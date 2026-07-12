@@ -1,0 +1,253 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\geometry{margin=1in}
+
+\title{Homework Assignment 1: Slab-Geometry Boltzmann Equation}
+\author{Tal Ramot}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction \& Case's Method}
+
+This report presents the solutions to Homework Assignment 1, which focuses on the monoenergetic, steady-state Boltzmann transport equation in slab geometry for an infinite, homogeneous, isotropic medium with an isotropic plane delta-source at $x = 0$. The transport equation is written as:
+\begin{equation}
+    \mu \frac{\partial \psi(x, \mu)}{\partial x} + \psi(x, \mu) = \frac{c}{2} \int_{-1}^1 \psi(x, \mu') d\mu' + \frac{1}{4\pi} \delta(x)
+\end{equation}
+where $\psi(x, \mu)$ is the angular flux, $c \in [0, 1)$ is the scattering ratio, and $\mu$ is the cosine of the angle of the particle's velocity with the $x$-axis.
+
+In 1953, Kenneth Case analyzed this equation by searching for separation-of-variables solutions of the form:
+\begin{equation}
+    \psi_\nu(x, \mu) = e^{-x/\nu} \phi_\nu(\mu)
+\end{equation}
+Substituting this ansatz into the homogeneous transport equation leads to the eigenvalue problem:
+\begin{equation}
+    (\nu - \mu) \phi_\nu(\mu) = \frac{c\nu}{2} \int_{-1}^1 \phi_\nu(\mu') d\mu'
+\end{equation}
+Normalizing the eigenfunctions such that $\int_{-1}^1 \phi_\nu(\mu') d\mu' = 1$, we obtain:
+\begin{equation}
+    (\nu - \mu) \phi_\nu(\mu) = \frac{c\nu}{2}
+\end{equation}
+
+Depending on the value of the eigenvalue $\nu$, two cases arise:
+\begin{enumerate}
+    \item \textbf{Discrete Spectrum ($\nu \notin [-1, 1]$):} Since $\nu - \mu \neq 0$ for all $\mu \in [-1, 1]$, we can divide directly by $\nu - \mu$, yielding the discrete eigenfunctions:
+    \begin{equation}
+        \phi_0^{\pm}(\mu) = \frac{c\nu_0}{2(\nu_0 \mp \mu)}
+    \end{equation}
+    Integrating these over $[-1, 1]$ and applying the normalization condition yields the transcendental characteristic equation for the discrete eigenvalues $\pm\nu_0$:
+    \begin{equation}
+        1 = c\nu_0 \text{arctanh}(1/\nu_0)
+    \end{equation}
+    For $c \in (0, 1)$, there is exactly one pair of real, positive roots $\pm\nu_0$ with $\nu_0 > 1$.
+
+    \item \textbf{Continuous Spectrum ($\nu \in [-1, 1]$):} In this case, the term $\nu - \mu$ vanishes at $\mu = \nu$. Thus, we cannot divide by $\nu - \mu$ in the sense of ordinary functions. Instead, in the theory of distributions (generalized functions), the general solution to the equation is:
+    \begin{equation}
+        \phi_\nu(\mu) = \frac{c\nu}{2} \mathcal{P} \frac{1}{\nu - \mu} + \lambda(\nu)\delta(\mu - \nu)
+    \end{equation}
+    where $\mathcal{P}$ represents the Cauchy principal value distribution, $\delta(\mu - \nu)$ is the Dirac delta function, and $\lambda(\nu)$ is the dispersion function. Integrating $\phi_\nu(\mu)$ over $\mu \in [-1, 1]$ and setting the integral to 1 determines $\lambda(\nu)$:
+    \begin{equation}
+        \lambda(\nu) = 1 - c\nu \text{arctanh}(\nu)
+    \end{equation}
+\end{enumerate}
+
+\subsection{Intuition Behind the Continuous Spectrum and Generalized Functions}
+
+The presence of the Dirac delta function $\delta(\mu - \nu)$ and the principal value term $\mathcal{P}\frac{1}{\nu-\mu}$ in the continuous eigenfunctions $\phi_\nu(\mu)$ can feel counter-intuitive. 
+
+Physically, the continuous spectrum represents the singular behavior of particles that travel without undergoing collisions (uncollided transport) or undergo highly directional scattering. A particle traveling at a specific direction $\mu = \nu$ represents a singular distribution in angle, which is modeled by the Dirac delta $\delta(\mu - \nu)$. The principal value distribution $\mathcal{P}\frac{1}{\nu - \mu}$ accounts for the strong coupling between nearby angles due to scattering, where the singularity is balanced symmetrically.
+
+However, when we look at the scalar flux $\phi(x)$, which is the angle-integrated quantity:
+\begin{equation}
+    \phi(x) = 2\pi \int_{-1}^1 \psi(x, \mu) d\mu
+\end{equation}
+these angular singularities are integrated out. Under integration, the distribution $\phi_\nu(\mu)$ acts as a linear functional mapping to a constant:
+\begin{equation}
+    \int_{-1}^1 \phi_\nu(\mu) d\mu = 1
+\end{equation}
+This leads to the transient component of the scalar flux:
+\begin{equation}
+    \phi_{\text{tr}}(x) = \frac{1}{2} \int_0^1 \frac{e^{-|x|/\nu}}{N_\nu} d\nu
+\end{equation}
+where:
+\begin{equation}
+    N_\nu = \nu \left[ \lambda^2(\nu) + \frac{\pi^2 c^2 \nu^2}{4} \right]
+\end{equation}
+
+Crucially, \textbf{no distributions or generalized functions remain in the scalar flux integral}. The integrand is a regular, smooth function of $\nu$ on the open interval $(0, 1)$. For any $x > 0$, as $\nu \to 0$, the exponential term $e^{-|x|/\nu}$ decays extremely rapidly, making the integrand vanish at 0. As $\nu \to 1$, the dispersion function $\lambda(\nu) \to -\infty$, which causes the normalization factor $N_\nu \to \infty$ and the integrand to vanish at 1. Thus, the numerical integration is highly well-behaved.
+
+---
+
+\section{Question 1: Exact Scalar Flux Analysis}
+
+The exact scalar flux is computed as:
+\begin{equation}
+    \phi(x) = \phi_{\text{as}}(x) + \phi_{\text{tr}}(x)
+\end{equation}
+where $\phi_{\text{as}}(x) = \frac{e^{-|x|/\nu_0}}{2 N_0^+}$ is the asymptotic component, and $\phi_{\text{tr}}(x)$ is the transient component.
+The discrete normalization factor is:
+\begin{equation}
+    N_0^+ = \frac{c}{2} \nu_0^3 \left[ \frac{c}{\nu_0^2 - 1} - \frac{1}{\nu_0^2} \right]
+\end{equation}
+
+For $\nu_0$, we can choose to compute it using:
+\begin{itemize}
+    \item \textbf{Numerical Root-Finding:} Solving $\frac{\text{arctanh}(y)}{y} = \frac{1}{c}$ for $y = 1/\nu_0 \in (0, 1)$ using a bisection method, which is extremely stable.
+    \item \textbf{Analytic Approximation:}
+    \begin{equation}
+        \nu_0 \approx \frac{1}{\sqrt{1 - c^{p(c)}}}
+    \end{equation}
+    where:
+    \begin{equation}
+        p(c) = 2.47412 + \frac{0.00363081}{c^2} - 0.0352458c + \frac{0.557498}{c}
+    \end{equation}
+\end{itemize}
+
+\subsection{Question 1a: Asymptotic and Transient Components}
+
+[Insert plots of asymptotic and transient components for each $c$, and the relative contributions $\phi_{\text{tr}}(x)/\phi(x)$ and $\phi_{\text{as}}(x)/\phi(x)$ as a function of $x$. Add physical discussion here.]
+
+\subsection{Question 1b: Classical Diffusion Solution}
+
+The classical diffusion equation (in units of mean free path, where $\Sigma_t = 1$) for a homogeneous, isotropic medium with an isotropic plane delta-source is given by:
+\begin{equation}
+    - D \frac{d^2 \phi_{\text{class}}(x)}{dx^2} + (1 - c) \phi_{\text{class}}(x) = \delta(x)
+\end{equation}
+Using the standard P1 diffusion coefficient $D = 1/3$, the Green's function solution is:
+\begin{equation}
+    \phi_{\text{class}}(x) = \frac{\sqrt{3}}{2\sqrt{1-c}} e^{-\sqrt{3(1-c)} |x|}
+\end{equation}
+
+[Insert comparison plots with the classical diffusion solution. Discuss the differences, including the behavior near the source ($x \to 0$) and the asymptotic behavior ($x \to \infty$).]
+
+\subsection{Question 1c: Asymptotic Diffusion Solution}
+
+The asymptotic diffusion approximation matches the diffusion length to the exact discrete transport eigenvalue $\nu_0$, i.e., $L = \nu_0$, which corresponds to an asymptotic diffusion coefficient $D_{\text{as}} = (1 - c) \nu_0^2$. The governing equation is:
+\begin{equation}
+    - D_{\text{as}} \frac{d^2 \phi_{\text{as,diff}}(x)}{dx^2} + (1 - c) \phi_{\text{as,diff}}(x) = \delta(x)
+\end{equation}
+which yields the Green's function solution:
+\begin{equation}
+    \phi_{\text{as,diff}}(x) = \frac{1}{2(1-c)\nu_0} e^{-|x|/\nu_0}
+\end{equation}
+
+[Insert comparison plots with the asymptotic diffusion solution. Discuss how the asymptotic diffusion solution compares to both the classical diffusion solution and the exact transport asymptotic component $\phi_{\text{as}}(x)$.]
+
+\subsection{Question 1d: Relative Error of Diffusion Approximations}
+
+The relative error of each diffusion approximation relative to the exact transport solution is defined as:
+\begin{equation}
+    \text{Relative Error (\%)} = \frac{|\phi_{\text{approx}}(x) - \phi_{\text{exact}}(x)|}{\phi_{\text{exact}}(x)} \times 100\%
+\end{equation}
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figs/diffusion_comparison_numerical.pdf}
+    \caption{Comparison of the exact scalar flux, its asymptotic component, classical diffusion, and asymptotic diffusion solutions ($c = 0.5, 0.6, 0.7, 0.8, 0.9, 0.95$).}
+    \label{fig:diffusion_comparison}
+\end{figure}
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figs/diffusion_errors_numerical.pdf}
+    \caption{Relative error (\%) of the classical and asymptotic diffusion approximations compared to the exact transport solution.}
+    \label{fig:diffusion_errors}
+\end{figure}
+
+[Insert relative error plots as a function of $x$. Add physical discussion comparing the accuracy of the classical and asymptotic diffusion approximations across the different values of $c$. Analyze why the error behaves as it does near the source and far from it.]
+
+---
+
+\section{Question 2: Numerical Code for Diffusion Equation}
+
+To solve the time-independent diffusion equation with a delta-source at $x=0$ numerically, we exploit the symmetry of the medium and integrate over the half-domain $x \in [-a, 0]$. Since the delta-source is located at $x=0$, the domain $x < 0$ is source-free, governed by the homogeneous equation:
+\begin{equation}
+    - D \frac{d^2 \phi(x)}{dx^2} + (1 - c) \phi(x) = 0
+\end{equation}
+
+\subsection{Analytical Conversion to a First-Order System}
+We convert this second-order ODE to a linear system of two first-order ODEs. Let:
+\begin{equation}
+    y_1(x) = \phi(x), \quad y_2(x) = \frac{d\phi(x)}{dx}
+\end{equation}
+This yields the first-order system:
+\begin{equation}
+    \frac{d}{dx} \begin{pmatrix} y_1 \\ y_2 \end{pmatrix} = \begin{pmatrix} y_2 \\ \frac{1-c}{D} y_1 \end{pmatrix}
+\end{equation}
+
+\subsection{Boundary Conditions and the Shooting Method}
+Because the exact solution decays exponentially as $e^{-\kappa |x|}$ where $\kappa = \sqrt{(1-c)/D}$, we choose the truncation boundary $x = -a$ where $a = 3/\kappa$ (corresponding to 3 decay lengths, where the flux is negligible).
+
+We set the function boundary condition at the far boundary to zero:
+\begin{equation}
+    y_1(-a) = 0
+\end{equation}
+and parameterize the unknown initial derivative as a shooting parameter $s$:
+\begin{equation}
+    y_2(-a) = s
+\end{equation}
+
+To find the correct $s$, we use the derivative jump condition at the source. Integrating the governing equation $-D\phi''(x) + (1-c)\phi(x) = \delta(x)$ from $-\epsilon$ to $+\epsilon$ and taking the limit $\epsilon \to 0$ yields:
+\begin{equation}
+    - D \left[ \phi'(0^+) - \phi'(0^-) \right] = 1
+\end{equation}
+By symmetry of the infinite-medium solution ($\phi(x) = \phi(-x) \implies \phi'(0^-) = - \phi'(0^+)$), this simplifies to the target boundary condition at $x=0$:
+\begin{equation}
+    y_2(0^-) = \phi'(0^-) = \frac{1}{2D}
+\end{equation}
+
+Thus, we define the objective mismatch function:
+\begin{equation}
+    f(s) = y_2(0; s) - \frac{1}{2D}
+\end{equation}
+where $y_2(0; s)$ is obtained by integrating the first-order system from $-a$ to $0$ with the initial state $[0.0, s]^T$. We use a bisection-based root-finding algorithm (specifically Brent's method, `brentq`) to solve $f(s^*) = 0$ for the optimal initial derivative $s^*$.
+
+\subsection{Comparison with the Analytical Solution}
+The numerical solution is compared to the analytical classical diffusion solution:
+\begin{equation}
+    \phi_{\text{class}}(x) = \frac{1}{2\sqrt{D(1-c)}} e^{\kappa x} \quad (x < 0)
+\end{equation}
+for three values of the scattering ratio: $c = 0.5, 0.7, 0.9$. The comparison of the flux values and the relative error are presented in Figure~\ref{fig:num_vs_ana_diff} and Figure~\ref{fig:num_diff_errors}.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figs/diffusion_numerical_vs_analytic.pdf}
+    \caption{Comparison of the numerical (shooting method) solution and the analytical classical diffusion solution for $c = 0.5, 0.7, 0.9$ on the half-domain $[-a, 0]$.}
+    \label{fig:num_vs_ana_diff}
+\end{figure}
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{figs/diffusion_numerical_errors.pdf}
+    \caption{Relative error (\%) of the numerical diffusion solution compared to the analytical classical diffusion solution on $[-a, 0]$.}
+    \label{fig:num_diff_errors}
+\end{figure}
+
+---
+
+\section{Question 3: Critical Half-Thickness and Critical Radius}
+
+[Present critical half-thickness $a/2$ and critical radius $R_c$ results for $1.02 < c < 2$. Compare the various approximations.]
+
+---
+
+\section{Question 4: Numerical Diffusion Code in Spherical Coordinates}
+
+[Present the numerical results for critical radius calculations in spherical geometry, and compare with the analytical results.]
+
+---
+
+\section{Question 5: Bare Critical Mass of U-235 and Pu-239}
+
+[Present bare critical mass calculations using realistic cross sections.]
+
+\end{document}

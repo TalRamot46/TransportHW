@@ -1,0 +1,36 @@
+{
+    "files.associations": {
+        "*.tex": "latex"
+    },
+    "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk (perl)",
+            "command": "C:/Strawberry/perl/bin/perl.exe",
+            "args": [
+                "C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/scripts/latexmk/latexmk.pl",
+                "-pdf",
+                "-interaction=nonstopmode",
+                "-synctex=1",
+                "%DOC%"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "latexmk (perl)",
+            "tools": [
+                "latexmk (perl)"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipe.default": "first",
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.latex.outDir": "%DIR%",
+    "latex-workshop.synctex.path": "C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/miktex/bin/x64/synctex.exe",
+    "latex-workshop.view.pdf.viewer": "tab",
+    "latex-workshop.view.pdf.internal.synctex.keybinding": "ctrl-click",
+    "latex-workshop.synctex.afterBuild.enabled": true,
+    "latex-workshop.latex.search.rootFiles.include": [
+        "docs/homework4/homework1.tex"
+    ]
+}

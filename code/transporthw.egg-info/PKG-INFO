@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: transporthw
+Version: 0.1.0
+Summary: A project for Transport HW with numeric libraries
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: scipy
+Requires-Dist: matplotlib
+Requires-Dist: tqdm
+
+"# TransportHW" 

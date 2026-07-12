@@ -1,0 +1,78 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{microtype}
+
+\geometry{margin=1in}
+
+\title{Homework Assignment 4: Studention Transport Monte Carlo Simulation}
+\author{Tal Ramot}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This report details the results of an explicit Monte Carlo simulation of Studention transport in a sphere of Exercisium. Exercisium is a fissile material with atomic weight $A = 300$, density $\rho = 30$ g/cm$^3$, and a microscopic cross section $\Sigma_t = 10$ barn. 
+
+The simulation advanced active Studentions generation-by-generation. For each Studention, the distance to the next event is determined by $s = -\ln(\xi) / \Sigma_{macro}$. If the advanced particle leaves the sphere radius $R$, it is deleted. Otherwise, the type of collision is determined probabilistically:
+\begin{itemize}
+    \item \textbf{Absorption} ($P_0 = 20\%$): The Studention disappears.
+    \item \textbf{Scattering} ($P_1 = 50\%$): The Studention scatters in a random 3D direction.
+    \item \textbf{Fission} ($P_2 = 30\%$): The original is absorbed, and two new Studentions are emitted in independent random directions.
+\end{itemize}
+
+A sphere is considered critical if at least one of 100 histories starting at the origin becomes critical (surpassing 10,000 active particles). Otherwise, the sphere is noncritical.
+
+\section{Question 1: Critical Radius of the Base Case}
+Running the bisection search with $N = 100$ histories per check yielded:
+\begin{itemize}
+    \item \textbf{Critical Radius:} [Insert Critical Radius] cm
+    \item \textbf{Critical Mass:} [Insert Critical Mass] g
+\end{itemize}
+
+\section{Question 2: Critical Mass vs. Density}
+The simulation was executed for 11 densities linearly spaced between 10 g/cm$^3$ and 100 g/cm$^3$. The resulting critical radius and critical mass are plotted on a logarithmic scale in Figure~\ref{fig:density}.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figs/density_analysis.pdf}
+    \caption{Critical radius (cm) and critical mass (g) as a function of Exercisium density.}
+    \label{fig:density}
+\end{figure}
+
+\subsection{Discussion}
+[Write explanation of how critical radius and critical mass depend on the density of the fissile material.]
+
+\section{Question 3: Probability Grid \& Parameterization}
+The critical radius and critical mass were evaluated across 13 different collision probability configurations. The results are plotted against the multiplication parameter $c = P_1 + 2P_2$ in Figure~\ref{fig:probability}.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figs/probability_analysis.pdf}
+    \caption{Critical radius (cm) and critical mass (g) as a function of the multiplication parameter $c = P_1 + 2P_2$.}
+    \label{fig:probability}
+\end{figure}
+
+\subsection{Discussion}
+[Discuss whether the critical mass is uniquely determined by the average secondary neutron count $c$, or if individual $P_0, P_1, P_2$ values have distinct effects.]
+
+\section{Question 4: Deep Probability Sweep}
+A wider grid of 33 different probability configurations was simulated to analyze the critical radius and mass across a broad range of $c$. The results are shown in Figure~\ref{fig:deep_probability}.
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figs/deep_probability_analysis.pdf}
+    \caption{Critical radius (cm) and critical mass (g) for 33 configurations as a function of the multiplication parameter $c = P_1 + 2P_2$.}
+    \label{fig:deep_probability}
+\end{figure}
+
+\subsection{Discussion}
+[Explain whether the results are determined mainly by $c$, or whether the separate values of $P_0, P_1$, and $P_2$ also have a visible effect.]
+
+\end{document}

@@ -1,0 +1,20 @@
+[project]
+name = "transporthw"
+version = "0.1.0"
+description = "A project for Transport HW with numeric libraries"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "tqdm",
+]
+
+[build-system]
+requires = ["setuptools>=61.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["homework1", "homework4"]
+package-dir = {"" = "code"}
