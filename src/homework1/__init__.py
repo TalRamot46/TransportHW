@@ -11,8 +11,15 @@ from homework1.exact_solution import (
 )
 
 from homework1.diffusion import (
+    diffusion_coefficients,
+    phi_diffusion_analytic,
     phi_classical_diffusion,
     phi_asymptotic_diffusion,
-    solve_diffusion_numerical
+    solve_diffusion_numerical,
+    solve_diffusion_shooting,
+    solve_diffusion_fv,
+    solve_diffusion_fv_full,
+    absorption_balance,
+    convergence_study
 )
 

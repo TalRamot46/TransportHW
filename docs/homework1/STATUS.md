@@ -11,7 +11,7 @@ Status of `src/homework1` against `instruction_files/Assignment1.pdf`, as of 202
 | 1c — asymptotic diffusion | Done |
 | 1d — relative error of each diffusion approximation | Done |
 | 1 — all seven required `c` values plotted and regenerated | Done |
-| 2 — numerical diffusion code with delta-source | Mostly done |
+| 2 — numerical diffusion code with delta-source | Done (branch `homework1-q2-diffusion`) |
 | 3 — critical `a/2` and `R_c` for `1.02 < c < 2` (5 methods) | Not started |
 | 4 — spherical diffusion code, `k = 1` critical radius | Not started |
 | 5 — bare critical mass of U-235 and Pu-239 | Not started |
@@ -51,14 +51,25 @@ half-domain `x` in `[-a, 0]` and imposing the current boundary condition
 delta over a cell. Compared against the analytic solution with an error plot
 (`plots.py:225`).
 
-Remaining:
+All three gaps are now closed on branch `homework1-q2-diffusion` — see `plan.md` for the
+derivation and measured results. Summary:
 
-- Only the **classical** approximation is wired up. The assignment allows "either", but
-  the write-up therefore compares just one.
-- **No convergence study**, though the assignment asks for "converged numerical results".
-  `num_points` and the RK tolerances are fixed, with no refinement sweep.
-- Minor: the comment at `diffusion.py:75` says "3 decay lengths" but the code uses
-  `a = 10/kappa`; the far boundary uses `phi(-a) = 0` rather than an extrapolated endpoint.
+- **Three solvers**, all using the symmetry-derived current condition `J(0+) = 1/2` at the
+  source and a radiation condition at the outer boundary: `solve_diffusion_shooting`
+  (single scaled integration, no root-finding), `solve_diffusion_fv` (tridiagonal
+  finite volume, half-domain), and `solve_diffusion_fv_full` (full domain, source smeared
+  over one cell). The last two answer the assignment's delta-source question by direct
+  comparison.
+- **Both approximations** are covered by one solver, since asymptotic diffusion is the same
+  equation with `D = (1-c) nu0^2`.
+- **Convergence study** added: observed order `2.000` for both finite-volume treatments,
+  with the smeared source carrying a `~14x` larger constant.
+- The zero-flux outer boundary was the real defect in the original solver, forcing a `100 %`
+  relative error at `x = -a`. The radiation condition removes it; error is now flat at
+  `<= 1.5e-2 %` across the domain.
+- `solve_diffusion_numerical` is retained, with a docstring explaining its limitation, so
+  the original Q2 figure still builds.
+- The stale "3 decay lengths" comment is fixed.
 
 ## Questions 3, 4, 5 — not started
 
@@ -85,7 +96,9 @@ project; the figures above were regenerated with `PYTHONPATH=src`.
 ## Suggested order of work
 
 1. ~~Restore `c = 0` and uncomment the Q1 plot calls.~~ Done 2026-08-07.
-2. Add the Q2 grid-convergence sweep, optionally the asymptotic-diffusion variant.
-3. Extend the eigenvalue solver to `c > 1`, then build Q3 on top of it.
+2. ~~Add the Q2 grid-convergence sweep and the asymptotic-diffusion variant.~~ Done
+   2026-08-07 on branch `homework1-q2-diffusion`.
+3. Extend the eigenvalue solver to `c > 1`, then build Q3 on top of it. The finite-volume
+   solver added for Q2 is the intended foundation for Q4.
 4. Q4 spherical `k`-eigenvalue code, validated against Q3's analytic `R_c`.
 5. Q5 critical masses, using the Q3/Q4 radii and the Sood benchmark cross sections.

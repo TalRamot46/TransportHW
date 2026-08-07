@@ -2,13 +2,17 @@ import os
 import logging
 import numpy as np
 from homework1.exact_solution import compute_nu0_numerical, compute_nu0_approx
+from homework1.diffusion import absorption_balance, solve_diffusion_fv
 from homework1.plots import (
-    create_figs_dir, 
-    plot_flux_components, 
+    create_figs_dir,
+    plot_flux_components,
     plot_relative_contributions,
     plot_diffusion_comparison,
     plot_diffusion_errors,
-    plot_numerical_vs_analytic_diffusion
+    plot_numerical_vs_analytic_diffusion,
+    plot_q2_solution_comparison,
+    plot_q2_error_profiles,
+    plot_q2_convergence
 )
 
 # Setup logging configuration
@@ -65,12 +69,40 @@ def main():
         error_path = os.path.join(figs_dir, f"diffusion_errors_{method_item}.pdf")
         plot_diffusion_errors(x, c_values, method=method_item, save_path=error_path)
 
-    # Question 2 new plots
+    # Question 2 reference figures (original shooting solver, zero-flux outer BC)
     logger.info("\nGenerating Question 2 numerical vs. analytical diffusion comparison...")
     num_comp_path = os.path.join(figs_dir, "diffusion_numerical_vs_analytic.pdf")
     num_err_path = os.path.join(figs_dir, "diffusion_numerical_errors.pdf")
     plot_numerical_vs_analytic_diffusion(c_values=[0.5, 0.7, 0.9], D=1.0/3.0, save_path_comp=num_comp_path, save_path_err=num_err_path)
-        
+
+    # Question 2: solvers using the symmetry-derived current condition at the
+    # source and a radiation condition at the outer boundary.
+    q2_c_values = [0.5, 0.7, 0.9]
+    q2_approximations = ("classical", "asymptotic")
+
+    logger.info("\n=== Homework 1 Question 2 ===")
+    logger.info("Neutron balance check, Sigma_a * integral(phi dx) (should be 1):")
+    logger.info(f"{'c':<6} | {'approximation':<13} | {'balance':<14}")
+    logger.info("-" * 40)
+    for approximation in q2_approximations:
+        for c in q2_c_values:
+            x_fv, phi_fv = solve_diffusion_fv(c, approximation)
+            balance = absorption_balance(x_fv, phi_fv, c, approximation, quadrature="midpoint")
+            logger.info(f"{c:<6} | {approximation:<13} | {balance:<14.10f}")
+    logger.info("-" * 40)
+
+    logger.info("\nGenerating Question 2 solver comparison, error profiles and convergence...")
+    plot_q2_solution_comparison(
+        q2_c_values, q2_approximations,
+        save_path=os.path.join(figs_dir, "q2_solver_comparison.pdf"))
+    plot_q2_error_profiles(
+        q2_c_values, q2_approximations,
+        save_path=os.path.join(figs_dir, "q2_error_profiles.pdf"))
+    plot_q2_convergence(
+        q2_c_values, q2_approximations,
+        save_path=os.path.join(figs_dir, "q2_convergence.pdf"))
+
+
     logger.info(f"\nAll plots have been successfully generated and saved to:")
     logger.info(f"  {figs_dir}")
     logger.info("==============================")

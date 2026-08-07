@@ -3,7 +3,16 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 from homework1.exact_solution import phi_asymptotic, phi_transient, phi_exact
-from homework1.diffusion import phi_classical_diffusion, phi_asymptotic_diffusion, solve_diffusion_numerical
+from homework1.diffusion import (
+    phi_classical_diffusion,
+    phi_asymptotic_diffusion,
+    phi_diffusion_analytic,
+    solve_diffusion_numerical,
+    solve_diffusion_shooting,
+    solve_diffusion_fv,
+    solve_diffusion_fv_full,
+    convergence_study,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -278,3 +287,165 @@ def plot_numerical_vs_analytic_diffusion(c_values=[0.5, 0.7, 0.9], D=1.0/3.0, sa
         fig2.savefig(save_path_err, bbox_inches='tight', dpi=300)
         logger.info(f"Saved figure to: {save_path_err}")
     plt.close(fig2)
+
+# ---------------------------------------------------------------------------
+# Question 2: numerical diffusion solvers
+# ---------------------------------------------------------------------------
+
+APPROXIMATION_LABELS = {'classical': 'Classical', 'asymptotic': 'Asymptotic'}
+
+def _q2_solutions(c, approximation, n_cells=500):
+    """
+    Runs the three numerical solvers for one case and returns them restricted to
+    x >= 0, so that they can be compared on a common domain. The full-domain
+    solver is symmetric about the origin, so discarding x < 0 loses nothing.
+    """
+    x_sh, phi_sh = solve_diffusion_shooting(c, approximation)
+    x_fv, phi_fv = solve_diffusion_fv(c, approximation, n_cells=n_cells)
+    x_fu, phi_fu = solve_diffusion_fv_full(c, approximation, n_cells=2 * n_cells + 1)
+
+    right = x_fu >= 0.0
+    return {
+        'Shooting (radiation BC)': (x_sh, phi_sh),
+        'Finite volume, half-domain': (x_fv, phi_fv),
+        'Finite volume, smeared source': (x_fu[right], phi_fu[right]),
+    }
+
+_Q2_STYLES = {
+    'Shooting (radiation BC)': dict(color='#e74c3c', linestyle='--', linewidth=1.8),
+    'Finite volume, half-domain': dict(color='#2ecc71', linestyle='-.', linewidth=1.8),
+    'Finite volume, smeared source': dict(color='#9b59b6', linestyle=':', linewidth=2.0),
+}
+
+def plot_q2_solution_comparison(c_values, approximations=('classical', 'asymptotic'),
+                                save_path=None):
+    """
+    Compares each numerical solver against the closed-form diffusion Green's
+    function, one row per value of c and one column per approximation.
+    """
+    plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
+
+    n_rows, n_cols = len(c_values), len(approximations)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(6 * n_cols, 3.5 * n_rows), squeeze=False)
+
+    for i, c in enumerate(c_values):
+        for j, approximation in enumerate(approximations):
+            ax = axes[i][j]
+            solutions = _q2_solutions(c, approximation)
+
+            x_ref = solutions['Shooting (radiation BC)'][0]
+            ax.plot(x_ref, phi_diffusion_analytic(x_ref, c, approximation),
+                    label='Analytic', color='#2c3e50', linewidth=2.5)
+            for name, (x, phi) in solutions.items():
+                ax.plot(x, phi, label=name, **_Q2_STYLES[name])
+
+            ax.set_yscale('log')
+            ax.set_title(f'{APPROXIMATION_LABELS[approximation]} diffusion, $c = {c}$',
+                         fontsize=11, fontweight='bold')
+            ax.grid(True, which='both', ls='--', alpha=0.5)
+            if j == 0:
+                ax.set_ylabel('Scalar Flux (log scale)', fontsize=10)
+            if i == n_rows - 1:
+                ax.set_xlabel('$x$ [mean free paths]', fontsize=10)
+            if i == 0 and j == 0:
+                ax.legend(loc='upper right', fontsize=8, frameon=True)
+
+    fig.suptitle('Question 2: Numerical Diffusion Solvers vs. Analytic Green\'s Function',
+                 fontsize=15, fontweight='bold', y=0.995)
+    fig.tight_layout()
+
+    if save_path:
+        fig.savefig(save_path, bbox_inches='tight', dpi=300)
+        logger.info(f"Saved figure to: {save_path}")
+    plt.close(fig)
+
+def plot_q2_error_profiles(c_values, approximations=('classical', 'asymptotic'),
+                           save_path=None):
+    """
+    Relative error of each numerical solver against the closed form, as a
+    function of x. With the radiation boundary condition the error stays flat
+    across the domain instead of diverging at the outer edge.
+    """
+    plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
+
+    n_rows, n_cols = len(c_values), len(approximations)
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(6 * n_cols, 3.5 * n_rows), squeeze=False)
+
+    for i, c in enumerate(c_values):
+        for j, approximation in enumerate(approximations):
+            ax = axes[i][j]
+
+            for name, (x, phi) in _q2_solutions(c, approximation).items():
+                phi_ana = phi_diffusion_analytic(x, c, approximation)
+                rel_err = np.abs(phi - phi_ana) / phi_ana * 100.0
+                ax.plot(x, rel_err, label=name, **_Q2_STYLES[name])
+
+            ax.set_yscale('log')
+            ax.set_title(f'{APPROXIMATION_LABELS[approximation]} diffusion, $c = {c}$',
+                         fontsize=11, fontweight='bold')
+            ax.grid(True, which='both', ls='--', alpha=0.5)
+            if j == 0:
+                ax.set_ylabel('Relative Error (%)', fontsize=10)
+            if i == n_rows - 1:
+                ax.set_xlabel('$x$ [mean free paths]', fontsize=10)
+            if i == 0 and j == 0:
+                ax.legend(loc='lower right', fontsize=8, frameon=True)
+
+    fig.suptitle('Question 2: Relative Error of the Numerical Solvers',
+                 fontsize=15, fontweight='bold', y=0.995)
+    fig.tight_layout()
+
+    if save_path:
+        fig.savefig(save_path, bbox_inches='tight', dpi=300)
+        logger.info(f"Saved figure to: {save_path}")
+    plt.close(fig)
+
+def plot_q2_convergence(c_values, approximations=('classical', 'asymptotic'),
+                        save_path=None):
+    """
+    Mesh-refinement study for the two finite-volume source treatments, with an
+    O(dx^2) reference slope. Both are second-order; the smeared source carries a
+    larger constant because it spreads the kink at the origin over one cell.
+    """
+    plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
+
+    fig, axes = plt.subplots(1, len(approximations),
+                             figsize=(6 * len(approximations), 5), squeeze=False)
+
+    solver_styles = {
+        'fv': ('Half-domain, current BC', '#2ecc71', 'o'),
+        'fv_full': ('Full domain, smeared source', '#9b59b6', 's'),
+    }
+
+    for j, approximation in enumerate(approximations):
+        ax = axes[0][j]
+
+        for c in c_values:
+            for solver, (label, color, marker) in solver_styles.items():
+                dx, errors, orders = convergence_study(c, approximation, solver=solver)
+                ax.loglog(dx, errors, marker=marker, color=color, alpha=0.85,
+                          label=f'{label} (p = {orders[-1]:.2f})' if c == c_values[0] else None)
+                logger.info(f"  {approximation:11s} c={c}  {solver:8s} "
+                            f"observed order = {orders[-1]:.3f}")
+
+        # O(dx^2) reference slope, anchored to the finest point of the last curve
+        ref_dx = np.array([dx[0], dx[-1]])
+        ref = errors[-1] * (ref_dx / dx[-1])**2
+        ax.loglog(ref_dx, ref, 'k--', alpha=0.6, linewidth=1.2, label=r'$O(\Delta x^2)$')
+
+        ax.set_title(f'{APPROXIMATION_LABELS[approximation]} diffusion',
+                     fontsize=12, fontweight='bold')
+        ax.set_xlabel(r'$\Delta x$ [mean free paths]', fontsize=10)
+        if j == 0:
+            ax.set_ylabel('Relative $L_2$ error', fontsize=10)
+        ax.grid(True, which='both', ls='--', alpha=0.5)
+        ax.legend(loc='upper left', fontsize=9, frameon=True)
+
+    fig.suptitle('Question 2: Mesh Convergence of the Finite-Volume Solvers',
+                 fontsize=15, fontweight='bold', y=1.0)
+    fig.tight_layout()
+
+    if save_path:
+        fig.savefig(save_path, bbox_inches='tight', dpi=300)
+        logger.info(f"Saved figure to: {save_path}")
+    plt.close(fig)
