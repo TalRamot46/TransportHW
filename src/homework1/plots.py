@@ -7,22 +7,50 @@ from homework1.diffusion import phi_classical_diffusion, phi_asymptotic_diffusio
 
 logger = logging.getLogger(__name__)
 
+N_COLS = 2
+
 def create_figs_dir():
     figs_dir = os.path.join("docs", "homework1", "figs")
     os.makedirs(figs_dir, exist_ok=True)
     return figs_dir
+
+def _make_grid(n_panels):
+    """
+    Creates a two-column grid of subplots with one panel per value of c.
+    """
+    plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
+
+    n_rows = -(-n_panels // N_COLS)  # ceiling division
+    fig, axes = plt.subplots(n_rows, N_COLS, figsize=(12, 4 * n_rows), sharex=True)
+    return fig, axes.flatten()
+
+def _finalize_grid(fig, axes, n_panels, ylabel):
+    """
+    Removes the unused panels of the grid and applies the axis labels.
+
+    The trailing panels are deleted first: with an odd number of c values the last
+    row is only half filled. Because the grid is created with sharex=True, matplotlib
+    hides the x tick labels on every panel that is not at the bottom of its column,
+    so deleting a panel exposes a new bottom panel whose tick labels must be turned
+    back on explicitly.
+    """
+    for j in range(n_panels, len(axes)):
+        fig.delaxes(axes[j])
+
+    for i in range(n_panels):
+        if i % N_COLS == 0:
+            axes[i].set_ylabel(ylabel, fontsize=10)
+        if i >= n_panels - N_COLS:
+            axes[i].tick_params(labelbottom=True)
+            axes[i].set_xlabel('$x$ [mean free paths]', fontsize=10)
 
 def plot_flux_components(x, c_values, method='numerical', save_path=None):
     """
     Plots the exact scalar flux, its asymptotic component, and its transient component
     for each c in c_values.
     """
-    # Use a professional, clean style
-    plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
-    
-    fig, axes = plt.subplots(4, 2, figsize=(12, 16), sharex=True)
-    axes = axes.flatten()
-    
+    fig, axes = _make_grid(len(c_values))
+
     for i, c in enumerate(c_values):
         ax = axes[i]
         
@@ -44,16 +72,10 @@ def plot_flux_components(x, c_values, method='numerical', save_path=None):
         ax.set_yscale('log')
         ax.grid(True, which="both", ls="--", alpha=0.5)
         
-        if i % 2 == 0:
-            ax.set_ylabel('Scalar Flux (log scale)', fontsize=10)
-        if i >= 6:
-            ax.set_xlabel('$x$ [mean free paths]', fontsize=10)
-            
         ax.legend(loc='upper right', frameon=True, facecolor='white', edgecolor='none', shadow=True)
-    
-    # Hide the 8th subplot (since we have 7 c values)
-    fig.delaxes(axes[7])
-    
+
+    _finalize_grid(fig, axes, len(c_values), 'Scalar Flux (log scale)')
+
     plt.suptitle(f'Scalar Flux Components ({method.capitalize()} Method)', fontsize=16, fontweight='bold', y=0.98)
     plt.tight_layout()
     
@@ -67,19 +89,16 @@ def plot_relative_contributions(x, c_values, method='numerical', save_path=None)
     Plots the relative contribution of the transient and asymptotic components:
     phi_as/phi and phi_tr/phi as a function of x.
     """
-    plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
-    
-    fig, axes = plt.subplots(4, 2, figsize=(12, 16), sharex=True)
-    axes = axes.flatten()
-    
+    fig, axes = _make_grid(len(c_values))
+
     for i, c in enumerate(c_values):
         ax = axes[i]
-        
+
         # Calculate components
         phi_as = phi_asymptotic(x, c, method=method)
         phi_tr = phi_transient(x, c)
         phi_ex = phi_as + phi_tr
-        
+
         # Relative contributions
         # For c = 0, phi_as = 0, so contribution of phi_tr is 100%
         if c == 0.0:
@@ -98,16 +117,10 @@ def plot_relative_contributions(x, c_values, method='numerical', save_path=None)
         ax.set_ylim(-0.05, 1.05)
         ax.grid(True, which="both", ls="--", alpha=0.5)
         
-        if i % 2 == 0:
-            ax.set_ylabel('Relative Contribution', fontsize=10)
-        if i >= 6:
-            ax.set_xlabel('$x$ [mean free paths]', fontsize=10)
-            
         ax.legend(loc='center right', frameon=True, facecolor='white', edgecolor='none', shadow=True)
-        
-    # Hide the 8th subplot
-    fig.delaxes(axes[7])
-    
+
+    _finalize_grid(fig, axes, len(c_values), 'Relative Contribution')
+
     plt.suptitle(f'Relative Contributions of Components ({method.capitalize()} Method)', fontsize=16, fontweight='bold', y=0.98)
     plt.tight_layout()
     
@@ -121,22 +134,19 @@ def plot_diffusion_comparison(x, c_values, method='numerical', save_path=None):
     Plots a comparison of exact transport, asymptotic transport, classical diffusion,
     and asymptotic diffusion for each c in c_values.
     """
-    plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
-    
-    fig, axes = plt.subplots(4, 2, figsize=(12, 16), sharex=True)
-    axes = axes.flatten()
-    
+    fig, axes = _make_grid(len(c_values))
+
     for i, c in enumerate(c_values):
         ax = axes[i]
-        
+
         # Calculate solutions
         phi_as_val = phi_asymptotic(x, c, method=method)
         phi_tr_val = phi_transient(x, c)
         phi_ex_val = phi_as_val + phi_tr_val
-        
+
         phi_class_val = phi_classical_diffusion(x, c)
         phi_as_diff_val = phi_asymptotic_diffusion(x, c, method=method)
-        
+
         # Plot
         ax.plot(x, phi_ex_val, label=r'$\phi(x)$ (Exact Transport)', color='#2c3e50', linewidth=2.0)
         
@@ -151,16 +161,10 @@ def plot_diffusion_comparison(x, c_values, method='numerical', save_path=None):
         ax.set_yscale('log')
         ax.grid(True, which="both", ls="--", alpha=0.5)
         
-        if i % 2 == 0:
-            ax.set_ylabel('Scalar Flux (log scale)', fontsize=10)
-        if i >= 6:
-            ax.set_xlabel('$x$ [mean free paths]', fontsize=10)
-            
         ax.legend(loc='upper right', frameon=True, facecolor='white', edgecolor='none', shadow=True)
-    
-    # Hide the 8th subplot
-    fig.delaxes(axes[7])
-    
+
+    _finalize_grid(fig, axes, len(c_values), 'Scalar Flux (log scale)')
+
     plt.suptitle(f'Comparison of Transport and Diffusion Solutions ({method.capitalize()} Method)', fontsize=16, fontweight='bold', y=0.98)
     plt.tight_layout()
     
@@ -174,14 +178,11 @@ def plot_diffusion_errors(x, c_values, method='numerical', save_path=None):
     Plots the relative error (%) of classical and asymptotic diffusion approximations
     relative to the exact transport solution.
     """
-    plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
-    
-    fig, axes = plt.subplots(4, 2, figsize=(12, 16), sharex=True)
-    axes = axes.flatten()
-    
+    fig, axes = _make_grid(len(c_values))
+
     for i, c in enumerate(c_values):
         ax = axes[i]
-        
+
         # Calculate solutions
         phi_as_val = phi_asymptotic(x, c, method=method)
         phi_tr_val = phi_transient(x, c)
@@ -204,16 +205,10 @@ def plot_diffusion_errors(x, c_values, method='numerical', save_path=None):
         ax.set_yscale('log')
         ax.grid(True, which="both", ls="--", alpha=0.5)
         
-        if i % 2 == 0:
-            ax.set_ylabel('Relative Error (%) (log scale)', fontsize=10)
-        if i >= 6:
-            ax.set_xlabel('$x$ [mean free paths]', fontsize=10)
-            
         ax.legend(loc='upper right', frameon=True, facecolor='white', edgecolor='none', shadow=True)
-        
-    # Hide the 8th subplot
-    fig.delaxes(axes[7])
-    
+
+    _finalize_grid(fig, axes, len(c_values), 'Relative Error (%) (log scale)')
+
     plt.suptitle(f'Relative Error of Diffusion Approximations ({method.capitalize()} Method)', fontsize=16, fontweight='bold', y=0.98)
     plt.tight_layout()
     

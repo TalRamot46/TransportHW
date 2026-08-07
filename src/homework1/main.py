@@ -25,7 +25,7 @@ def main():
     x_max = 5.0
     x_points = 500
 
-    c_values = [1e-1, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
+    c_values = [0.0, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
     x = np.linspace(x_min, x_max, x_points)
 
     logger.info("=== Homework 1 Question 1a ===")
@@ -50,21 +50,21 @@ def main():
     
     methods_to_run = ["numerical", "approx"] if method == "both" else [method]
     
-    # for method_item in methods_to_run:
-    #     logger.info(f"\nGenerating plots using method: {method_item}...")
-        
-    #     flux_path = os.path.join(figs_dir, f"flux_components_{method_item}.pdf")
-    #     plot_flux_components(x, c_values, method=method_item, save_path=flux_path)
-        
-    #     contrib_path = os.path.join(figs_dir, f"relative_contributions_{method_item}.pdf")
-    #     plot_relative_contributions(x, c_values, method=method_item, save_path=contrib_path)
-        
-    #     diff_path = os.path.join(figs_dir, f"diffusion_comparison_{method_item}.pdf")
-    #     plot_diffusion_comparison(x, c_values, method=method_item, save_path=diff_path)
-        
-    #     error_path = os.path.join(figs_dir, f"diffusion_errors_{method_item}.pdf")
-        # plot_diffusion_errors(x, c_values, method=method_item, save_path=error_path)
-        
+    for method_item in methods_to_run:
+        logger.info(f"\nGenerating plots using method: {method_item}...")
+
+        flux_path = os.path.join(figs_dir, f"flux_components_{method_item}.pdf")
+        plot_flux_components(x, c_values, method=method_item, save_path=flux_path)
+
+        contrib_path = os.path.join(figs_dir, f"relative_contributions_{method_item}.pdf")
+        plot_relative_contributions(x, c_values, method=method_item, save_path=contrib_path)
+
+        diff_path = os.path.join(figs_dir, f"diffusion_comparison_{method_item}.pdf")
+        plot_diffusion_comparison(x, c_values, method=method_item, save_path=diff_path)
+
+        error_path = os.path.join(figs_dir, f"diffusion_errors_{method_item}.pdf")
+        plot_diffusion_errors(x, c_values, method=method_item, save_path=error_path)
+
     # Question 2 new plots
     logger.info("\nGenerating Question 2 numerical vs. analytical diffusion comparison...")
     num_comp_path = os.path.join(figs_dir, "diffusion_numerical_vs_analytic.pdf")

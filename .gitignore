@@ -1,0 +1,47 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Packaging / build output
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments (uv writes .venv/)
+.venv/
+venv/
+env/
+
+# --- LaTeX build artifacts ---
+# The .tex sources and the final .pdf reports stay tracked; everything
+# latexmk regenerates on a rebuild does not.
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ilg
+*.ind
+
+# --- Editors / OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Office lock files (e.g. lecture_presentations/~$week5.pptx)
+~$*

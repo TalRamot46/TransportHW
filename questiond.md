@@ -1,0 +1,1 @@
+1. Why are all the equations defined over the angular flux and not the density function of neutrons? Does this definition implicitly include the assumption of monoenergy?
