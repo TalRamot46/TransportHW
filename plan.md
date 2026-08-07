@@ -91,30 +91,33 @@ phi   = scale * phi
 
 Same answer, no bracketing heuristic, no tolerance to tune.
 
-### 2.3 Add a finite-volume solver as the primary method
+### 2.3 Scope decision: shooting only
 
-Shooting is a fine check but a poor foundation. A cell-centred finite-volume discretisation
-solved as a tridiagonal system is:
+Finite-volume solvers were implemented and then **removed by decision** (commit history on
+this branch). The shooting method is kept as the sole solver: it is the simplest and, at
+`2.0e-8 %` maximum relative error against `1.49e-2 %` for finite volume at 500 cells, by far
+the most accurate.
 
-- the natural place to answer the delta-source question, because it permits a direct
-  comparison of the two modelling choices (below);
-- second-order accurate, so it produces a clean `O(dx^2)` convergence plot;
-- **the code Q4 needs anyway** (spherical geometry, `k`-eigenvalue power iteration). Writing
-  it here means Q4 is a geometry change plus an outer iteration, not a rewrite.
+Consequences to be aware of:
 
-### 2.4 Model the delta source two ways and compare
+- The empirical comparison of two delta-source treatments (2.4) is gone. The symmetry
+  argument still *answers* the assignment's question; what is lost is the measurement
+  showing the alternative is worse.
+- Q4 (spherical geometry, `k`-eigenvalue power iteration per Bell & Glasstone) will most
+  likely need a tridiagonal mesh solver, since that algorithm iterates on a discretised
+  operator. The removed code is recoverable from this branch's history.
 
-This is the assignment's actual question, so answer it empirically:
+### 2.4 Modelling the delta source
 
-- **(a) Half-domain, current boundary condition.** `x in [0, a]`, with `-D phi'(0) = 1/2`
-  from the symmetry argument. The kink at the origin sits exactly on a boundary, so it is
-  represented exactly.
-- **(b) Full domain, source smeared over one cell.** `x in [-a, a]` with `S_i = 1/dx` in the
-  cell containing the origin, zero elsewhere. This is the approach that generalises to
-  sources that are not delta functions, but it smears the kink over one cell.
+The symmetry reduction of 1.1 *is* the answer: the delta is never discretised. Integrating
+across the origin and using evenness converts it into the boundary current `J(0+) = 1/2`,
+so the singularity never enters the numerical scheme at all.
 
-Expected result, to be confirmed: both converge at `O(dx^2)`, with (b) carrying a larger
-constant and a visible local error at the origin. That comparison is the report's answer.
+The alternative — keeping the full domain `[-a, a]` and smearing the source over the one
+cell containing the origin, `S_i = 1/dx` — was implemented and measured before removal. It
+converges at the same order but with a `~14x` larger error constant, because it spreads the
+kink at the origin over a cell instead of placing it exactly on a boundary. Worth stating in
+the report as a contrast, even without the code.
 
 ### 2.5 Cover both approximations at no extra cost
 
@@ -132,16 +135,14 @@ parameter choice, and the assignment's "either ... or" can be answered with "bot
 ## 3. Work items
 
 1. `solve_diffusion_shooting` — half-domain, Robin BC, single scaled integration (2.1–2.2).
-2. `solve_diffusion_fv` — cell-centred tridiagonal solve, half-domain, current BC (2.3).
-3. `solve_diffusion_fv_full` — full domain, one-cell smeared source (2.4b).
-4. `diffusion_coefficients(c, approximation)` — returns `(D, Sigma_a)` for `"classical"` /
+2. `diffusion_coefficients(c, approximation)` — returns `(D, Sigma_a)` for `"classical"` /
    `"asymptotic"` (2.5); refactor `phi_classical_diffusion` / `phi_asymptotic_diffusion`
    onto the shared closed form.
-5. Convergence study over `dx`, reporting observed order for methods 2 and 3.
-6. Plots: solution comparison, error vs `x` (log), and a convergence plot with an `O(dx^2)`
-   reference slope.
-7. Fix the stale "3 decay lengths" comment.
-8. Keep `solve_diffusion_numerical` working so the existing Q2 figure path does not break.
+3. Convergence study over the integrator tolerance (see 5.1), since a shooting method has
+   no mesh spacing to refine.
+4. Plots: solution comparison, error vs `x` (log), and a tolerance-convergence plot.
+5. Fix the stale "3 decay lengths" comment.
+6. Keep `solve_diffusion_numerical` working so the existing Q2 figure path does not break.
 
 ## 4. Verification
 
@@ -154,22 +155,12 @@ parameter choice, and the assignment's "either ... or" can be answered with "bot
 ## 5. Results (implemented, measured)
 
 All items in section 3 are implemented. Measured on `c = 0.5, 0.7, 0.9` for both
-approximations:
+approximations, `solve_diffusion_shooting` gives a **maximum relative error of `2.0e-8 %`**
+and a neutron balance of `0.99998807`.
 
-| Solver | Max relative error | Neutron balance |
-|---|---|---|
-| Shooting, radiation BC | `2.0e-8 %` | `0.99998807` |
-| Finite volume, half-domain, 500 cells | `1.49e-2 %` | `0.99995459` |
-| Finite volume, smeared source, 501 cells | `3.95e-2 %` | `0.99995457` |
-
-- **Convergence order is `2.000` for both finite-volume treatments**, across every `c` and
-  both approximations. The smeared source has a `~14x` larger error constant at equal `dx`,
-  exactly as anticipated in 2.4: `6.49e-2` vs `4.72e-3` relative L2 error at the coarsest
-  mesh. Same order, worse constant — that comparison is the report's answer to the
-  assignment's delta-source question.
-- **The endpoint artifact is gone.** The error is now flat across the domain at
-  `<= 1.5e-2 %`, instead of reaching `100 %` at the outer boundary.
-- The residual `4.5e-5` balance deficit is not solver error: it is the physical tail of the
+- **The endpoint artifact is gone.** The error is flat across the domain instead of reaching
+  `100 %` at the outer boundary.
+- The residual `1.2e-5` balance deficit is not solver error: it is the physical tail of the
   Green's function beyond 10 diffusion lengths, which the truncated domain does not carry.
 - `D_asy = (1-c) nu0^2` reproduces `phi_asymptotic_diffusion` to `1e-13 %`, confirming the
   identification in 2.5.
@@ -177,13 +168,31 @@ approximations:
   `a = 10/kappa`; in units of `kappa x` all cases are the *same* boundary-value problem, so
   `c` and the approximation enter only through the scaling. Worth stating in the report.
 
-### Note on the trapezoid trap
+### 5.1 What "converged" means for a shooting method
 
-The first balance check reported `0.99005` for the half-domain solver — a 1% deficit that
-looks like a broken solver. It is not: applying the trapezoid rule to *cell-averaged* data
-omits the half-cell slivers at each end, discarding a fraction `kappa dx / 2` of the
-integral, which is exactly 1% at the default resolution. `absorption_balance` therefore
-takes a `quadrature` argument, and the finite-volume callers pass `'midpoint'`.
+There is no mesh spacing to refine — `num_points` only sets the output grid resolution, not
+the accuracy. Convergence is therefore demonstrated by tightening the integrator tolerance:
+the relative L2 error falls monotonically from `9e-6` at `rtol = 1e-4` to `1.3e-12` at
+`rtol = 1e-11`, tracking the requested tolerance with slope 1 and running consistently about
+an order of magnitude below it.
+
+### 5.2 Measured before the finite-volume solvers were removed
+
+Retained here because the numbers are still worth quoting in the report:
+
+| Solver | Max relative error | Convergence |
+|---|---|---|
+| Finite volume, half-domain, 500 cells | `1.49e-2 %` | order `2.000` |
+| Finite volume, smeared source, 501 cells | `3.95e-2 %` | order `2.000` |
+
+Same order, but the smeared source carries a `~14x` larger error constant at equal `dx`
+(`6.49e-2` vs `4.72e-3` relative L2 at the coarsest mesh).
+
+A balance check on these initially read `0.99005`, a 1% deficit that looked like a broken
+solver. It was the check that was wrong: a trapezoid rule over *cell-averaged* data omits
+the half-cell slivers at each end, discarding a fraction `kappa dx / 2` of the integral —
+exactly 1% at that resolution. Not an issue for the shooting solver, whose output is point
+values on a grid, so `absorption_balance` no longer carries a `quadrature` argument.
 
 ### Discarded hypothesis
 

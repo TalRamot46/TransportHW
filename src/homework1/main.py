@@ -2,7 +2,7 @@ import os
 import logging
 import numpy as np
 from homework1.exact_solution import compute_nu0_numerical, compute_nu0_approx
-from homework1.diffusion import absorption_balance, solve_diffusion_fv
+from homework1.diffusion import absorption_balance, solve_diffusion_shooting
 from homework1.plots import (
     create_figs_dir,
     plot_flux_components,
@@ -86,15 +86,15 @@ def main():
     logger.info("-" * 40)
     for approximation in q2_approximations:
         for c in q2_c_values:
-            x_fv, phi_fv = solve_diffusion_fv(c, approximation)
-            balance = absorption_balance(x_fv, phi_fv, c, approximation, quadrature="midpoint")
+            x_num, phi_num = solve_diffusion_shooting(c, approximation)
+            balance = absorption_balance(x_num, phi_num, c, approximation)
             logger.info(f"{c:<6} | {approximation:<13} | {balance:<14.10f}")
     logger.info("-" * 40)
 
-    logger.info("\nGenerating Question 2 solver comparison, error profiles and convergence...")
+    logger.info("\nGenerating Question 2 solution comparison, error profiles and convergence...")
     plot_q2_solution_comparison(
         q2_c_values, q2_approximations,
-        save_path=os.path.join(figs_dir, "q2_solver_comparison.pdf"))
+        save_path=os.path.join(figs_dir, "q2_solution_comparison.pdf"))
     plot_q2_error_profiles(
         q2_c_values, q2_approximations,
         save_path=os.path.join(figs_dir, "q2_error_profiles.pdf"))

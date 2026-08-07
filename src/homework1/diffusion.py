@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.integrate import solve_ivp
-from scipy.linalg import solve_banded
 from scipy.optimize import brentq
 from homework1.exact_solution import compute_nu0
 
@@ -118,12 +117,11 @@ def phi_asymptotic_diffusion(x, c, method='numerical'):
 #
 #     phi'(0+) = -1 / (2 D)     equivalently     J(0+) = -D phi'(0+) = 1/2
 #
-# i.e. half the source neutrons stream in each direction. This turns the delta
-# into a *boundary condition*: the problem is solved on the half-line x >= 0
-# with a prescribed current at x = 0, and the singularity never enters the
-# discretisation. `solve_diffusion_shooting` and `solve_diffusion_fv` below use
-# this. `solve_diffusion_fv_full` instead keeps the whole line and smears the
-# delta over the single cell containing the origin, for comparison.
+# i.e. half the source neutrons stream in each direction. This is the answer to
+# the assignment's "how should a delta-function source be modelled in a
+# numerical scheme?": it is not discretised at all. Symmetry turns it into a
+# boundary condition, the problem is solved on the half-line x >= 0 with a
+# prescribed current at x = 0, and the singularity never enters the numerics.
 #
 # The outer boundary is a truncation of an infinite medium, not a physical
 # surface, so it carries the radiation (Robin) condition
@@ -134,15 +132,10 @@ def phi_asymptotic_diffusion(x, c, method='numerical'):
 # annihilates the growing mode and makes the truncation exact for any a. Using
 # a zero-flux condition phi(a) = 0 instead forces the flux to vanish where the
 # true Green's function is small but non-zero, producing a 100% relative error
-# at the outer boundary that does not shrink under mesh refinement.
+# at the outer boundary that does not shrink as the solver tolerance is reduced.
 # ---------------------------------------------------------------------------
 
-def _source_current():
-    """
-    Current at the source-side boundary, J(0+) = 1/2, from the symmetry of the
-    Green's function. Independent of D and c.
-    """
-    return 0.5
+SOURCE_CURRENT = 0.5  # J(0+), from the symmetry of the Green's function
 
 def _default_half_width(kappa, n_diffusion_lengths=10.0):
     """
@@ -151,7 +144,7 @@ def _default_half_width(kappa, n_diffusion_lengths=10.0):
     return n_diffusion_lengths / kappa
 
 def solve_diffusion_shooting(c, approximation='classical', D=None, num_points=500,
-                             n_diffusion_lengths=10.0):
+                             n_diffusion_lengths=10.0, rtol=1e-10, atol=1e-14):
     """
     Solves the diffusion equation on the half-domain [0, a] by integrating the
     equivalent first-order system, using the symmetry-derived current condition
@@ -164,6 +157,12 @@ def solve_diffusion_shooting(c, approximation='classical', D=None, num_points=50
 
     Integration runs from a towards 0, i.e. in the direction in which the
     solution grows, which is the numerically stable direction.
+
+    Parameters:
+    rtol, atol : float, optional
+        Tolerances passed to the ODE integrator. These, not `num_points`,
+        control the accuracy of the result; `num_points` only sets the
+        resolution of the output grid.
 
     Returns:
     x_grid : numpy.ndarray
@@ -184,140 +183,25 @@ def solve_diffusion_shooting(c, approximation='classical', D=None, num_points=50
     # Start from the radiation condition at x = a with unit amplitude:
     # phi(a) = 1, phi'(a) = -kappa phi(a).
     sol = solve_ivp(system, [a, 0.0], [1.0, -kappa], t_eval=x_grid[::-1],
-                    method='RK45', rtol=1e-10, atol=1e-14)
+                    method='RK45', rtol=rtol, atol=atol)
 
     phi_unscaled = sol.y[0][::-1]
     dphi0_unscaled = sol.y[1][-1]
 
     # Rescale to satisfy -D phi'(0) = J(0+) = 1/2.
-    dphi0_target = -_source_current() / D_eff
-    scale = dphi0_target / dphi0_unscaled
+    scale = (-SOURCE_CURRENT / D_eff) / dphi0_unscaled
 
     return x_grid, scale * phi_unscaled
-
-def _solve_tridiagonal(lower, diag, upper, rhs):
-    """
-    Solves a tridiagonal system given its three diagonals.
-    `lower[i]` multiplies unknown i-1 in row i, `upper[i]` multiplies unknown
-    i+1 in row i; `lower[0]` and `upper[-1]` are unused.
-    """
-    n = len(diag)
-    ab = np.zeros((3, n))
-    ab[0, 1:] = upper[:-1]
-    ab[1, :] = diag
-    ab[2, :-1] = lower[1:]
-    return solve_banded((1, 1), ab, rhs)
-
-def _robin_face_coefficient(D_eff, kappa, dx):
-    """
-    Coefficient k such that the outward current at a radiation boundary is
-    k * phi_edge_cell.
-
-    With a ghost cell the Robin condition phi' = -kappa phi, discretised with
-    a centred difference and a centred average at the face, gives
-    phi_ghost = phi_edge (2 - kappa dx) / (2 + kappa dx), and hence an outward
-    current of 2 D kappa / (2 + kappa dx) times the edge-cell flux.
-    """
-    return 2.0 * D_eff * kappa / (2.0 + kappa * dx)
-
-def solve_diffusion_fv(c, approximation='classical', D=None, n_cells=500,
-                       n_diffusion_lengths=10.0):
-    """
-    Cell-centred finite-volume solution on the half-domain [0, a].
-
-    The delta source enters only through the face current J(0) = 1/2 at the
-    left boundary, so the kink of the Green's function sits exactly on a face
-    and is represented exactly. The right boundary uses the radiation
-    condition.
-
-    Balance over cell i, with faces i and i+1:
-        J_{i+1} - J_i + Sigma_a dx phi_i = 0,   J = -D dphi/dx
-
-    Returns:
-    x_centers : numpy.ndarray
-        Cell-centre coordinates on [0, a].
-    phi : numpy.ndarray
-        Cell-averaged scalar flux.
-    """
-    D_eff, sigma_a = diffusion_coefficients(c, approximation, D)
-    kappa = np.sqrt(sigma_a / D_eff)
-    a = _default_half_width(kappa, n_diffusion_lengths)
-
-    dx = a / n_cells
-    x_centers = (np.arange(n_cells) + 0.5) * dx
-
-    t = D_eff / dx  # face transmission coefficient
-    diag = np.full(n_cells, 2.0 * t + sigma_a * dx)
-    lower = np.full(n_cells, -t)
-    upper = np.full(n_cells, -t)
-    rhs = np.zeros(n_cells)
-
-    # Left boundary (x = 0): prescribed current from the source symmetry.
-    diag[0] = t + sigma_a * dx
-    rhs[0] = _source_current()
-
-    # Right boundary (x = a): radiation condition.
-    diag[-1] = t + sigma_a * dx + _robin_face_coefficient(D_eff, kappa, dx)
-
-    return x_centers, _solve_tridiagonal(lower, diag, upper, rhs)
-
-def solve_diffusion_fv_full(c, approximation='classical', D=None, n_cells=501,
-                            n_diffusion_lengths=10.0):
-    """
-    Cell-centred finite-volume solution on the full domain [-a, a], with the
-    delta source smeared over the single cell containing the origin.
-
-    This is the alternative answer to "how should a delta-function source be
-    modelled in a numerical scheme?": rather than converting the source into a
-    boundary condition, keep the whole line and set the cell-integrated source
-    to 1 in the origin cell. It generalises to sources that are not delta
-    functions, at the cost of smearing the kink at x = 0 over one cell.
-
-    `n_cells` is forced odd so that the origin lies at a cell centre and the
-    discretisation stays symmetric.
-
-    Returns:
-    x_centers : numpy.ndarray
-        Cell-centre coordinates on [-a, a].
-    phi : numpy.ndarray
-        Cell-averaged scalar flux.
-    """
-    if n_cells % 2 == 0:
-        n_cells += 1
-
-    D_eff, sigma_a = diffusion_coefficients(c, approximation, D)
-    kappa = np.sqrt(sigma_a / D_eff)
-    a = _default_half_width(kappa, n_diffusion_lengths)
-
-    dx = 2.0 * a / n_cells
-    x_centers = -a + (np.arange(n_cells) + 0.5) * dx
-
-    t = D_eff / dx
-    diag = np.full(n_cells, 2.0 * t + sigma_a * dx)
-    lower = np.full(n_cells, -t)
-    upper = np.full(n_cells, -t)
-    rhs = np.zeros(n_cells)
-
-    # Radiation condition at both outer boundaries.
-    robin = _robin_face_coefficient(D_eff, kappa, dx)
-    diag[0] = t + sigma_a * dx + robin
-    diag[-1] = t + sigma_a * dx + robin
-
-    # Cell-integrated delta source: the whole unit source in the origin cell.
-    rhs[n_cells // 2] = 1.0
-
-    return x_centers, _solve_tridiagonal(lower, diag, upper, rhs)
 
 def solve_diffusion_numerical(c, D=1.0/3.0, num_points=500):
     """
     Original shooting solution on [-a, 0] with a zero-flux outer boundary,
     retained for reference and for the existing Question 2 figure.
 
-    Prefer `solve_diffusion_shooting` or `solve_diffusion_fv`: the zero-flux
-    condition phi(-a) = 0 used here is a truncation artifact, and forces a 100%
-    relative error at x = -a where the true Green's function is small but
-    non-zero. Its effect on the interior is only about -2e-9 relative for the
-    default domain size.
+    Prefer `solve_diffusion_shooting`: the zero-flux condition phi(-a) = 0 used
+    here is a truncation artifact, and forces a 100% relative error at x = -a
+    where the true Green's function is small but non-zero. Its effect on the
+    interior is only about -2e-9 relative for the default domain size.
     """
     if c >= 1.0 or c <= 0.0:
         raise ValueError("c must be in (0, 1) for the shooting method.")
@@ -357,73 +241,44 @@ def solve_diffusion_numerical(c, D=1.0/3.0, num_points=500):
 # Verification
 # ---------------------------------------------------------------------------
 
-def absorption_balance(x, phi, c, approximation='classical', D=None,
-                       quadrature='trapezoid'):
+def absorption_balance(x, phi, c, approximation='classical', D=None):
     """
     Returns Sigma_a * integral(phi dx) over the whole line, which must equal the
     unit source strength. `x` may cover either the half-domain or the full
     domain; a half-domain profile is doubled by symmetry.
 
-    Parameters:
-    quadrature : str
-        'trapezoid' for point values sampled on a grid (the shooting solvers),
-        'midpoint' for cell averages on cell centres (the finite-volume
-        solvers). The distinction matters: a trapezoid rule over cell centres
-        omits the half-cell slivers at each end of the domain, which for the
-        half-domain solver discards a fraction kappa dx / 2 of the integral --
-        1% at the default resolution, purely as a quadrature artifact.
+    The residual deficit at the default domain size is the physical tail of the
+    Green's function beyond the truncation, not solver error.
     """
     _, sigma_a = diffusion_coefficients(c, approximation, D)
-
-    if quadrature == 'midpoint':
-        integral = np.sum(phi) * (x[1] - x[0])
-    elif quadrature == 'trapezoid':
-        integral = np.trapezoid(phi, x) if hasattr(np, 'trapezoid') else np.trapz(phi, x)
-    else:
-        raise ValueError("quadrature must be 'trapezoid' or 'midpoint'")
-
+    integral = np.trapezoid(phi, x) if hasattr(np, 'trapezoid') else np.trapz(phi, x)
     if x[0] >= 0.0:
         integral *= 2.0
     return sigma_a * integral
 
-def convergence_study(c, approximation='classical', solver='fv',
-                      n_cells_list=(25, 50, 100, 200, 400, 800, 1600),
+def convergence_study(c, approximation='classical',
+                      rtols=(1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10, 1e-11),
                       n_diffusion_lengths=10.0):
     """
-    Refines the mesh and measures the relative L2 error against the closed-form
-    solution, returning the observed order of accuracy between successive
-    refinements.
+    Tightens the integrator tolerance and measures the relative L2 error against
+    the closed-form solution.
 
-    Parameters:
-    solver : str
-        'fv' for the half-domain finite-volume solver, 'fv_full' for the
-        full-domain solver with a smeared source.
+    For a shooting method the accuracy is set by the ODE tolerance rather than
+    by a mesh spacing, so this is the meaningful analogue of a grid-refinement
+    study and is what "converged numerical results" means here.
 
     Returns:
-    dx : numpy.ndarray
-        Mesh spacing for each refinement.
+    rtols : numpy.ndarray
+        Requested relative tolerance for each run.
     errors : numpy.ndarray
-        Relative L2 error for each refinement.
-    orders : numpy.ndarray
-        Observed convergence order between successive refinements; one shorter
-        than `dx`.
+        Relative L2 error against the analytic solution for each run.
     """
-    solvers = {'fv': solve_diffusion_fv, 'fv_full': solve_diffusion_fv_full}
-    if solver not in solvers:
-        raise ValueError("solver must be 'fv' or 'fv_full'")
-    solve = solvers[solver]
-
-    dx_values = []
     errors = []
-    for n_cells in n_cells_list:
-        x, phi_num = solve(c, approximation, n_cells=n_cells,
-                           n_diffusion_lengths=n_diffusion_lengths)
+    for rtol in rtols:
+        x, phi_num = solve_diffusion_shooting(
+            c, approximation, rtol=rtol, atol=1e-16,
+            n_diffusion_lengths=n_diffusion_lengths)
         phi_ana = phi_diffusion_analytic(x, c, approximation)
-        dx_values.append(x[1] - x[0])
         errors.append(np.linalg.norm(phi_num - phi_ana) / np.linalg.norm(phi_ana))
 
-    dx_values = np.array(dx_values)
-    errors = np.array(errors)
-    orders = np.log(errors[:-1] / errors[1:]) / np.log(dx_values[:-1] / dx_values[1:])
-
-    return dx_values, errors, orders
+    return np.array(rtols), np.array(errors)

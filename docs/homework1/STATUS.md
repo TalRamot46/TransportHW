@@ -54,19 +54,22 @@ delta over a cell. Compared against the analytic solution with an error plot
 All three gaps are now closed on branch `homework1-q2-diffusion` — see `plan.md` for the
 derivation and measured results. Summary:
 
-- **Three solvers**, all using the symmetry-derived current condition `J(0+) = 1/2` at the
-  source and a radiation condition at the outer boundary: `solve_diffusion_shooting`
-  (single scaled integration, no root-finding), `solve_diffusion_fv` (tridiagonal
-  finite volume, half-domain), and `solve_diffusion_fv_full` (full domain, source smeared
-  over one cell). The last two answer the assignment's delta-source question by direct
-  comparison.
-- **Both approximations** are covered by one solver, since asymptotic diffusion is the same
-  equation with `D = (1-c) nu0^2`.
-- **Convergence study** added: observed order `2.000` for both finite-volume treatments,
-  with the smeared source carrying a `~14x` larger constant.
+- **One solver**, `solve_diffusion_shooting`: half-domain, using the symmetry-derived
+  current condition `J(0+) = 1/2` at the source and a radiation condition at the outer
+  boundary, with a single scaled integration instead of root-finding. Maximum relative
+  error `2.0e-8 %`.
+- **Both approximations** are covered by that one solver, since asymptotic diffusion is the
+  same equation with `D = (1-c) nu0^2`.
+- **Convergence study** added over the integrator tolerance — the meaningful analogue of
+  mesh refinement for a shooting method. Error falls from `9e-6` at `rtol = 1e-4` to
+  `1.3e-12` at `rtol = 1e-11`.
 - The zero-flux outer boundary was the real defect in the original solver, forcing a `100 %`
-  relative error at `x = -a`. The radiation condition removes it; error is now flat at
-  `<= 1.5e-2 %` across the domain.
+  relative error at `x = -a`. The radiation condition removes it; the error is now flat
+  across the domain.
+- Finite-volume solvers were implemented, measured, and then removed in favour of keeping
+  only the shooting method. Their numbers are preserved in `plan.md` section 5.2, and the
+  code is recoverable from this branch's history — likely wanted for Q4, whose Bell &
+  Glasstone `k` iteration operates on a discretised mesh operator.
 - `solve_diffusion_numerical` is retained, with a docstring explaining its limitation, so
   the original Q2 figure still builds.
 - The stale "3 decay lengths" comment is fixed.
