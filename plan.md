@@ -80,8 +80,8 @@ so a convergence study becomes meaningful.
 ### 2.2 Drop the root-finder — the problem is linear
 
 The ODE is linear and homogeneous away from the source, so the shooting function is
-*exactly* proportional to `s`: `y(x; s) = s * y(x; 1)`. `brentq` is currently performing
-~40 integrations to find the root of a straight line. One integration suffices:
+*exactly* proportional to `s`: `y(x; s) = s * y(x; 1)`. `brentq` is therefore root-finding
+on a straight line through the origin. One integration suffices:
 
 ```
 integrate once from -a to 0 with (phi, phi') = (1, kappa)      # Robin BC, arbitrary scale
@@ -90,6 +90,12 @@ phi   = scale * phi
 ```
 
 Same answer, no bracketing heuristic, no tolerance to tune.
+
+The saving is *not* mainly speed: measured, `brentq` converges in 4 integrations (5 with the
+output pass) against 1, because inverse quadratic interpolation resolves a near-linear
+function almost immediately. The gain is that the bracket `[0, 1.5 * target]` and its
+justifying comment stop being needed at all — the bracket is a hand-derived bound that would
+have to be revisited for any change of domain size or coefficients.
 
 ### 2.3 Scope decision: shooting only
 
