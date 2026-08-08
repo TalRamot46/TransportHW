@@ -96,6 +96,22 @@ placeholder stubs.
 `src/`. Until that is updated, `homework1` cannot be imported from an install of the
 project; the figures above were regenerated with `PYTHONPATH=src`.
 
+## Building the report
+
+Use `.\docs\build.ps1 homework1`, not `latexmk`.
+
+On this machine a file that has just been written cannot immediately be overwritten; the
+write fails with a Windows EINVAL, reported by pdflatex as ``! I can't write on file
+`homework1.pdf'.`` `latexmk` runs its pdflatex passes back to back, so its second pass
+always collides with the output of its first. Invoking `latexmk.pl` through `perl` directly
+fails the same way — `latexmk` is not the cause. A single `pdflatex` pass succeeds, which is
+why this only shows up when a document is *rebuilt*.
+
+`docs/build.ps1` deletes the output before each pass, which avoids the collision. The same
+workaround is applied to the figures in `_savefig` (`src/homework1/plots.py`). Ruled out as
+causes: OneDrive (not on this path), Windows Defender Controlled Folder Access (disabled),
+third-party antivirus (none registered), and stale file locks (an exclusive open succeeds).
+
 ## Suggested order of work
 
 1. ~~Restore `c = 0` and uncomment the Q1 plot calls.~~ Done 2026-08-07.

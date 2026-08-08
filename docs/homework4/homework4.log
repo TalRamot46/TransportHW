@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.6)  9 JUL 2026 08:31
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.6)  8 AUG 2026 11:01
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**c:/Users/TLP-001/Documents/GitHub/TransportHW/docs/homework4/homework4.tex
-(c:/Users/TLP-001/Documents/GitHub/TransportHW/docs/homework4/homework4.tex
+**./homework4.tex
+(homework4.tex
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-06-18>
 (C:\Users\TLP-001\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -498,13 +498,13 @@ Package rerunfilecheck Info: File `homework4.out' has not changed.
 (rerunfilecheck)             Checksum: D81AE28DA1A33A130AA676EA2885DE2E;1472.
  ) 
 Here is how much of TeX's memory you used:
- 12280 strings out of 467510
- 193750 string characters out of 5407823
+ 12278 strings out of 467510
+ 193567 string characters out of 5407823
  652930 words of memory out of 5000000
  41315 multiletter control sequences out of 15000+600000
  635938 words of font info for 92 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 74i,6n,79p,1067b,482s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 74i,6n,79p,1008b,482s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
 m/cmbx10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public
 /amsfonts/cm/cmbx12.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/t
@@ -517,7 +517,7 @@ Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8
 .pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
 s/cm/cmsy10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/pub
 lic/cm-super/sfrm1095.pfb>
-Output written on homework4.pdf (3 pages, 193646 bytes).
+Output written on homework4.pdf (3 pages, 193933 bytes).
 PDF statistics:
  275 PDF objects out of 1000 (max. 8388607)
  15 named destinations out of 1000 (max. 500000)
