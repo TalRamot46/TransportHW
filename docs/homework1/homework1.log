@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.6)  11 JUL 2026 11:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.6)  8 AUG 2026 11:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**c:/Users/TLP-001/Documents/GitHub/TransportHW/docs/homework1/homework1.tex
-(c:/Users/TLP-001/Documents/GitHub/TransportHW/docs/homework1/homework1.tex
+**./homework1.tex
+(homework1.tex
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-06-18>
 (C:\Users\TLP-001\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
@@ -472,49 +472,85 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 {C:/Users/TLP-001/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
 [2] [3{C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super/
 cm-super-ts1.enc}]
-<figs/diffusion_comparison_numerical.pdf, id=108, 859.6821pt x 1136.83167pt>
+<figs/diffusion_comparison_numerical.pdf, id=144, 859.6821pt x 1136.83167pt>
 File: figs/diffusion_comparison_numerical.pdf Graphic file (type pdf)
 <use figs/diffusion_comparison_numerical.pdf>
 Package pdftex.def Info: figs/diffusion_comparison_numerical.pdf  used on input
  line 154.
 (pdftex.def)             Requested size: 399.29463pt x 528.03148pt.
-<figs/diffusion_errors_numerical.pdf, id=109, 859.49922pt x 1136.83167pt>
+<figs/diffusion_errors_numerical.pdf, id=145, 859.9007pt x 1136.83167pt>
 File: figs/diffusion_errors_numerical.pdf Graphic file (type pdf)
 <use figs/diffusion_errors_numerical.pdf>
 Package pdftex.def Info: figs/diffusion_errors_numerical.pdf  used on input lin
 e 161.
-(pdftex.def)             Requested size: 399.29463pt x 528.13556pt.
- [4] [5 <./figs/diffusion_comparison_numerical.pdf>] [6 <./figs/diffusion_error
-s_numerical.pdf>]
-<figs/diffusion_numerical_vs_analytic.pdf, id=353, 570.77339pt x 853.53328pt>
-File: figs/diffusion_numerical_vs_analytic.pdf Graphic file (type pdf)
-<use figs/diffusion_numerical_vs_analytic.pdf>
-Package pdftex.def Info: figs/diffusion_numerical_vs_analytic.pdf  used on inpu
-t line 223.
-(pdftex.def)             Requested size: 375.80544pt x 561.99225pt.
-<figs/diffusion_numerical_errors.pdf, id=354, 569.9851pt x 853.53328pt>
-File: figs/diffusion_numerical_errors.pdf Graphic file (type pdf)
-<use figs/diffusion_numerical_errors.pdf>
-Package pdftex.def Info: figs/diffusion_numerical_errors.pdf  used on input lin
-e 230.
-(pdftex.def)             Requested size: 375.80544pt x 562.76067pt.
- [7] [8 <./figs/diffusion_numerical_vs_analytic.pdf>] [9 <./figs/diffusion_nume
-rical_errors.pdf>] (homework1.aux)
+(pdftex.def)             Requested size: 399.29463pt x 527.89272pt.
+ [4] [5 <./figs/diffusion_comparison_numerical.pdf>]
+
+LaTeX Warning: Text page 6 contains only floats.
+
+[6 <./figs/diffusion_errors_numerical.pdf>]
+<figs/q2_solution_comparison.pdf, id=387, 859.80255pt x 758.6789pt>
+File: figs/q2_solution_comparison.pdf Graphic file (type pdf)
+<use figs/q2_solution_comparison.pdf>
+Package pdftex.def Info: figs/q2_solution_comparison.pdf  used on input line 22
+6.
+(pdftex.def)             Requested size: 422.77664pt x 373.05247pt.
+<figs/q2_error_profiles.pdf, id=388, 859.9007pt x 758.6789pt>
+File: figs/q2_error_profiles.pdf Graphic file (type pdf)
+<use figs/q2_error_profiles.pdf>
+Package pdftex.def Info: figs/q2_error_profiles.pdf  used on input line 233.
+(pdftex.def)             Requested size: 422.77664pt x 373.01775pt.
+<figs/q2_convergence.pdf, id=389, 860.2785pt x 365.25172pt>
+File: figs/q2_convergence.pdf Graphic file (type pdf)
+<use figs/q2_convergence.pdf>
+Package pdftex.def Info: figs/q2_convergence.pdf  used on input line 240.
+(pdftex.def)             Requested size: 422.77664pt x 179.50436pt.
+ [7] [8 <./figs/q2_solution_comparison.pdf>]
+
+LaTeX Warning: Text page 9 contains only floats.
+
+
+Overfull \vbox (4.15045pt too high) has occurred while \output is active []
+
+
+[9 <./figs/q2_error_profiles.pdf> <./figs/q2_convergence.pdf>] [10]
+<figs/q3_critical_dimensions.pdf, id=726, 932.02654pt x 650.79134pt>
+File: figs/q3_critical_dimensions.pdf Graphic file (type pdf)
+<use figs/q3_critical_dimensions.pdf>
+Package pdftex.def Info: figs/q3_critical_dimensions.pdf  used on input line 31
+8.
+(pdftex.def)             Requested size: 469.75502pt x 328.01645pt.
+<figs/q3_extrapolation_distance.pdf, id=727, 533.68268pt x 354.12299pt>
+File: figs/q3_extrapolation_distance.pdf Graphic file (type pdf)
+<use figs/q3_extrapolation_distance.pdf>
+Package pdftex.def Info: figs/q3_extrapolation_distance.pdf  used on input line
+ 325.
+(pdftex.def)             Requested size: 352.31625pt x 233.78671pt.
+ [11]
+[12 <./figs/q3_critical_dimensions.pdf>] [13 <./figs/q3_extrapolation_distance.
+pdf>]
+<figs/q3_method_comparison.pdf, id=963, 932.02654pt x 650.79134pt>
+File: figs/q3_method_comparison.pdf Graphic file (type pdf)
+<use figs/q3_method_comparison.pdf>
+Package pdftex.def Info: figs/q3_method_comparison.pdf  used on input line 396.
+
+(pdftex.def)             Requested size: 469.75502pt x 328.01645pt.
+ [14 <./figs/q3_method_comparison.pdf>] (homework1.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-06-18>
  ***********
 Package rerunfilecheck Info: File `homework1.out' has not changed.
-(rerunfilecheck)             Checksum: D6E6B48B4CBD7B8F62BB7408B844BB9E;4247.
+(rerunfilecheck)             Checksum: 8B8006C535006548AAA60BA10521E09E;6077.
  ) 
 Here is how much of TeX's memory you used:
- 12369 strings out of 467510
- 195204 string characters out of 5407823
- 656181 words of memory out of 5000000
- 41335 multiletter control sequences out of 15000+600000
- 636576 words of font info for 104 fonts, out of 8000000 for 9000
+ 12492 strings out of 467510
+ 197299 string characters out of 5407823
+ 669137 words of memory out of 5000000
+ 41400 multiletter control sequences out of 15000+600000
+ 638476 words of font info for 123 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 74i,8n,79p,1067b,603s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 74i,9n,79p,1008b,603s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
 m/cmbx10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public
 /amsfonts/cm/cmbx12.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/t
@@ -531,10 +567,13 @@ blic/amsfonts/cm/cmr6.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts
 TeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/TLP-001/AppData/Local/P
 rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/TLP-001/AppDa
 ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Users/TLP
--001/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-super/sfrm1095.pfb>
-Output written on homework1.pdf (9 pages, 389697 bytes).
+-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb><C
+:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cm
+tt10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/cm-
+super/sfrm1095.pfb>
+Output written on homework1.pdf (14 pages, 717517 bytes).
 PDF statistics:
- 630 PDF objects out of 1000 (max. 8388607)
- 60 named destinations out of 1000 (max. 500000)
- 20613 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 1180 PDF objects out of 1200 (max. 8388607)
+ 87 named destinations out of 1000 (max. 500000)
+ 24289 words of extra memory for PDF output out of 24883 (max. 10000000)
 
