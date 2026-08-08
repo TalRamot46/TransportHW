@@ -2,6 +2,9 @@ from homework1.exact_solution import (
     compute_nu0_numerical,
     compute_nu0_approx,
     compute_nu0,
+    compute_nu0_magnitude_numerical,
+    compute_nu0_magnitude_approx,
+    compute_nu0_magnitude,
     compute_N0_plus,
     compute_lambda,
     compute_N_nu,
@@ -18,5 +21,13 @@ from homework1.diffusion import (
     solve_diffusion_shooting,
     absorption_balance,
     convergence_study
+)
+
+from homework1.criticality import (
+    critical_dimensions,
+    critical_dimensions_applied_bc,
+    diffusion_relaxation_length,
+    extrapolation_distance,
+    extrapolation_distance_table
 )
 

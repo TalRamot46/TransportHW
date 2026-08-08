@@ -12,7 +12,7 @@ Status of `src/homework1` against `instruction_files/Assignment1.pdf`, as of 202
 | 1d — relative error of each diffusion approximation | Done |
 | 1 — all seven required `c` values plotted and regenerated | Done |
 | 2 — numerical diffusion code with delta-source | Done (branch `homework1-q2-diffusion`) |
-| 3 — critical `a/2` and `R_c` for `1.02 < c < 2` (5 methods) | Not started |
+| 3 — critical `a/2` and `R_c` for `1.02 < c < 2` (5 methods) | 3a–3c done; 3d–3e not started |
 | 4 — spherical diffusion code, `k = 1` critical radius | Not started |
 | 5 — bare critical mass of U-235 and Pu-239 | Not started |
 
@@ -74,16 +74,68 @@ derivation and measured results. Summary:
   the original Q2 figure still builds.
 - The stale "3 decay lengths" comment is fixed.
 
-## Questions 3, 4, 5 — not started
+## Question 3 — critical dimensions
 
-Nothing in `src/homework1` covers these; `docs/homework1/homework1.tex:237-251` holds
-placeholder stubs.
+Parts 3(a)–3(c) are implemented in `src/homework1/criticality.py`. All three evaluate the
+same pair of relations and differ only in where the two inputs come from, so they are
+selected by a `method` key (`METHODS`): `'transport'` (3a), `'marshak'` (3b), `'mark'`
+(3c), plus `'transport-ref'` and `'transport-q+'` for the reference evaluations of 3a.
 
-- **Q3.** Needs a supercritical branch of the eigenvalue that the current code cannot
-  produce: `compute_nu0_numerical` raises for `c >= 1`, and for `c > 1` the root moves off
-  the real axis (`1/c = arctan(eta)/eta` with `nu0 = i/eta`). Also missing: the
-  extrapolation distance `z0(c)` / `l0(c)`, Marshak and Mark boundary conditions, and the
-  planar / spherical critical-size solves.
+### 3(a) — exact transport
+
+    a/2 = (pi/2)|nu0(c)| - z0(c),    Sigma_t R_c = pi |nu0(c)| - z0(c)
+
+both in mean free paths, with `|nu0(c)|` and `z0(c)` from the approximate formulas.
+
+- **Multiplying branch of the eigenvalue** added to `exact_solution.py`. For `c > 1` the
+  root moves onto the imaginary axis; with `nu0 = i|nu0|` and `k0 = 1/|nu0|` the
+  transcendental equation becomes `c arctan(k0) = k0`. Both a root-finder
+  (`compute_nu0_magnitude_numerical`) and the continuation of the Question 1 fit,
+  `|nu0| = 1/sqrt(c^p(c) - 1)` (`compute_nu0_magnitude_approx`), are provided. The fit is
+  within `1e-4 %` at `c = 1.02` and `0.10 %` at `c = 2`; the root reproduces Case's
+  Table 8 Part II to `4.7e-6`.
+- **Extrapolation distance** from the two-term expansion about `c = 1`. The course notes
+  print the quadratic coefficient as `q = -0.0199`, but Case's Table 23 (`c z0` rising on
+  *both* sides of `c = 1`) requires `q = +0.0199`, which then matches the table to its
+  four printed digits at `c = 0.9` and `c = 1.1`. Both signs are computed and plotted;
+  the difference is `< 0.07 %` in `a/2` below `c = 1.2` but `3.2 %` at `c = 2`.
+- **Results** span `a/2 = 5.67 -> 0.33` and `Sigma_t R_c = 12.03 -> 1.00` mean free paths
+  over `1.02 < c < 2`. The error of the approximate route is dominated by `z0`, not by
+  `nu0`, and stays under `0.1 %` up to `c = 1.25`.
+- Figures `q3_critical_dimensions.pdf` and `q3_extrapolation_distance.pdf`.
+
+### 3(b), 3(c) — classical diffusion with Marshak and Mark conditions
+
+Classical diffusion in a multiplying medium gives `phi'' + B^2 phi = 0` with
+`B^2 = (c-1)/D = 3(c-1)`, i.e. the *same* flux shapes as transport. The criticality
+relations are therefore unchanged in form; only the inputs move:
+
+    |nu0(c)| -> 1/B = 1/sqrt(3(c-1)),    z0 -> 2/3 (Marshak) or 1/sqrt(3) (Mark)
+
+- Neither diffusion input carries the true `c`-dependence, which is the whole story of the
+  comparison: `1/B` is the leading term of `|nu0|` as `c -> 1+` (0.8 % high at `c = 1.02`,
+  34 % high at `c = 2`), and the two extrapolation distances are constants while the
+  transport `z0(c)` falls as `~0.7104/c`.
+- The two errors act in opposite directions and carry different weights in the two
+  geometries (`pi/2` vs `pi` on the relaxation length, the same `z0` subtracted in both).
+  Marshak's `a/2` is therefore non-monotonic in error — `+5.5 %` at `c ~ 1.23`, zero near
+  `c = 1.52`, `-26 %` at `c = 2` — while both spherical radii are over-estimated
+  throughout, `+15 %` (Marshak) and `+24 %` (Mark) at `c = 2`. Mark's `a/2` ends at `+1 %`
+  at `c = 2`, which is a cancellation, not accuracy.
+- `critical_dimensions_applied_bc` solves `phi + l0 phi' = 0` on the flux shape instead of
+  using an extrapolated zero, giving `B a/2 = arctan(1/(B l0))` and
+  `u cot u = 1 - u/(B l0)`. The two agree to first order in `B l0` (0.1 % at `c = 1.02`)
+  and diverge as the system shrinks (factor 1.7 in the Marshak slab at `c = 2`), which is
+  what shows the good large-`c` agreement above to be a cancellation.
+- Figure `q3_method_comparison.pdf`.
+
+Still open: parts **3(d)–3(e)** — the asymptotic diffusion approximation with the exact
+`l0(c)`/`z0(c)`, and with `l0(c)` from a modified Marshak-like boundary condition. The
+linear extrapolation length `l0(c)` is not implemented, and the spherical relation used
+here omits the Winslow curvature correction.
+
+## Questions 4, 5 — not started
+
 - **Q4.** No spherical diffusion solver and no Bell & Glasstone power iteration for `k`.
   `src/homework4/criticality.py` finds a critical radius, but by Monte Carlo bisection for
   Assignment 4 — a different method, not reusable beyond the bracketing idea.
@@ -117,7 +169,8 @@ third-party antivirus (none registered), and stale file locks (an exclusive open
 1. ~~Restore `c = 0` and uncomment the Q1 plot calls.~~ Done 2026-08-07.
 2. ~~Add the Q2 grid-convergence sweep and the asymptotic-diffusion variant.~~ Done
    2026-08-07 on branch `homework1-q2-diffusion`.
-3. Extend the eigenvalue solver to `c > 1`, then build Q3 on top of it. The finite-volume
-   solver added for Q2 is the intended foundation for Q4.
+3. ~~Extend the eigenvalue solver to `c > 1`, then build Q3 on top of it.~~ Done for parts
+   3(a)–3(c) on 2026-08-08; parts 3(d)–3(e) need `l0(c)`. The finite-volume solver added
+   for Q2 is the intended foundation for Q4.
 4. Q4 spherical `k`-eigenvalue code, validated against Q3's analytic `R_c`.
 5. Q5 critical masses, using the Q3/Q4 radii and the Sood benchmark cross sections.
