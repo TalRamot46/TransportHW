@@ -152,14 +152,14 @@ The relative error of each diffusion approximation relative to the exact transpo
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.85\textwidth]{figs/diffusion_comparison_numerical.pdf}
-    \caption{Comparison of the exact scalar flux, its asymptotic component, classical diffusion, and asymptotic diffusion solutions ($c = 0.5, 0.6, 0.7, 0.8, 0.9, 0.95$).}
+    \caption{Exact scalar flux compared with the classical and asymptotic diffusion approximations, for $c = 0, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95$. Each approximation is shown both as its analytic closed form and as the numerical solution of Question 2; the two coincide to within $2 \times 10^{-8}\,\%$ and are indistinguishable at this scale.}
     \label{fig:diffusion_comparison}
 \end{figure}
 
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.85\textwidth]{figs/diffusion_errors_numerical.pdf}
-    \caption{Relative error (\%) of the classical and asymptotic diffusion approximations compared to the exact transport solution.}
+    \caption{Two relative errors per approximation. The solid curves compare the numerical solution with the \emph{exact transport} solution, and so measure the error of the diffusion approximation itself (Question 1d). The dotted curves compare it with the \emph{analytic diffusion} solution, and so measure the error of the solver (Question 2). The two differ by roughly ten orders of magnitude: the discretisation error is negligible against the modelling error, so the solid curves may be read as properties of the approximation rather than of the code.}
     \label{fig:diffusion_errors}
 \end{figure}
 
@@ -169,7 +169,7 @@ The relative error of each diffusion approximation relative to the exact transpo
 
 \section{Question 2: Numerical Code for Diffusion Equation}
 
-To solve the time-independent diffusion equation with a delta-source at $x=0$ numerically, we exploit the symmetry of the medium and integrate over the half-domain $x \in [-a, 0]$. Since the delta-source is located at $x=0$, the domain $x < 0$ is source-free, governed by the homogeneous equation:
+To solve the time-independent diffusion equation with a delta-source at $x=0$ numerically, we exploit the symmetry of the medium and integrate over the half-domain $x \in [0, a]$. Since the delta-source is located at $x=0$, the domain $x > 0$ is source-free, governed by the homogeneous equation:
 \begin{equation}
     - D \frac{d^2 \phi(x)}{dx^2} + (1 - c) \phi(x) = 0
 \end{equation}
@@ -184,52 +184,62 @@ This yields the first-order system:
     \frac{d}{dx} \begin{pmatrix} y_1 \\ y_2 \end{pmatrix} = \begin{pmatrix} y_2 \\ \frac{1-c}{D} y_1 \end{pmatrix}
 \end{equation}
 
-\subsection{Boundary Conditions and the Shooting Method}
-Because the exact solution decays exponentially as $e^{-\kappa |x|}$ where $\kappa = \sqrt{(1-c)/D}$, we choose the truncation boundary $x = -a$ where $a = 3/\kappa$ (corresponding to 3 decay lengths, where the flux is negligible).
-
-We set the function boundary condition at the far boundary to zero:
-\begin{equation}
-    y_1(-a) = 0
-\end{equation}
-and parameterize the unknown initial derivative as a shooting parameter $s$:
-\begin{equation}
-    y_2(-a) = s
-\end{equation}
-
-To find the correct $s$, we use the derivative jump condition at the source. Integrating the governing equation $-D\phi''(x) + (1-c)\phi(x) = \delta(x)$ from $-\epsilon$ to $+\epsilon$ and taking the limit $\epsilon \to 0$ yields:
+\subsection{Modelling the Delta Source}
+The delta source is never discretised. Integrating the governing equation $-D\phi''(x) + (1-c)\phi(x) = \delta(x)$ from $-\epsilon$ to $+\epsilon$ and taking the limit $\epsilon \to 0$ yields the jump condition
 \begin{equation}
     - D \left[ \phi'(0^+) - \phi'(0^-) \right] = 1
 \end{equation}
-By symmetry of the infinite-medium solution ($\phi(x) = \phi(-x) \implies \phi'(0^-) = - \phi'(0^+)$), this simplifies to the target boundary condition at $x=0$:
+By symmetry of the infinite-medium solution ($\phi(x) = \phi(-x) \implies \phi'(0^-) = - \phi'(0^+)$), this reduces to a boundary condition at the origin:
 \begin{equation}
-    y_2(0^-) = \phi'(0^-) = \frac{1}{2D}
+    \phi'(0^+) = -\frac{1}{2D}, \qquad \text{equivalently} \qquad J(0^+) = -D\phi'(0^+) = \frac{1}{2}
 \end{equation}
+that is, half the source neutrons stream in each direction. This is the answer to the question of how a delta-function source should be modelled: symmetry converts it into a prescribed current, the problem is solved on the half-line $x \geq 0$, and the singularity never enters the numerical scheme.
 
-Thus, we define the objective mismatch function:
+\subsection{The Outer Boundary}
+The outer boundary is a truncation of an infinite medium, not a physical surface. Imposing a zero-flux condition $\phi(a) = 0$ would force the flux to vanish where the true Green's function is small but non-zero, producing a $100\,\%$ relative error at $x = a$ that does not shrink as the solver tolerance is reduced. We therefore impose the radiation (Robin) condition
 \begin{equation}
-    f(s) = y_2(0; s) - \frac{1}{2D}
+    \phi'(a) = -\kappa \phi(a), \qquad \kappa = \sqrt{\frac{\Sigma_a}{D}}
 \end{equation}
-where $y_2(0; s)$ is obtained by integrating the first-order system from $-a$ to $0$ with the initial state $[0.0, s]^T$. We use a bisection-based root-finding algorithm (specifically Brent's method, `brentq`) to solve $f(s^*) = 0$ for the optimal initial derivative $s^*$.
+which the decaying solution $e^{-\kappa x}$ satisfies identically. This annihilates the growing mode $e^{+\kappa x}$, so the truncation is exact for any $a$; we use $a = 10/\kappa$.
+
+\subsection{Solution by a Single Integration}
+Away from the source the equation is linear and homogeneous, so its solution is exactly proportional to its starting amplitude: $y(x; s) = s\, y(x; 1)$. No root-finding is required. We integrate once from $a$ towards $0$ --- the direction in which the solution grows, which is the numerically stable one --- starting from the radiation condition with unit amplitude, $[y_1(a), y_2(a)]^T = [1, -\kappa]^T$, and then rescale the result by
+\begin{equation}
+    \text{scale} = \frac{-1/(2D)}{y_2(0)}
+\end{equation}
+so that the source condition $-D\phi'(0) = 1/2$ is satisfied exactly.
+
+\subsection{Both Diffusion Approximations}
+Classical and asymptotic diffusion are the same equation with different coefficients. Matching the closed form $\phi = e^{-\kappa|x|}/(2D\kappa)$ to Case's asymptotic mode $\phi = e^{-|x|/\nu_0} / (2(1-c)\nu_0)$ requires $\kappa = 1/\nu_0$ and hence
+\begin{equation}
+    \Sigma_a = 1 - c, \qquad D_{\text{classical}} = \frac{1}{3}, \qquad D_{\text{asymptotic}} = (1-c)\,\nu_0^2
+\end{equation}
+so a single solver covers both by choice of $D$.
 
 \subsection{Comparison with the Analytical Solution}
-The numerical solution is compared to the analytical classical diffusion solution:
-\begin{equation}
-    \phi_{\text{class}}(x) = \frac{1}{2\sqrt{D(1-c)}} e^{\kappa x} \quad (x < 0)
-\end{equation}
-for three values of the scattering ratio: $c = 0.5, 0.7, 0.9$. The comparison of the flux values and the relative error are presented in Figure~\ref{fig:num_vs_ana_diff} and Figure~\ref{fig:num_diff_errors}.
+The numerical solution reproduces the analytic diffusion Green's function to a maximum relative error of $2 \times 10^{-8}\,\%$ for both approximations at $c = 0.5, 0.7, 0.9$, and conserves neutrons to $\Sigma_a \int \phi \, dx = 0.99998807$; the residual is the physical tail of the Green's function beyond the truncation, not solver error. Both comparisons appear in Figures~\ref{fig:diffusion_comparison} and~\ref{fig:diffusion_errors} above, alongside the exact transport solution.
+
+Because a shooting method has no mesh spacing to refine --- the output grid does not control accuracy --- convergence is demonstrated by tightening the integrator tolerance. Figure~\ref{fig:q2_convergence} shows the relative $L_2$ error falling from $9 \times 10^{-6}$ at $\texttt{rtol} = 10^{-4}$ to $1.3 \times 10^{-12}$ at $\texttt{rtol} = 10^{-11}$, tracking the requested tolerance with unit slope.
 
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=0.8\textwidth]{figs/diffusion_numerical_vs_analytic.pdf}
-    \caption{Comparison of the numerical (shooting method) solution and the analytical classical diffusion solution for $c = 0.5, 0.7, 0.9$ on the half-domain $[-a, 0]$.}
-    \label{fig:num_vs_ana_diff}
+    \includegraphics[width=0.9\textwidth]{figs/q2_solution_comparison.pdf}
+    \caption{Numerical solution against the analytic diffusion Green's function, for both approximations at $c = 0.5, 0.7, 0.9$.}
+    \label{fig:q2_solution_comparison}
 \end{figure}
 
 \begin{figure}[hbt!]
     \centering
-    \includegraphics[width=0.8\textwidth]{figs/diffusion_numerical_errors.pdf}
-    \caption{Relative error (\%) of the numerical diffusion solution compared to the analytical classical diffusion solution on $[-a, 0]$.}
-    \label{fig:num_diff_errors}
+    \includegraphics[width=0.9\textwidth]{figs/q2_error_profiles.pdf}
+    \caption{Relative error of the numerical solution across the domain. With the radiation boundary condition the error stays flat instead of diverging at the outer edge.}
+    \label{fig:q2_error_profiles}
+\end{figure}
+
+\begin{figure}[hbt!]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figs/q2_convergence.pdf}
+    \caption{Tolerance convergence of the shooting solver.}
+    \label{fig:q2_convergence}
 \end{figure}
 
 ---

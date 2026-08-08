@@ -15,7 +15,6 @@ from homework1.diffusion import (
     phi_diffusion_analytic,
     phi_classical_diffusion,
     phi_asymptotic_diffusion,
-    solve_diffusion_numerical,
     solve_diffusion_shooting,
     absorption_balance,
     convergence_study

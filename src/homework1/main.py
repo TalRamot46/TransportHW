@@ -9,7 +9,6 @@ from homework1.plots import (
     plot_relative_contributions,
     plot_diffusion_comparison,
     plot_diffusion_errors,
-    plot_numerical_vs_analytic_diffusion,
     plot_q2_solution_comparison,
     plot_q2_error_profiles,
     plot_q2_convergence
@@ -69,13 +68,7 @@ def main():
         error_path = os.path.join(figs_dir, f"diffusion_errors_{method_item}.pdf")
         plot_diffusion_errors(x, c_values, method=method_item, save_path=error_path)
 
-    # Question 2 reference figures (original shooting solver, zero-flux outer BC)
-    logger.info("\nGenerating Question 2 numerical vs. analytical diffusion comparison...")
-    num_comp_path = os.path.join(figs_dir, "diffusion_numerical_vs_analytic.pdf")
-    num_err_path = os.path.join(figs_dir, "diffusion_numerical_errors.pdf")
-    plot_numerical_vs_analytic_diffusion(c_values=[0.5, 0.7, 0.9], D=1.0/3.0, save_path_comp=num_comp_path, save_path_err=num_err_path)
-
-    # Question 2: solvers using the symmetry-derived current condition at the
+    # Question 2: solver using the symmetry-derived current condition at the
     # source and a radiation condition at the outer boundary.
     q2_c_values = [0.5, 0.7, 0.9]
     q2_approximations = ("classical", "asymptotic")

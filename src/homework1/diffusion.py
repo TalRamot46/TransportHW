@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.integrate import solve_ivp
-from scipy.optimize import brentq
 from homework1.exact_solution import compute_nu0
 
 # ---------------------------------------------------------------------------
@@ -24,7 +23,7 @@ from homework1.exact_solution import compute_nu0
 
 CLASSICAL_D = 1.0 / 3.0
 
-def diffusion_coefficients(c, approximation='classical', D=None):
+def diffusion_coefficients(c, approximation='classical', D=None, method='numerical'):
     """
     Returns (D, Sigma_a) for the requested diffusion approximation.
 
@@ -38,6 +37,11 @@ def diffusion_coefficients(c, approximation='classical', D=None):
         Overrides the diffusion coefficient of the classical approximation.
         Ignored for the asymptotic approximation, whose coefficient is fixed
         by nu0.
+    method : str, optional
+        How nu0 is obtained for the asymptotic approximation, 'numerical' or
+        'approx'. The analytic solution and the solver must be given the same
+        value, otherwise the ~5e-3% difference between the two nu0 evaluations
+        appears as a spurious floor when they are compared against each other.
     """
     if c < 0.0 or c >= 1.0:
         raise ValueError("Scattering ratio c must be in [0, 1).")
@@ -50,12 +54,12 @@ def diffusion_coefficients(c, approximation='classical', D=None):
     if approximation == 'asymptotic':
         if c == 0.0:
             raise ValueError("The asymptotic approximation requires c > 0.")
-        nu0 = compute_nu0(c)
+        nu0 = compute_nu0(c, method=method)
         return sigma_a * nu0**2, sigma_a
 
     raise ValueError("approximation must be 'classical' or 'asymptotic'")
 
-def phi_diffusion_analytic(x, c, approximation='classical', D=None):
+def phi_diffusion_analytic(x, c, approximation='classical', D=None, method='numerical'):
     """
     Closed-form Green's function of the diffusion equation for an isotropic
     plane delta-source:
@@ -64,7 +68,7 @@ def phi_diffusion_analytic(x, c, approximation='classical', D=None):
 
     which is 1 / (2 sqrt(D (1 - c))) * exp(-|x| sqrt((1 - c) / D)).
     """
-    D_eff, sigma_a = diffusion_coefficients(c, approximation, D)
+    D_eff, sigma_a = diffusion_coefficients(c, approximation, D, method)
     kappa = np.sqrt(sigma_a / D_eff)
     return np.exp(-kappa * np.abs(x)) / (2.0 * D_eff * kappa)
 
@@ -144,7 +148,8 @@ def _default_half_width(kappa, n_diffusion_lengths=10.0):
     return n_diffusion_lengths / kappa
 
 def solve_diffusion_shooting(c, approximation='classical', D=None, num_points=500,
-                             n_diffusion_lengths=10.0, rtol=1e-10, atol=1e-14):
+                             n_diffusion_lengths=10.0, rtol=1e-10, atol=1e-14,
+                             method='numerical', x_eval=None):
     """
     Solves the diffusion equation on the half-domain [0, a] by integrating the
     equivalent first-order system, using the symmetry-derived current condition
@@ -163,14 +168,21 @@ def solve_diffusion_shooting(c, approximation='classical', D=None, num_points=50
         Tolerances passed to the ODE integrator. These, not `num_points`,
         control the accuracy of the result; `num_points` only sets the
         resolution of the output grid.
+    method : str, optional
+        How nu0 is obtained for the asymptotic approximation. Must match the
+        value used for any analytic solution it is compared against.
+    x_eval : array_like, optional
+        Output points, which must lie within [0, a]. Defaults to a uniform grid
+        of `num_points` points spanning the domain. Supplying the comparison
+        grid directly avoids interpolating the result afterwards.
 
     Returns:
     x_grid : numpy.ndarray
-        Uniform grid on [0, a].
+        The output grid, either `x_eval` or a uniform grid on [0, a].
     phi : numpy.ndarray
         Scalar flux on that grid.
     """
-    D_eff, sigma_a = diffusion_coefficients(c, approximation, D)
+    D_eff, sigma_a = diffusion_coefficients(c, approximation, D, method)
     kappa = np.sqrt(sigma_a / D_eff)
     a = _default_half_width(kappa, n_diffusion_lengths)
 
@@ -178,64 +190,31 @@ def solve_diffusion_shooting(c, approximation='classical', D=None, num_points=50
     def system(x, Y):
         return [Y[1], (sigma_a / D_eff) * Y[0]]
 
-    x_grid = np.linspace(0.0, a, num_points)
+    if x_eval is None:
+        x_grid = np.linspace(0.0, a, num_points)
+    else:
+        x_grid = np.asarray(x_eval, dtype=float)
+        if x_grid[0] < 0.0 or x_grid[-1] > a:
+            raise ValueError(f"x_eval must lie within [0, {a:.4f}] for c={c}.")
+
+    # The normalisation below reads the derivative at x = 0, so that point must
+    # be evaluated even when the caller's output grid starts elsewhere.
+    starts_at_origin = x_grid[0] == 0.0
+    eval_points = x_grid if starts_at_origin else np.concatenate(([0.0], x_grid))
 
     # Start from the radiation condition at x = a with unit amplitude:
     # phi(a) = 1, phi'(a) = -kappa phi(a).
-    sol = solve_ivp(system, [a, 0.0], [1.0, -kappa], t_eval=x_grid[::-1],
+    sol = solve_ivp(system, [a, 0.0], [1.0, -kappa], t_eval=eval_points[::-1],
                     method='RK45', rtol=rtol, atol=atol)
 
     phi_unscaled = sol.y[0][::-1]
-    dphi0_unscaled = sol.y[1][-1]
+    dphi0_unscaled = sol.y[1][::-1][0]
 
     # Rescale to satisfy -D phi'(0) = J(0+) = 1/2.
     scale = (-SOURCE_CURRENT / D_eff) / dphi0_unscaled
+    phi = scale * phi_unscaled
 
-    return x_grid, scale * phi_unscaled
-
-def solve_diffusion_numerical(c, D=1.0/3.0, num_points=500):
-    """
-    Original shooting solution on [-a, 0] with a zero-flux outer boundary,
-    retained for reference and for the existing Question 2 figure.
-
-    Prefer `solve_diffusion_shooting`: the zero-flux condition phi(-a) = 0 used
-    here is a truncation artifact, and forces a 100% relative error at x = -a
-    where the true Green's function is small but non-zero. Its effect on the
-    interior is only about -2e-9 relative for the default domain size.
-    """
-    if c >= 1.0 or c <= 0.0:
-        raise ValueError("c must be in (0, 1) for the shooting method.")
-
-    kappa = np.sqrt((1.0 - c) / D)
-    a = 10.0 / kappa  # 10 diffusion lengths
-
-    # 1st-order system: dy/dx = [y2, (1-c)/D * y1]
-    def system(x, Y):
-        y1, y2 = Y
-        return [y2, ((1.0 - c) / D) * y1]
-
-    # Objective function for shooting: f(s) = y2(0; s) - 1/(2D)
-    target = 1.0 / (2.0 * D)
-
-    def shoot(s):
-        # Integrate from -a to 0
-        sol = solve_ivp(system, [-a, 0.0], [0.0, s], method='RK45', rtol=1e-10, atol=1e-12)
-        # Return value of y2 at the end (x=0) minus target
-        return sol.y[1, -1] - target
-
-    # Bracket the root. s_min = 0.0 gives shoot(s_min) = -target < 0.
-    # Since exact s = target * exp(-kappa * a), target * 1.5 is a safe upper bound.
-    s_min = 0.0
-    s_max = target * 1.5
-
-    # Solve for shooting parameter s
-    s_opt = brentq(shoot, s_min, s_max)
-
-    # Re-integrate with optimal shooting parameter to get dense output on a uniform grid
-    x_grid = np.linspace(-a, 0.0, num_points)
-    sol = solve_ivp(system, [-a, 0.0], [0.0, s_opt], t_eval=x_grid, method='RK45', rtol=1e-10, atol=1e-12)
-
-    return x_grid, sol.y[0]
+    return x_grid, phi if starts_at_origin else phi[1:]
 
 # ---------------------------------------------------------------------------
 # Verification
