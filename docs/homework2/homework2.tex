@@ -6,6 +6,7 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{microtype}
+\usepackage{xcolor} % TEMPORARY: marks Claude's additions in blue
 
 \geometry{margin=1in}
 
@@ -19,26 +20,31 @@
 \section{Question 1 - Useful identity for the solution of the time-dependent slab-geometry Boltzmann equation}
 In this question we are asked to prove the following identity:
 \begin{equation}
-    \psi(x,\mu,t;c) = ce^{-(1-c)t}\psi(cx,\mu,ct;1) \label{eq:identity}
+    \psi(x,\mu,t;c) = ce^{-(1-c){\color{blue}v\Sigma_t} t}\psi(cx,\mu,ct;1) \label{eq:identity}
 \end{equation}
-We will do it in two parts. First, we will write down the equation that $\tilde{\psi} = \psi(cx,\mu,ct;1)$ satisfies, and then we will use it in order to prove that the product $ce^{-(1-c)t}\tilde{\psi}$ satisfies the same equation as $\psi(x,\mu,t;c)$.
+{\color{blue}(the exponent is written as $-(1-c)t$ in the units $v=\Sigma_t=1$).}
+We will do it in two parts. First, we will write down the equation that $\tilde{\psi} = \psi(cx,\mu,ct;1)$ satisfies, and then we will use it in order to prove that the product $ce^{-(1-c){\color{blue}v\Sigma_t} t}\tilde{\psi}$ satisfies the same equation as $\psi(x,\mu,t;c)$.
 \subsection{The equation for $\tilde{\psi}$}
 \paragraph{Notation:} We will denote $\frac{\partial \tilde{\psi}(x,\mu,t)}{\partial \tilde{x}}$ as the full derivative (before applying the chain rule) and $\frac{\partial \tilde{\psi}(x,\mu,t)}{\partial x}$ as the partial derivative (after applying the chain rule, and assuming that the $cx$ and $ct$ are parameters \textit{substituted} into the derivative (and not those that the derivative is taken with respect to)). We will denote the same for the time derivative.
 First, from the definition of $\tilde{\psi}$ we have:
 \begin{equation}
-    \frac{1}{v}\frac{\partial \tilde{\psi}}{\partial \tilde{t}} + \mu \frac{\partial \tilde{\psi}}{\partial \tilde{x}} + \Sigma_t \tilde{\psi} = \frac{1}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime
+    \frac{1}{v}\frac{\partial \tilde{\psi}}{\partial \tilde{t}} + \mu \frac{\partial \tilde{\psi}}{\partial \tilde{x}} + \Sigma_t \tilde{\psi} = \frac{{\color{blue}\Sigma_t}}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime
 \end{equation}
-which after applying the chain rule becomes:
+which after applying the chain rule\textcolor{blue}{, $\frac{\partial \tilde{\psi}}{\partial \tilde{t}} = \frac{1}{c}\frac{\partial \tilde{\psi}}{\partial t}$ and the same for $x$, and multiplying by $c$,} becomes:
 \begin{equation}
-    \frac{c}{v}\frac{\partial \tilde{\psi}}{\partial t} + c\mu \frac{\partial \tilde{\psi}}{\partial x} + \Sigma_t \tilde{\psi} = \frac{1}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime
+    {\color{blue}\frac{1}{v}\frac{\partial \tilde{\psi}}{\partial t} + \mu \frac{\partial \tilde{\psi}}{\partial x} + c\Sigma_t \tilde{\psi} = \frac{c\Sigma_t}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime} \label{eq:tilde}
 \end{equation}
+\textcolor{blue}{So $\tilde{\psi}$ obeys the same equation as $\psi(x,\mu,t;c)$ except that it is removed at the rate $c\Sigma_t$ instead of $\Sigma_t$, and the exponential factor is what makes up this difference.}
 \subsection{Proving the identity}
 In this part we are going to simply subtitute the RHS of \ref{eq:identity} into the LHS of the equation for $\psi(x,\mu,t;c)$ and show that it satisfies the same equation. After substitution and application of the chain rule we get:
+{\color{blue}
 \begin{align}
-    \text{LHS} &= \frac{1}{v}\left[c(c-1)e^{-(1-c)t}\tilde{\psi}+c^2 e^{-(1-c)t}\frac{\partial\tilde{\psi}}{\partial t}\right] + \mu c^2 e^{-(1-c)t}\frac{\partial\tilde{\psi}}{\partial x} + \Sigma_t c e^{-(1-c)t}\tilde{\psi} \\
-    &= c e^{-(1-c)t}\left[\frac{c}{v}\frac{\partial\tilde{\psi}}{\partial t} + c\mu \frac{\partial\tilde{\psi}}{\partial x} + \Sigma_t \tilde{\psi} + \frac{c-1}{v}\tilde{\psi}\right] \\
-    &= c e^{-(1-c)t}\left[\frac{1}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime + \frac{c-1}{v}\tilde{\psi}\right] \\
+    \text{LHS} &= \frac{1}{v}\left[c(c-1)v\Sigma_t e^{-(1-c)v\Sigma_t t}\tilde{\psi}+c\, e^{-(1-c)v\Sigma_t t}\frac{\partial\tilde{\psi}}{\partial t}\right] + \mu c\, e^{-(1-c)v\Sigma_t t}\frac{\partial\tilde{\psi}}{\partial x} + \Sigma_t c\, e^{-(1-c)v\Sigma_t t}\tilde{\psi} \\
+    &= c e^{-(1-c)v\Sigma_t t}\left[\frac{1}{v}\frac{\partial\tilde{\psi}}{\partial t} + \mu \frac{\partial\tilde{\psi}}{\partial x} + \Sigma_t \tilde{\psi} + (c-1)\Sigma_t\tilde{\psi}\right] \\
+    &= c e^{-(1-c)v\Sigma_t t}\left[\frac{1}{v}\frac{\partial\tilde{\psi}}{\partial t} + \mu \frac{\partial\tilde{\psi}}{\partial x} + c\Sigma_t \tilde{\psi}\right] \\
+    &= c e^{-(1-c)v\Sigma_t t}\frac{c\Sigma_t}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime = \frac{c\Sigma_t}{2}\int_{-1}^{1} c e^{-(1-c)v\Sigma_t t}\tilde{\psi}d\mu^\prime
 \end{align}
+where \ref{eq:tilde} was used in the last line, and this is exactly the RHS of the equation for $\psi(x,\mu,t;c)$. The prefactor $c$ itself does not follow from the equation, which is homogeneous, but from the initial condition: for the plane pulse $\psi(x,\mu,0^+)=\frac{v}{2}\delta(x)$ for every $c$, and indeed $c\cdot\frac{v}{2}\delta(cx) = \frac{v}{2}\delta(x)$.}
 \section{Question 2 - Derivation of the time-dependent planar scalar flux for a plane source}
 The relation between a plane source and a point source as studied in class is given by:
 \begin{equation}
@@ -46,9 +52,26 @@ The relation between a plane source and a point source as studied in class is gi
 \end{equation}
 The solution taken from J. C. J. Paasschens is the point-source scalar flux $\phi_{\text{pt}}(r,t)$ for $c=1$, and therefore the planar-source scalar flux is given by the integration given above.
 \begin{align}
-    \phi_{\text{pt}}(r,t) &= 2\pi \int_{|x|}^{\infty} \frac{e^{-v\Sigma_t t}}{{4\pi r^2}}\delta(r-vt)rdr + \int_{|x|}^{\infty} \frac{{\left(1-r^2/v^2t^2\right)}^{1/8}}{\left(4\pi vt/(3\Sigma_t)\right)^{3/2}} e^{-v\Sigma_t t}G\left(v\Sigma_t t\left[1-\frac{r^2}{v^2t^2}\right]^{3/4}\right)\Theta(vt-r)rdr \\
-    &= \frac{e^{-v\Sigma_t t}}{2vt}\Theta(vt-|x|) + \text{sign}(vt-|x|) \frac{e^{-v\Sigma_t t}}{\left(4\pi vt/(3\Sigma_t)\right)^{3/2}} \int_{|x|}^{vt} \left(1-\frac{r^2}{v^2t^2}\right)^{1/8} G\left(v\Sigma_t t\left[1-\frac{r^2}{v^2t^2}\right]^{3/4}\right)rdr \\
-    &= \frac{e^{-v\Sigma_t t}}{2vt}\Theta(vt-|x|) + \text{sign}(vt-|x|) \frac{e^{-v\Sigma_t t}(vt)^{1/2}}{\left(4\pi /(3\Sigma_t)\right)^{3/2}} \int_{\frac{|x|}{vt}}^{1} \left(1-\xi^2\right)^{1/8} G\left(v\Sigma_t t\left[1-\xi^2\right]^{3/4}\right) \xi d\xi
+    {\color{blue}\phi_{\text{pl}}(x,t)} &= 2\pi \int_{|x|}^{\infty} \frac{e^{-v\Sigma_t t}}{{4\pi r^2}}\delta(r-vt)rdr + {\color{blue}2\pi}\int_{|x|}^{\infty} \frac{{\left(1-r^2/v^2t^2\right)}^{1/8}}{\left(4\pi vt/(3\Sigma_t)\right)^{3/2}} e^{-v\Sigma_t t}G\left(v\Sigma_t t\left[1-\frac{r^2}{v^2t^2}\right]^{3/4}\right)\Theta(vt-r)rdr \\
+    &= \frac{e^{-v\Sigma_t t}}{2vt}\Theta(vt-|x|) + {\color{blue}\Theta}(vt-|x|) \frac{{\color{blue}2\pi} e^{-v\Sigma_t t}}{\left(4\pi vt/(3\Sigma_t)\right)^{3/2}} \int_{|x|}^{vt} \left(1-\frac{r^2}{v^2t^2}\right)^{1/8} G\left(v\Sigma_t t\left[1-\frac{r^2}{v^2t^2}\right]^{3/4}\right)rdr \\
+    &= \frac{e^{-v\Sigma_t t}}{2vt}\Theta(vt-|x|) + {\color{blue}\Theta}(vt-|x|) \frac{{\color{blue}2\pi} e^{-v\Sigma_t t}(vt)^{1/2}}{\left(4\pi /(3\Sigma_t)\right)^{3/2}} \int_{\frac{|x|}{vt}}^{1} \left(1-\xi^2\right)^{1/8} G\left(v\Sigma_t t\left[1-\xi^2\right]^{3/4}\right) \xi d\xi
 \end{align}
-and then the integral can be evaluated numerically to get the planar-source scalar flux, and of course the relation proved in Q1 can be used to get the solution for $c\neq 1$ using a simple scaling and multiplication by an exponential factor of the solution for $c=1$.
+{\color{blue}Note that the collided term carries $\Theta(vt-|x|)$ and not $\text{sign}(vt-|x|)$, since for $|x|>vt$ the factor $\Theta(vt-r)$ kills the integrand for every $r\geq|x|$ and the term vanishes.}
+
+{\color{blue}
+The remaining integral is in fact elementary. Writing $a = v\Sigma_t t$ and substituting first $u=1-\xi^2$ and then $w=au^{3/4}$, the powers combine as $\frac{1}{6}+\frac{1}{3}=\frac{1}{2}$ and
+\begin{equation}
+    \int_{\frac{|x|}{vt}}^{1} \left(1-\xi^2\right)^{1/8} G\left(a\left[1-\xi^2\right]^{3/4}\right) \xi d\xi = \frac{1}{2}\int_{0}^{u_0} u^{1/8}G\left(au^{3/4}\right)du = \frac{2}{3a^{3/2}}\int_{0}^{w_0}\sqrt{w}G(w)dw
+\end{equation}
+with $u_0 = 1-x^2/(vt)^2$ and $w_0 = a\left(1-x^2/(vt)^2\right)^{3/4}$. This also removes the integrable $(vt-r)^{-1/4}$ singularity at the front. The prefactor then collapses, $2\pi (vt)^{1/2}\left(3\Sigma_t/4\pi\right)^{3/2}\frac{2}{3a^{3/2}} = \frac{1}{2vt}\sqrt{\frac{3}{\pi}}$, so that $\Sigma_t$ cancels and both terms share the same factor:
+\begin{equation}
+    \phi_{\text{pl}}(x,t) = \frac{e^{-v\Sigma_t t}}{2vt}\left[1 + \sqrt{\frac{3}{\pi}}\int_{0}^{w_0}\sqrt{w}G(w)dw\right]\Theta(vt-|x|)
+\end{equation}
+Finally, with the interpolation formula of Paasschens, $G(w) = e^{w}\sqrt{1+b/w}$ with $b=2.026$, the $\sqrt{w}$ rationalises the square root, $\sqrt{w}G(w) = e^{w}\sqrt{w+b}$, and the integral has a closed form:
+\begin{equation}
+    \int_{0}^{w_0}e^{w}\sqrt{w+b}\,dw = e^{w_0}\sqrt{w_0+b} - \sqrt{b} - \frac{\sqrt{\pi}}{2}e^{-b}\left[\text{erfi}\left(\sqrt{w_0+b}\right)-\text{erfi}\left(\sqrt{b}\right)\right]
+\end{equation}
+For evaluation it is convenient to use $\text{erfi}(z) = \frac{2}{\sqrt{\pi}}e^{z^2}D(z)$ with $D$ the Dawson function, which turns the bracket into $e^{w_0}\left[\sqrt{w_0+b}-D(\sqrt{w_0+b})\right]-\left[\sqrt{b}-D(\sqrt{b})\right]$; since $w_0\leq a$, the $e^{w_0}$ is cancelled by the $e^{-a}$ in front and nothing overflows. As a check, at the front $|x|\to vt$ we have $w_0\to0$ and the bracket vanishes, leaving the uncollided term alone.}
+
+Of course the relation proved in Q1 can be used to get the solution for $c\neq 1$ using a simple scaling and multiplication by an exponential factor of the solution for $c=1$.
 \end{document}
