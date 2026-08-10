@@ -17,14 +17,28 @@ is the solution for a source that has been *on forever* — a steady state. It h
 so cannot be overlaid on a `t`-resolved plot.
 
 What matches the pulse source `delta(x) delta(t)` of Q1 and Q2 is the time-dependent Green's
-function, which for `dn/dt - D n'' + (1-c) n = delta(x) delta(t)` is a spreading Gaussian:
+function, which for `(1/v) dphi/dt - D phi'' + (1-c) Sigma_t phi = delta(x) delta(t)` is a
+spreading Gaussian (derived in the report, `docs/homework2/homework2.tex` §3.2):
 
 ```
 n_diff(x,t;c) = e^{-(1-c)t} / sqrt(4 pi D t) * exp(-x^2 / (4 D t))
 ```
 
 `sqrt(2 D t)` is the diffusive width and `e^{-(1-c)t}` the absorption (or, above `c = 1`,
-multiplication) of the population as a whole.
+multiplication) of the population as a whole. The derivation runs: integrate the pulse into the
+initial condition, factor the absorption out, Fourier transform, invert.
+
+## A note on the `1/v`
+
+The time term is `(1/v) dphi/dt` whenever the unknown is the **flux** `phi = v n`, and plain
+`dn/dt` when it is the **density**. Dimensionally: `D` is a length and `Sigma_a` an inverse
+length, so `D phi''` and `Sigma_a phi` both carry `phi/length`, while `dphi/dt` carries
+`phi/time` — only `1/v` reconciles them. It is the same pairing of `d/dx` with `(1/v) d/dt`
+that appears in the transport equation this descends from.
+
+With `Sigma_t = v = 1` the two forms coincide, so nothing in the code changes; the general-`v`
+Green's function is `phi = v e^{-(1-c) Sigma_t v t} / sqrt(4 pi D v t) * exp(-x^2/(4 D v t))`,
+and setting `v = Sigma_t = 1` gives what `_phi_diffusion` computes.
 
 ## They are the same solution
 

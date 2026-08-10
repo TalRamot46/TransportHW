@@ -59,6 +59,6 @@ def close(fig):
 
 def figs_dir():
     """Creates and returns the figure directory of the Question 3 report."""
-    path = os.path.join("docs", "homework3", "figs")
+    path = os.path.join("docs", "homework2", "figs")
     os.makedirs(path, exist_ok=True)
     return path

@@ -5,9 +5,9 @@ One figure per scattering ratio c, one panel per time t.
 """
 
 import numpy as np
-from homework3.exact import phi_exact
-from homework3.diffusion import phi_classical_diffusion, phi_asymptotic_diffusion
-from homework3.figures import make_grid, label_grid, savefig, close
+from homework2.exact import phi_exact
+from homework2.diffusion import phi_classical_diffusion, phi_asymptotic_diffusion
+from homework2.figures import make_grid, label_grid, savefig, close
 
 C_VALUES = (0.6, 0.8, 1.0, 1.2, 1.5)
 TIMES = (1.0, 2.0, 3.0, 4.0, 7.0, 15.0)

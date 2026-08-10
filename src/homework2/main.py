@@ -4,16 +4,16 @@ import os
 import logging
 import numpy as np
 from scipy.integrate import quad
-from homework3.exact import phi_c1, phi_exact
-from homework3.diffusion import (
+from homework2.exact import phi_c1, phi_exact
+from homework2.diffusion import (
     diffusion_coefficient,
     phi_classical_diffusion,
     phi_asymptotic_diffusion,
     phi_steady_classical,
     phi_steady_asymptotic,
 )
-from homework3.figures import figs_dir
-from homework3.plots import plot_comparison_for_c, C_VALUES, TIMES
+from homework2.figures import figs_dir
+from homework2.plots import plot_comparison_for_c, C_VALUES, TIMES
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)

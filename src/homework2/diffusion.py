@@ -1,8 +1,14 @@
 """
 Classical and asymptotic diffusion solutions for the same planar pulse source.
 
-Both solve  dn/dt - D n'' + (1-c) n = delta(x) delta(t)  with Sigma_t = v = 1, and
-differ only through D. See explanations/03-diffusion-coefficients.md.
+Both solve the flux-form diffusion equation
+
+    (1/v) dphi/dt - D phi'' + (1-c) Sigma_t phi = delta(x) delta(t)
+
+and differ only through D. The 1/v belongs on the time derivative whenever the
+unknown is the flux phi = v n rather than the density n; with Sigma_t = v = 1 the
+two forms coincide, which is why it does not appear in the code below.
+See explanations/03-diffusion-coefficients.md and 04-time-dependent-vs-steady.md.
 """
 
 import numpy as np

@@ -2,7 +2,7 @@
 
 **The six checks in `main.py` and the numbers they produce.**
 
-Run with `python -m homework3.main` from the repository root. Every number below is measured,
+Run with `python -m homework2.main` from the repository root. Every number below is measured,
 not asserted.
 
 ## 1. Particle balance, `int phi(x,t;c) dx = e^{-(1-c)t}`

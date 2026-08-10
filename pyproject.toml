@@ -16,5 +16,5 @@ requires = ["setuptools>=61.0.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-packages = ["homework1", "homework3", "homework4"]
+packages = ["homework1", "homework2", "homework4"]
 package-dir = {"" = "src"}

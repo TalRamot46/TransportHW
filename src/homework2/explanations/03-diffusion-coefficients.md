@@ -5,10 +5,14 @@
 Implemented in `diffusion.py`. Classical and asymptotic diffusion solve the *same* equation
 
 ```
-dn/dt - D n'' + (1-c) n = delta(x) delta(t)
+(1/v) dphi/dt - D phi'' + (1-c) Sigma_t phi = delta(x) delta(t)
 ```
 
 and differ only in `D`. So the code has one solver, `_phi_diffusion`, and two coefficients.
+
+(The `1/v` is there because the unknown is the flux `phi = v n`; for the density it would be
+absent. With `Sigma_t = v = 1` the two forms are identical — see
+[04](04-time-dependent-vs-steady.md) for the derivation and the dimensional argument.)
 
 ## Classical: `D = 1/3`
 

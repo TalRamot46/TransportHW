@@ -1,7 +1,14 @@
 # TransportHW — working rules
 
-Coursework repository for a neutron transport course. Each assignment has code in
-`src/homeworkN/` and a LaTeX report in `docs/homeworkN/homeworkN.tex`.
+Coursework repository for a neutron transport course. Assignment *N* has its code in
+`src/homeworkN/` and its report in `docs/homeworkN/homeworkN.tex`. **`homeworkN` always means
+Assignment N, never "question N"** — Assignment 2's Question 3 lives in `src/homework2/` and
+in §3 of `docs/homework2/homework2.tex`, not in a `homework3` of its own.
+
+The reports are the user's own write-ups. Additions to them go in
+`\textcolor{blue}{...}` / `{\color{blue} ... }`, the convention already established in
+`homework2.tex`, so they can be reviewed before being accepted. Do not restructure or
+reword the surrounding text.
 
 ## Code style
 
@@ -43,10 +50,11 @@ way rather than another — goes into `src/homeworkN/explanations/` as its own m
   Figures are written to `docs/homeworkN/figs/` on paths relative to the root, so the working
   directory matters.
 - **Build LaTeX with `.\docs\build.ps1 homeworkN`, never latexmk.** latexmk cannot build in
-  this repository — see the comment header of `docs/build.ps1` for why.
+  this repository — see the comment header of `docs/build.ps1` for why. A second argument
+  builds a document whose name differs from its directory, e.g. `.\docs\build.ps1 homework2 extra`.
 - **Delete a figure or PDF before overwriting it.** Writing over an existing file fails
   intermittently on this machine with `OSError: [Errno 22] Invalid argument`. Both
-  `docs/build.ps1` and `homework3/figures.py::savefig` already do this; any new writer must
+  `docs/build.ps1` and `homework2/figures.py::savefig` already do this; any new writer must
   too.
 
 ## Report style
