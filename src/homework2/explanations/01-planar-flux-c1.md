@@ -6,6 +6,34 @@ Implemented in `exact.py`. The derivation itself is in
 [homework2.tex](../../../docs/homework2/homework2.tex) §2 and, in more detail, in
 [explanation.md](../../../explanation.md) §2.2–2.4.
 
+## What the source is
+
+Paasschens' solution is the Green's function of an **instantaneous isotropic point source**,
+his Eq. (4):
+
+```
+S(r, t, s_hat) = delta(r) delta(t)
+```
+
+— point in space, instantaneous in time, isotropic in direction. Three checks that it cannot be
+a steady `delta(r)`:
+
+- His abstract and §I describe "the spreading of a **pulse** of particles", with `t` "the time
+  after **pulse generation**".
+- His Eq. (13b) gives the uncollided term `P_0 = e^{-ct/l} delta(r - ct) / (Omega_d r^{d-1})`,
+  which in `d = 3` is the first term of the assignment's formula. A delta *at* `r = vt` is the
+  signature of an instantaneous release: every uncollided particle is at radius exactly `vt`. A
+  steady source would give `e^{-Sigma_t r}/(4 pi r^2)`, with no `t` in it.
+- The assignment asks for the solution at `t = 1, 2, 3, 4, 7, 15`, which is only a question for
+  a pulse.
+
+> **Notation trap.** Paasschens' `c` is the particle *velocity*, not the scattering ratio; `l`
+> is the mean free path, `l_a` the absorption length, and `D = cl/d`. He sets `l_a -> infinity`
+> — purely scattering — which is why his result is the `c = 1` case in the assignment's
+> notation. His `D = cl/3 = v/(3 Sigma_t)` carries a velocity, where the `D = 1/(3 Sigma_t)`
+> used here is a pure length; the difference is exactly the `1/v` on the time derivative
+> discussed in [04](04-time-dependent-vs-steady.md), and `D_Paasschens = v * D_here`.
+
 ## The result being coded
 
 Superposing the Paasschens point-source solution over the source plane gives

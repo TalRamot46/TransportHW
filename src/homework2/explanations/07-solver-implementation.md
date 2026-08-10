@@ -8,31 +8,33 @@ yet.
 
 ## What is being solved
 
-After the two exact reductions of the derivation (report §3.2.2), the equation handed to the
-solver is the **pure heat equation**:
+Only the absorption is removed analytically (Step 2 of the derivation, report §3.2.2), leaving
+the solver the **heat equation** with the pulse still in it:
 
 ```
-du/dt = D v d2u/dx2,        phi(x,t) = e^{-(1-c) Sigma_t v t} u(x,t)
+du/dt = D v d2u/dx2 + v delta(x) delta(t),      phi(x,t) = e^{-(1-c) Sigma_t v t} u(x,t)
 ```
 
-with the delta gone from the source and the absorption gone from the operator. Both the
-`c`-dependence and the `delta` have been removed analytically; what remains for the numerics is
-the one part that genuinely needs discretising.
+The `c`-dependence now enters only through `D` and through the prefactor reapplied at the end.
+The delta stays, and is discretised — that is the part Question 3(c) is actually asking about.
 
 ## Module layout
 
-`src/homework2/solver.py`, four short functions:
+`src/homework2/solver.py`, five short functions:
 
 ```python
 def _grid(D, t_max, x_max, n_nodes)       -> x, h        # node-centred half domain [0, L]
 def _laplacian(n_nodes, h, D)             -> A           # sparse tridiagonal, BCs baked in
-def _warm_start(x, t0, D)                 -> u0          # analytic Gaussian at t0
-def solve_diffusion(c, approximation, times, ...) -> (x, {t: phi})
+def _pulse_source(x, h)                   -> u0          # the delta, in node 0
+def _warm_start(x, t0, D)                 -> u0          # analytic Gaussian at t0 (diagnostic)
+def _step_matrices(A, dt)                 -> banded (I - dt/2 A), (I + dt/2 A)
+def solve_diffusion(c, approximation, times, start="pulse", ...) -> (x, {t: phi})
 ```
 
 `solve_diffusion` is the only public one. It picks `D = diffusion_coefficient(c, approximation)`
-from `diffusion.py`, builds the grid and operator, warm-starts, integrates, and reapplies the
-absorption factor on the way out.
+from `diffusion.py`, builds the grid and operator, sets the initial state from `start`,
+integrates, and reapplies the absorption factor on the way out. The `start` switch is what makes
+verification item 5 possible: `"pulse"` is the answer to 3(c), `"warm"` is the diagnostic run.
 
 ## Grid
 
@@ -57,13 +59,15 @@ asymptotic, `D0 = 0.4859`), that is `L ~ 50`, where the Gaussian is `~1e-38` of 
 Centred second difference, `(u_{j-1} - 2u_j + u_{j+1}) / h^2`, times `Dv`. Only the two end
 rows need thought; both come from eliminating a ghost node.
 
-**At `j = 0` — symmetry.** The source has already been absorbed into the initial condition, so
-for `t > 0` there is no source at the origin and the condition is pure evenness,
-`du/dx(0,t) = 0`. The ghost node is `u_{-1} = u_1`, and the row becomes
+**At `j = 0` — symmetry.** The solution is even, so `du/dx(0,t) = 0`. The ghost node is
+`u_{-1} = u_1`, and the row becomes
 
 ```
 (2 u_1 - 2 u_0) / h^2
 ```
+
+This is a condition on the *shape*, not on the source; the pulse enters through the initial
+state below, not through this row.
 
 **At `j = N` — zero flux, far away.** `du/dx(L,t) = 0`, ghost `u_{N+1} = u_{N-1}`, row
 
@@ -84,60 +88,109 @@ for `t > 0` there is no source at the origin and the condition is pure evenness,
 
 `A` is tridiagonal — build it with `scipy.sparse.diags` and keep it sparse.
 
-## Warm start
+## The initial state
 
-Choose `t0` so the initial Gaussian is resolved by the mesh: its width `sqrt(2 D v t0)` should
-span several cells. Five gives
+### `start="pulse"` — the answer to 3(c)
 
-```
-t0 = (5h)^2 / (2 D v)
-```
-
-which at `h = 0.0125`, `D = 1/3` is `t0 ~ 5.9e-3` — three orders of magnitude before the first
-output time. The initial data is the analytic solution **for `u`**, i.e. without the absorption
-factor:
+Integrating across `t = 0` turns the pulse into initial data, `u(x, 0^+) = v delta(x)`, which
+on the mesh becomes a spike in node 0. On the **half** domain the node at the origin represents
+a half cell of width `h/2`, and it carries half the particles, so for a unit total source
 
 ```
-u(x, t0) = v / sqrt(4 pi D v t0) * exp(-x^2 / (4 D v t0))
+u_0 = v / h,      u_j = 0  for j > 0
 ```
 
-Record `t0` in the returned metadata: it is a parameter of the method, and the convergence
-study has to hold it fixed while `h` varies, or the two effects mix.
+(The two factors of two cancel: half the source, spread over half a cell.) Check it by the same
+trapezoid rule used for the balance test — `2 * trapezoid(u, x)` must come out `v`, not `2v` or
+`v/2`. Getting this wrong is the single most likely bug in the whole solver, and it shows up as
+a clean factor of two everywhere, at every time.
+
+Integration then starts at `t = 0`.
+
+### `start="warm"` — the diagnostic
+
+Start instead at a small `t0` from the analytic Gaussian, chosen so its width spans several
+cells. Five gives
+
+```
+t0 = (5h)^2 / (2 D v),    u(x, t0) = v / sqrt(4 pi D v t0) * exp(-x^2 / (4 D v t0))
+```
+
+which at `h = 0.0125`, `D = 1/3` is `t0 ~ 5.9e-3` — two orders of magnitude before the first
+output time. Note this is the analytic solution **for `u`**, without the absorption factor.
+
+Record `t0` in the returned metadata: it is a parameter of the method, and the convergence study
+has to hold it fixed while `h` varies, or the two effects mix.
 
 ## Time integration
 
-Method of lines: `du/dt = A u` with `A` constant, linear and sparse. Two options, and it is
-worth implementing both because they answer different questions.
+The scheme comparison and the reasoning behind this choice are in
+[08](08-time-discretisation.md). What it settles: write **Crank–Nicolson with a backward-Euler
+startup**, fixed step, hand-discretised.
 
-**`solve_ivp(..., method="BDF", jac=lambda t, u: A, t_eval=times, rtol=1e-10)`.** Implicit, so
-the step size is set by accuracy rather than by the explicit stability limit
-`dt <= h^2/(2Dv) = 2.3e-4` — which would need about **64,000 steps** to reach `t = 15`. Passing
-`jac` explicitly matters: without it BDF finite-differences a 4000x4000 Jacobian. `atol` should
-be scaled to the initial peak (`u0.max() ~ 10` here), not left at its `1e-6` default.
+### The scheme
+
+With `r = D v dt / h^2` and the same `A` as above, each step is one banded solve:
+
+```
+Rannacher startup, steps 1..4:   (I - (dt/4) A) u^{n+1} = u^n
+Crank-Nicolson, steps 5.. :      (I - (dt/2) A) u^{n+1} = (I + (dt/2) A) u^n
+```
+
+Written out, the CN interior row is
+
+```
+-r/2 u_{j-1}^{n+1} + (1+r) u_j^{n+1} - r/2 u_{j+1}^{n+1}
+  =  r/2 u_{j-1}^n + (1-r) u_j^n + r/2 u_{j+1}^n
+```
+
+and the two end rows carry the same ghost-node substitutions as `A` — at `j = 0`,
+`-r u_1^{n+1} + (1+r) u_0^{n+1} = r u_1^n + (1-r) u_0^n`, and likewise at `j = N` with
+`u_{N-1}`. Build the three bands once and call `scipy.linalg.solve_banded` each step; the matrix
+is constant, so `scipy.linalg.lu_factor` on the banded form once is better still.
+
+**The startup is not optional here.** CN rings on a delta initial condition — the sign flip in
+its amplification factor sets in at exactly `r > 1/2`, and the delta excites every mode equally.
+Measured at `h = 0.0125`, `dt = h`: ten CN steps without the startup give a **negative** flux of
+`-13.4` near the origin and a relative error of `2.2e+1`; with four backward-Euler quarter-steps
+first, `+6.8e-2` and `1.3e-3`. See [08](08-time-discretisation.md).
+
+Choose `dt ~ h` (not `h^2`), which balances the `O(dt^2)` and `O(h^2)` errors: ~1,200 steps to
+`t = 15` at `h = 0.0125`, against the ~64,000 an explicit march would be forced into.
+
+### Two library cross-checks, optional
+
+**`solve_ivp(..., method="BDF", jac=lambda t, u: A, t_eval=times, rtol=1e-10)`.** Adaptive in
+both step and order. Agreement with the hand-written CN is strong evidence that the *spatial*
+operator and its boundary rows are right, since that is the only thing the two share. Pass `jac`
+explicitly — without it BDF finite-differences a 4000x4000 Jacobian — and scale `atol` to the
+initial peak rather than leaving it at `1e-6`.
 
 **`scipy.sparse.linalg.expm_multiply(A * (t - t0), u0)`.** The *exact* solution of the
-semi-discrete system — zero time-integration error by construction. This is the more useful of
-the two as a diagnostic: any discrepancy against the analytic solution is then purely the
-spatial discretisation, so the two error sources can be separated instead of being reported as
-one number.
+semi-discrete system — zero time-integration error by construction, so any discrepancy against
+the analytic solution is purely spatial. This is what makes verification item 2 below a clean
+measurement of the spatial order alone.
 
 ## Verification
 
 1. **Against the analytic solution** at every output time: relative `L2` and max-norm over the
    plotted range. This is the headline number.
-2. **Spatial order**, using `expm_multiply` so no time error contaminates it: halve `h` at
-   fixed `t0` and expect the error to fall by 4. Anything other than order 2 means a boundary
-   row is wrong — that is what this test is really probing.
-3. **Temporal convergence**, using BDF at fixed `h`: tighten `rtol` and watch the error fall to
-   the floor set by the spatial error. Same shape of study as `convergence_study` in
-   `homework1/diffusion.py`.
+2. **Spatial order**, run with `start="warm"` and `expm_multiply` so neither the source
+   smearing nor the time integration contaminates it: halve `h` at fixed `t0` and expect the
+   error to fall by 4. Anything other than order 2 means a boundary row is wrong — that is what
+   this test is really probing.
+3. **Temporal order**, halving `dt` at fixed `h` with the Crank–Nicolson march: expect the error
+   to fall by 4 until it hits the floor set by the spatial error. This is the study a
+   hand-discretised scheme makes possible and a library integrator hides behind `rtol` — with
+   `solve_ivp` the equivalent is tightening `rtol`, as `convergence_study` does for the shooting
+   solver in `homework1/diffusion.py`, which measures tolerance-following rather than order.
 4. **Particle balance**: `2 * trapezoid(phi, x) == exp(-(1-c)t)`, the factor 2 for the half
    domain.
-5. **The claim in [06](06-delta-source-numerics.md)**: run the alternative — full domain, delta
-   smeared into cell 0 at `S_0 = 1/h`, started at `t = 0` — and check its error against the
-   analytic solution matches a time offset `dt_eff = h^2/(24 D v)`, i.e. that
-   `phi_smeared(x,t)` agrees with `phi_exact(x, t + dt_eff)` far better than with
-   `phi_exact(x,t)`. That turns the claim into a measurement.
+5. **The claim in [06](06-delta-source-numerics.md)**: the difference between the `"pulse"` and
+   `"warm"` runs on the same mesh isolates the source smearing. Check that `"pulse"` agrees
+   with `phi_exact(x, t + dt_eff)`, `dt_eff = h^2/(24 D v)`, far better than with
+   `phi_exact(x, t)`. That turns the claim into a measurement, and it is the one place the two
+   `start` modes have to be run side by side.
 
 ## Pitfalls
 
@@ -153,4 +206,6 @@ one number.
 - **Never integrate `phi` directly for `c > 1`.** At `c = 1.5, t = 15` it has grown by
   `e^{7.5} ~ 1808`; keep that in the analytic prefactor where it costs nothing.
 - **`t0` is a method parameter, not a result.** Hold it fixed across a convergence study, and
-  report it.
+  report it. It applies only to `start="warm"`.
+- **The `u_0 = v/h` normalisation on a half domain** is where a factor of two hides. Verify it
+  against the trapezoid rule before trusting anything downstream.

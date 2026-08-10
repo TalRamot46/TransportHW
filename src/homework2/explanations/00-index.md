@@ -11,8 +11,9 @@ one-line statement of what it settles.
 | [03](03-diffusion-coefficients.md) | The two diffusion coefficients | Where `D0(c) = (1-c) nu0^2` comes from, and why it stays positive above `c = 1` |
 | [04](04-time-dependent-vs-steady.md) | Time-dependent vs. steady | Why Q3(a)(b) needs the Green's function, how the steady formula falls out of it, and where the `1/v` belongs |
 | [05](05-verification.md) | Verification | The six checks in `main.py` and the numbers they produce |
-| [06](06-delta-source-numerics.md) | Discretising a delta source | Why the delta should never reach the mesh, and what the first-cell approach actually costs |
+| [06](06-delta-source-numerics.md) | Discretising a delta source | What the first-cell delta actually costs, and why the time stepping is the real problem |
 | [07](07-solver-implementation.md) | Implementing the numerical solver | A concrete specification for the Question 3(c) code — not built yet |
+| [08](08-time-discretisation.md) | Discretising time | Why `solve_ivp` is a time discretisation too, and which fully-discrete scheme to write instead |
 
 Units throughout: `Sigma_t = v = 1`, as Assignment 2 specifies, so lengths are mean free
 paths, times are mean free times, and the scalar flux equals the number density.
