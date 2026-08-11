@@ -6,6 +6,7 @@
 \usepackage{booktabs}
 \usepackage{hyperref}
 \usepackage{microtype}
+\usepackage{xcolor}
 
 \geometry{margin=1in}
 
@@ -402,12 +403,149 @@ against $B a/2 = \pi/2 - B\ell_0$ and $u = \pi - B\ell_0$ for the extrapolated f
 
 \section{Question 4: Numerical Diffusion Code in Spherical Coordinates}
 
-[Present the numerical results for critical radius calculations in spherical geometry, and compare with the analytical results.]
+{\color{blue}
+
+The code solves the steady-state diffusion equation with a fission source in a bare sphere,
+\begin{equation}
+    -D \frac{1}{r^2} \frac{d}{dr}\left( r^2 \frac{d\phi}{dr} \right) + \Sigma_a \phi(r) = \frac{1}{k} \nu \Sigma_f \phi(r)
+    \label{eq:q4_sphere}
+\end{equation}
+and finds the radius at which $k = 1$. Dividing the fission source by $k$ makes a solution exist at every radius, so criticality becomes a root-finding problem on $R$ rather than an eigenvalue search. Both approximations use the same solver and differ only in two constants:
+\begin{equation}
+    \text{classical:} \quad D = \frac{1}{3\Sigma_t}, \quad z_0 = 2D,
+    \qquad
+    \text{asymptotic:} \quad D = \frac{(c-1)|\nu_0(c)|^2}{\Sigma_t}, \quad z_0 = z_0(c)
+\end{equation}
+The asymptotic coefficient is the continuation above $c = 1$ of the $D = (1-c)\nu_0^2$ of Question 2: with $\nu_0 = i|\nu_0|$ both $\nu_0^2$ and $1-c$ change sign, so $D$ remains positive. Its purpose is to give the diffusion equation the true transport relaxation length, $1/B = |\nu_0|/\Sigma_t$, in place of the classical $1/\sqrt{3(c-1)}$.
+
+\subsection{Discretisation}
+
+The equation is discretised by finite volume on $N$ uniform cell-centred shells. Integrating \eqref{eq:q4_sphere} over cell $i$ turns the divergence term into a difference of surface currents,
+\begin{equation}
+    A_{i+1/2} J_{i+1/2} - A_{i-1/2} J_{i-1/2} + \Sigma_a V_i \phi_i = S_i V_i,
+    \qquad J_{i+1/2} = -D\,\frac{\phi_{i+1} - \phi_i}{h}
+\end{equation}
+with $A = 4\pi r^2$ and $V_i = \frac{4\pi}{3}(r_{i+1/2}^3 - r_{i-1/2}^3)$. Writing the balance rather than the derivatives is what removes the $1/r^2$ singularity at the origin: the innermost face has $A_{1/2} = 0$, so the term vanishes on its own and the symmetry condition $\phi'(0) = 0$ is imposed exactly, with no special case in the code. The resulting matrix is tridiagonal and is solved in $O(N)$.
+
+Both outer boundary treatments are the single condition $\phi + \ell_0 \phi' = 0$. Eliminating the surface flux gives one leakage coefficient,
+\begin{equation}
+    J_s = \frac{D\,\phi_{N-1}}{\ell_0 + h/2}
+\end{equation}
+which covers the extrapolated zero ($\ell_0 = 0$ on a mesh run out to $R + z_0$) and the Robin condition ($\ell_0 = z_0$ at the physical surface $R$) without a branch. The extrapolated form is used below, since it is what the analytic relations of Question 3 assume, making the comparison a test of the numerics alone.
+
+\subsection{The Iterative Algorithm}
+
+$k$ is obtained by the source iteration of Bell \& Glasstone, pp.~189--192:
+\begin{enumerate}
+    \item start from a flat flux $\phi^{(0)}$ and $k^{(0)} = 1$;
+    \item form the fission source $S^{(n)} = \frac{1}{k^{(n)}} \nu \Sigma_f \phi^{(n)}$;
+    \item solve the removal problem $\left(-D\nabla^2 + \Sigma_a\right)\phi^{(n+1)} = S^{(n)}$, one banded solve;
+    \item update $k$ by the ratio of successive fission-source integrals,
+    \begin{equation}
+        k^{(n+1)} = k^{(n)} \, \frac{\int \nu \Sigma_f \phi^{(n+1)} \, dV}{\int \nu \Sigma_f \phi^{(n)} \, dV}
+    \end{equation}
+    \item repeat until $|k^{(n+1)} - k^{(n)}| < 10^{-10} k^{(n+1)}$.
+\end{enumerate}
+The flux is renormalised to unit maximum after each sweep. Each sweep multiplies its amplitude by roughly $k$, and over the several hundred sweeps this problem needs the iterate would otherwise drift by many orders of magnitude and the convergence test would lose its significant digits. The rescaling is physically irrelevant because the ratio in step 4 is homogeneous in $\phi$.
+
+Convergence is at the dominance ratio $k_1/k_0 = (\Sigma_a + DB_0^2)/(\Sigma_a + DB_1^2)$, which tends to unity for a large weakly multiplying sphere --- about $0.94$ at $c = 1.02$, so several hundred sweeps are needed there. The critical radius is then found by bisection (Brent) on $k(R) - 1$, which is monotonically increasing in $R$, bracketed within $\pm 5\%$ of the analytic radius so that $k$ is never evaluated far from criticality.
+
+\subsection{Comparison with the Analytical Result}
+
+At $k = 1$ equation \eqref{eq:q4_sphere} reduces to a Helmholtz equation with buckling $B^2 = (\nu\Sigma_f - \Sigma_a)/D = \Sigma_t(c-1)/D$, whose regular solution $\sin(Br)/r$ vanishes at the extrapolated radius when
+\begin{equation}
+    R_c = \frac{\pi}{B} - z_0
+    \label{eq:q4_analytic}
+\end{equation}
+Substituting the two parameter sets recovers exactly the relations of Question 3: $\Sigma_t R_c = \pi/\sqrt{3(c-1)} - 2/3$ for classical diffusion with Marshak conditions, and $\Sigma_t R_c = \pi|\nu_0| - z_0(c)$ for asymptotic diffusion, the latter being the exact-transport relation of part 3(a). Note that $R_c$ depends on the cross sections only through $c$, since $\Sigma_a$ and $\nu\Sigma_f$ enter \eqref{eq:q4_analytic} only as their difference.
+
+Table~\ref{tab:q4} compares the two. On a 400-cell mesh the numerical radius agrees with \eqref{eq:q4_analytic} to between $1.6\times10^{-4}\,\%$ and $2.4\times10^{-4}\,\%$ over the whole range $1.02 < c < 2$, for both approximations.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Critical radius in mean free paths from the $k = 1$ search ($N = 400$) against the analytic result \eqref{eq:q4_analytic}.}
+    \label{tab:q4}
+    \begin{tabular}{lccccc}
+        \toprule
+        & \multicolumn{2}{c}{Classical} & \multicolumn{2}{c}{Asymptotic} & \\
+        \cmidrule(lr){2-3} \cmidrule(lr){4-5}
+        $c$ & numerical & analytic & numerical & analytic & difference (classical) \\
+        \midrule
+        1.02 & 12.15881 & 12.15883 & 12.02752 & 12.02754 & $-1.6\times10^{-4}\,\%$ \\
+        1.10 & 5.06906  & 5.06907  & 4.87295  & 4.87295  & $-1.7\times10^{-4}\,\%$ \\
+        1.20 & 3.38911  & 3.38911  & 3.17289  & 3.17289  & $-1.8\times10^{-4}\,\%$ \\
+        1.50 & 1.89843  & 1.89843  & 1.69369  & 1.69369  & $-2.1\times10^{-4}\,\%$ \\
+        1.80 & 1.36122  & 1.36122  & 1.18995  & 1.18996  & $-2.3\times10^{-4}\,\%$ \\
+        2.00 & 1.14713  & 1.14713  & 0.99952  & 0.99952  & $-2.4\times10^{-4}\,\%$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The residual is discretisation error alone. The scheme is second order: refining the mesh at $c = 1.5$ drives the relative error of $R_c$ from $5.28\times10^{-4}$ at $N = 25$ to $5.16\times10^{-7}$ at $N = 800$, a factor of exactly $4.00$ per doubling at every step (Figure~\ref{fig:q4_convergence}). The sign is consistently negative --- the discrete operator is slightly too leaky on a coarse mesh and so reaches $k = 1$ at a marginally smaller radius. Two further checks: $k$ at the returned radius equals $1$ to ten digits, and the converged flux matches the fundamental mode $\sin(Br)/Br$ to $3.2\times10^{-6}$ across the whole mesh (Figure~\ref{fig:q4_flux}).
+
+The two approximations differ from each other far more than either differs from its own analytic solution, and the gap is entirely in the relaxation length. Classical diffusion gives the larger radius throughout, by $1.1\,\%$ at $c = 1.02$ rising to $14.8\,\%$ at $c = 2$, because $1/\sqrt{3(c-1)}$ is only the $c \to 1$ limit of $|\nu_0(c)|$.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q4_critical_radius.pdf}
+    \caption{Critical radius from the $k = 1$ search (markers) against the analytic radius $\pi/B - z_0$ (solid), for both diffusion approximations, with the relative difference below.}
+    \label{fig:q4_radius}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q4_mesh_convergence.pdf}
+    \caption{Mesh convergence of the critical radius. The error follows the second-order guide $\propto N^{-2}$ at every refinement.}
+    \label{fig:q4_convergence}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q4_flux_profiles.pdf}
+    \caption{Converged critical flux (solid) against the fundamental mode $\sin(Br)/Br$ (dashed), normalised at the centre. The mesh continues past $r/R_c = 1$ to the extrapolated radius $R_c + z_0$, where the flux is driven to zero.}
+    \label{fig:q4_flux}
+\end{figure}
+
+}
 
 ---
 
 \section{Question 5: Bare Critical Mass of U-235 and Pu-239}
 
-[Present bare critical mass calculations using realistic cross sections.]
+{\color{blue}
+
+Question 5 is Question 4 run with the one-group benchmark cross sections of Sood, Forster \& Parsons (2003), with the mass following from the radius as $M_c = \rho \frac{4}{3}\pi R_c^3$. Both fissile materials have $\Sigma_t = 0.32640$ cm$^{-1}$, a mean free path of $3.0637$ cm, so both critical spheres are only about two mean free paths in radius.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Bare critical radius and mass, from the $k = 1$ search on a 400-cell mesh. Numerical and analytic radii agree to four decimal places in cm.}
+    \label{tab:q5}
+    \begin{tabular}{llccccc}
+        \toprule
+        Material & Approximation & $c$ & $\rho$ [g/cm$^3$] & $R_c$ [cm] & $\Sigma_t R_c$ & $M_c$ [kg] \\
+        \midrule
+        Pu-239 & classical  & 1.50 & 15.7 & 5.8163 & 1.8984 & 12.940 \\
+        Pu-239 & asymptotic & 1.50 & 15.7 & 5.1890 & 1.6937 & \phantom{0}9.188 \\
+        \midrule
+        U-235  & classical  & 1.30 & 19.0 & 8.1031 & 2.6449 & 42.345 \\
+        U-235  & asymptotic & 1.30 & 19.0 & 7.4339 & 2.4264 & 32.696 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Because the mass goes as the cube of the radius, the moderate difference in relaxation length between the two approximations is strongly amplified. The classical radius exceeds the asymptotic one by $12.1\,\%$ for Pu-239 and $9.0\,\%$ for U-235, which becomes a mass ratio of $1.41$ and $1.30$ respectively --- classical diffusion over-predicts the critical mass by 30--40\,\% on these materials, and the discrepancy grows with $c$. The asymptotic values are the ones to quote, since asymptotic diffusion with the exact $z_0(c)$ reproduces the exact-transport criticality relation.
+
+These are one-group, isotropic-scattering results and should not be read as predictions of real critical masses. With a critical radius of only about two mean free paths, the boundary layer occupies a large fraction of the system and diffusion theory of either flavour is being used well outside its regime; the published transport benchmark radii of Sood \emph{et al.} are the appropriate reference against which to judge them.
+
+\paragraph{A note on the U-235 data.} Two U-235 rows were in circulation for this work. The assignment table gives $\Sigma_c = 0.013056$, $\Sigma_s = 0.248064$, $\Sigma_t = 0.32640$, whose own cross sections yield $c = (\nu\Sigma_f + \Sigma_s)/\Sigma_t = 1.3000$, matching the quoted $c$ exactly; these are the values used above. An alternative row ($\Sigma_c = 0.015672$, $\Sigma_s = 0.180448$, $\Sigma_t = 0.26140$) is quoted with $c = 1.50$ but in fact implies $c = 1.3646$, and so is not self-consistent. Run through the same code it gives $R_c = 8.9412$ cm and $M_c = 56.89$ kg classically, or $R_c = 8.1161$ cm and $M_c = 42.55$ kg asymptotically --- roughly $30\,\%$ more mass. The Pu-239 row is identical in both sources and is unaffected.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q5_criticality.pdf}
+    \caption{Multiplication factor against sphere radius for the two fissile benchmark materials, under both diffusion approximations. The circles mark the $k = 1$ crossing that defines the critical radius.}
+    \label{fig:q5}
+\end{figure}
+
+}
 
 \end{document}

@@ -13,8 +13,8 @@ Status of `src/homework1` against `instruction_files/Assignment1.pdf`, as of 202
 | 1 — all seven required `c` values plotted and regenerated | Done |
 | 2 — numerical diffusion code with delta-source | Done (branch `homework1-q2-diffusion`) |
 | 3 — critical `a/2` and `R_c` for `1.02 < c < 2` (5 methods) | 3a–3c done; 3d–3e not started |
-| 4 — spherical diffusion code, `k = 1` critical radius | Not started |
-| 5 — bare critical mass of U-235 and Pu-239 | Not started |
+| 4 — spherical diffusion code, `k = 1` critical radius | Done |
+| 5 — bare critical mass of U-235 and Pu-239 | Done |
 
 ## Question 1 — exact solution (Case's method)
 
@@ -134,19 +134,59 @@ Still open: parts **3(d)–3(e)** — the asymptotic diffusion approximation wit
 linear extrapolation length `l0(c)` is not implemented, and the spherical relation used
 here omits the Winslow curvature correction.
 
-## Questions 4, 5 — not started
+## Question 4 — spherical `k`-eigenvalue code
 
-- **Q4.** No spherical diffusion solver and no Bell & Glasstone power iteration for `k`.
-  `src/homework4/criticality.py` finds a critical radius, but by Monte Carlo bisection for
-  Assignment 4 — a different method, not reusable beyond the bracketing idea.
-- **Q5.** No cross-section table in the repo and no mass calculation. Gated on Q3/Q4
-  producing `R_c` first.
+Implemented in `src/homework1/spherical.py`, with figures in
+`src/homework1/plots_spherical.py`. Derivations are in `src/homework1/explanations/`.
+
+- **Finite volume on cell-centred spherical shells.** Writing the discretisation as a
+  neutron balance rather than as a difference of derivatives removes the `1/r^2`
+  singularity at the origin: the innermost face has zero area, so `phi'(0) = 0` is imposed
+  exactly with no special case. Tridiagonal, solved in `O(N)` by `solve_banded`.
+- **One leakage coefficient, `D A / (l0 + h/2)`,** covers both the extrapolated zero
+  (`l0 = 0` on a mesh run out to `R + z0`) and the Robin condition (`l0 = z0` at `R`)
+  without a branch. The extrapolated form is the default, since it is what the Question 3
+  relations assume.
+- **Bell & Glasstone source iteration** (pp. 189–192) for `k`, updated by the ratio of
+  successive fission-source integrals, with the flux renormalised each sweep. The critical
+  radius follows from `brentq` on `k(R) - 1`.
+- **Both approximations** come from the same solver: classical `D = 1/(3 Sigma_t)`,
+  `z0 = 2D`; asymptotic `D = (c-1)|nu0|^2/Sigma_t`, `z0 = z0(c)`. The asymptotic
+  coefficient is the analytic continuation of Q2's `D = (1-c) nu0^2` — both `nu0^2` and
+  `1-c` flip sign above `c = 1`, so `D` stays positive.
+- **Agreement with analytic** `R_c = pi/B - z0` is `1.6e-4 %` to `2.4e-4 %` over
+  `1.02 < c < 2` at `N = 400`, for both approximations. Second-order convergence measured
+  at exactly `4.00` per doubling, `5.28e-04` at `N = 25` to `5.16e-07` at `N = 800`.
+  `k` at the returned radius is 1 to ten digits and the flux matches `sin(Br)/Br` to
+  `3.2e-6`.
+- Figures `q4_critical_radius.pdf`, `q4_mesh_convergence.pdf`, `q4_flux_profiles.pdf`.
+
+## Question 5 — bare critical masses
+
+`src/homework1/materials.py` holds the Sood benchmark table and the mass calculation.
+
+| Material | Approximation | `R_c` [cm] | `M_c` [kg] |
+|---|---|---|---|
+| Pu-239 (`c = 1.50`) | classical | 5.8163 | 12.940 |
+| Pu-239 | asymptotic | 5.1890 | 9.188 |
+| U-235 (`c = 1.30`) | classical | 8.1031 | 42.345 |
+| U-235 | asymptotic | 7.4339 | 32.696 |
+
+Classical diffusion over-predicts the mass by 30–40 %, because its relaxation length
+`1/sqrt(3(c-1))` is only the `c -> 1` limit of `|nu0(c)|` and the mass goes as the cube of
+the radius. Figure `q5_criticality.pdf`.
+
+The U-235 row supplied in the task prompt (`Sigma_t = 0.26140`, `c` quoted as 1.50) is not
+self-consistent — its own cross sections give `c = 1.365` — and is not the assignment's
+row. The assignment values are used; the prompt row is retained as `PROMPT_U235` and
+reported alongside, giving 56.89 / 42.55 kg instead. See
+`explanations/06-u235-data-discrepancy.md`.
 
 ## Packaging note
 
-`pyproject.toml` still declares `package-dir = {"" = "code"}`, but the sources now live in
-`src/`. Until that is updated, `homework1` cannot be imported from an install of the
-project; the figures above were regenerated with `PYTHONPATH=src`.
+`pyproject.toml` now declares `package-dir = {"" = "src"}` with `homework1` among its
+packages, so `.\.venv\Scripts\python.exe -m homework1.main` runs from the repository root
+as documented in `CLAUDE.md`. The earlier `PYTHONPATH=src` workaround is no longer needed.
 
 ## Building the report
 
@@ -172,5 +212,9 @@ third-party antivirus (none registered), and stale file locks (an exclusive open
 3. ~~Extend the eigenvalue solver to `c > 1`, then build Q3 on top of it.~~ Done for parts
    3(a)–3(c) on 2026-08-08; parts 3(d)–3(e) need `l0(c)`. The finite-volume solver added
    for Q2 is the intended foundation for Q4.
-4. Q4 spherical `k`-eigenvalue code, validated against Q3's analytic `R_c`.
-5. Q5 critical masses, using the Q3/Q4 radii and the Sood benchmark cross sections.
+4. ~~Q4 spherical `k`-eigenvalue code, validated against Q3's analytic `R_c`.~~ Done.
+5. ~~Q5 critical masses, using the Q3/Q4 radii and the Sood benchmark cross sections.~~
+   Done.
+6. Remaining: parts **3(d)–3(e)**. Note that 3(d) is now partly covered — Q4's asymptotic
+   mode is exactly asymptotic diffusion with the exact `z0(c)` — but in spherical geometry
+   only, and `l0(c)` is still not implemented.

@@ -31,3 +31,23 @@ from homework1.criticality import (
     extrapolation_distance_table
 )
 
+from homework1.spherical import (
+    SphericalMedium,
+    build_medium,
+    buckling,
+    analytic_critical_radius,
+    k_eigenvalue,
+    critical_radius,
+    mesh_convergence
+)
+
+from homework1.materials import (
+    Material,
+    BENCHMARK,
+    FISSILE,
+    PROMPT_U235,
+    critical_mass,
+    solve_material,
+    solve_all
+)
+
