@@ -1,6 +1,6 @@
 # 06 — Discretising a delta source
 
-**What the first-cell delta actually costs, and why the time stepping is the real problem.**
+**What seeding the delta on the mesh actually costs, and why the time stepping is the real problem.**
 
 ## Scope
 
@@ -15,40 +15,64 @@ centred second difference — see [07](07-solver-implementation.md). What is wor
 | | usual choice | recommended |
 |---|---|---|
 | space | centred second difference | **unchanged** |
-| source | delta smeared into cell 0, `S_0 = 1/h` | **keep** — the error is `dt_eff = h^2/(24Dv)`, negligible on any sane mesh |
+| source | delta seeded in node 0, `u_0 = 1/h` | **keep** — `O(h^2)`, measured `2.1e-5` on the production mesh |
 | time | explicit FTCS, `dt <= h^2/(2Dv)` | **Crank–Nicolson, implicit** — this is the real win; see [08](08-time-discretisation.md) |
 
-So the first-cell source is fine and is what 3(c) should submit. What follows establishes *why*
+So seeding the delta directly is fine, and is what 3(c) should submit. What follows establishes *why*
 it is fine rather than assuming it, and describes a warm-start variant that is more accurate
 still but is better used as a diagnostic than as the answer.
 
-## What the first-cell source costs
+## What seeding the delta costs
 
-Replacing `delta(x)` by a top-hat of width `h` and height `1/h` is a change of the initial
-condition, and its effect can be written down exactly. A top-hat of width `h` has variance
-`h^2/12`; the diffusion Green's function at time `t` has variance `2Dvt`; and variances add
-under convolution. So the smeared solution has second moment
+### The time-offset argument, and where it applies
+
+If `delta(x)` is replaced by a top-hat of width `h` and height `1/h`, the effect can be written
+down exactly. A top-hat has variance `h^2/12`; the Green's function at time `t` has variance
+`2Dvt`; variances add under convolution. So the smeared solution has second moment
 
 ```
 2 D v t + h^2/12  =  2 D v ( t + h^2/(24 D v) )
 ```
 
-i.e. **the smeared source reproduces the exact solution at a shifted time**,
-`dt_eff = h^2/(24 D v)`. That is a much more useful statement than "the error is `O(h^2)`",
-because it says *where* the error lives: entirely in the early-time behaviour, decaying in
-relative terms as `dt_eff / t`.
+i.e. it reproduces the exact solution **at a shifted time**, `dt_eff = h^2/(24 D v)`.
 
-At `D = 1/3`, `v = 1`:
+That argument is sound, but it describes a **cell-centred** discretisation, where the delta
+genuinely becomes a top-hat spanning a cell. The scheme specified in
+[07](07-solver-implementation.md) is **node-centred**, with the spike sitting on the node at
+`x = 0`, and there the argument does not apply — as the measurement below shows.
 
-| `h` | `dt_eff` | relative error at `t = 1` |
-|---|---|---|
-| 0.5 | 3.1e-2 | ~3 % |
-| 0.1 | 1.3e-3 | ~0.1 % |
-| 0.0125 | 2.0e-5 | ~2e-3 % |
+### Measured: the node-centred scheme has no time offset at all
 
-So on any reasonable mesh the smeared delta is a small, quantified error, and it is smallest
-exactly where the diffusion approximation is *most* accurate (large `t`). The honest conclusion
-is that the first-cell source is not the weak point of the scheme. The stability limit is.
+Its discrete second moment is `sum h x_j^2 u_j = 0`, because the spike sits at `x_j = 0`. And
+the centred second difference is *exact* on quadratics, so summation by parts gives
+
+```
+d/dt <x^2> = 2 D v     exactly, for any h
+```
+
+Measured at `t = 1`, `D = 1/3`, for `n = 200, 400, 800, 1600` nodes: `<x^2> = 0.666667` in every
+case, against `2Dt = 0.666667`. **There is no `dt_eff` to measure.** The earlier claim that this
+scheme carries a time offset was wrong.
+
+### What it does cost
+
+Seeding the delta instead costs a *shape* error near the origin, from high modes the mesh cannot
+resolve — same order, larger constant. Against a warm start on the identical mesh (`c = 1`,
+classical, `t = 1` and `4`):
+
+| `n` | `h` | warm start | delta seeded | ratio |
+|---|---|---|---|---|
+| 200 | 0.0908 | 4.59e-4 | 1.82e-3 | 4.0 |
+| 400 | 0.0453 | 1.17e-4 | 5.04e-4 | 4.3 |
+| 800 | 0.0226 | 2.98e-5 | 1.06e-4 | 3.6 |
+| 1600 | 0.0113 | 7.52e-6 | 2.22e-5 | 3.0 |
+
+Both columns fall by about 4 per refinement, so both are `O(h^2)`; seeding the delta multiplies
+the error constant by roughly 3.5 and does not degrade the order. On the production mesh the
+absolute error is `2.1e-5`.
+
+So the conclusion stands even though the reasoning first offered for it was wrong: seeding the
+delta is not the weak point of the scheme. The stability limit is.
 
 ## The real cost: the explicit time step
 
@@ -74,8 +98,9 @@ free. Both the analysis and the recipe are in [08](08-time-discretisation.md), t
 
 ### 2. Half domain, with the symmetry condition at the origin
 
-All three solutions are even in `x`, so solve on `[0, L]` with `du/dx = 0` at `x = 0` and put
-half the source in the first cell. At the far end use a reflecting condition with `L` placed
+All three solutions are even in `x`, so solve on `[0, L]` with `du/dx = 0` at `x = 0` and
+`u_0 = 1/h` at the origin — half the source, over the half cell the boundary node owns, so the
+two factors of two cancel. At the far end use a reflecting condition with `L` placed
 beyond anything the pulse has reached, rather than `phi(L) = 0` — the latter is what produced
 the spurious 100 % boundary error in Assignment 1. Half the unknowns, and no artificial
 reflection.
@@ -105,15 +130,15 @@ u(x, t0) = v / sqrt(4 pi D v t0) * exp(-x^2 / (4 D v t0))
 ```
 
 with `t0` chosen so the width `sqrt(2 D v t0)` spans several cells. The delta never touches the
-mesh: no smearing error, no `dt_eff`, no first cell to normalise.
+mesh, so the high modes it cannot resolve are never excited.
 
 **Why this is a diagnostic and not the submission.** Handing the solver the analytic solution
 at `t0` is a weaker answer to "write a numerical code for the diffusion equation" — the delta
 was never actually solved for, and a reader could fairly say so. Its real value is that it
 *separates the two error sources*: run it and the remaining discrepancy is purely spatial
 discretisation, so the difference between the two runs measures the source smearing alone. That
-turns `dt_eff = h^2/(24Dv)` from a claim into a measurement (verification item 5 in
-[07](07-solver-implementation.md)).
+is what produced the measured table above, and it is the only way to separate the two
+(verification item 5 in [07](07-solver-implementation.md)).
 
 The instinct behind it is still the right one, and it is the same as Assignment 1, Q2, where
 integrating across the source turned the delta into a boundary current (`plan.md` §2.4: "the
@@ -136,7 +161,7 @@ knowing, not worth submitting.
 | difficulty | naive scheme | recommended |
 |---|---|---|
 | spatial operator | centred second difference | unchanged |
-| delta source | smeared over cell 0 | keep; cost is a time offset `dt_eff = h^2/(24Dv)` |
+| delta source | seeded in node 0 | keep; `O(h^2)`, ~3.5x the warm-start error constant |
 | time step | explicit, `dt <= h^2/(2Dv)`, ~6e4 steps | Crank–Nicolson + Rannacher startup, ~1.2e3 steps |
 | far boundary | `phi(L) = 0`, reflects | reflecting, at an `L` the pulse has not reached |
 | growth at `c > 1` | integrated numerically | factored out analytically |

@@ -82,21 +82,6 @@ with `|g| ~ 1`.
 This is a known failure mode, not a bug to hunt — see Rannacher, *Finite element solution of
 diffusion problems with irregular data*, Numer. Math. 43 (1984) 309.
 
-### Measured
-
-Ten CN steps from a delta at `h = 0.0125`, `dt = h`, `D = 1/3`, so `r = 26.7` and
-`g(pi) = -0.963`:
-
-| run | `min(u)` near the origin | sign flips | max relative error |
-|---|---|---|---|
-| CN alone | **`-13.4`** | 2 | **`2.2e+1`** |
-| CN + 4 backward-Euler quarter-steps | `+6.8e-2` | 0 | `1.3e-3` |
-
-The scheme does not merely lose accuracy — it returns a **negative flux**, and is wrong by a
-factor of twenty. Four cheap startup steps take it to three good digits. Note also that `g(pi)`
-decays as `0.963^n`, so the oscillation is still at 69 % of its initial amplitude after ten
-steps and does not quietly go away with more marching.
-
 ### The fix: Rannacher startup
 
 Take the first few steps with **backward Euler at a reduced step**, then switch to CN. BE has

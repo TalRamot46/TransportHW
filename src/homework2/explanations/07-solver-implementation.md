@@ -186,11 +186,12 @@ measurement of the spatial order alone.
    solver in `homework1/diffusion.py`, which measures tolerance-following rather than order.
 4. **Particle balance**: `2 * trapezoid(phi, x) == exp(-(1-c)t)`, the factor 2 for the half
    domain.
-5. **The claim in [06](06-delta-source-numerics.md)**: the difference between the `"pulse"` and
-   `"warm"` runs on the same mesh isolates the source smearing. Check that `"pulse"` agrees
-   with `phi_exact(x, t + dt_eff)`, `dt_eff = h^2/(24 D v)`, far better than with
-   `phi_exact(x, t)`. That turns the claim into a measurement, and it is the one place the two
-   `start` modes have to be run side by side.
+5. **The cost of seeding the delta**: run `"pulse"` and `"warm"` on the same mesh and compare
+   their errors against the analytic solution. Both must fall as `h^2`; the ratio between them
+   is the price of the delta, measured rather than predicted. This is the one place the two
+   `start` modes have to be run side by side — see the table in
+   [06](06-delta-source-numerics.md), which came out at ~3.5x and *not* at the time offset
+   originally predicted there.
 
 ## Pitfalls
 
