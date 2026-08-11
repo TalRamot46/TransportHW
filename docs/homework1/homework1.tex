@@ -430,6 +430,7 @@ with $A = 4\pi r^2$ and $V_i = \frac{4\pi}{3}(r_{i+1/2}^3 - r_{i-1/2}^3)$. Writi
 Both outer boundary treatments are the single condition $\phi + \ell_0 \phi' = 0$. Eliminating the surface flux gives one leakage coefficient,
 \begin{equation}
     J_s = \frac{D\,\phi_{N-1}}{\ell_0 + h/2}
+    \label{eq:leakage_bc}
 \end{equation}
 which covers the extrapolated zero ($\ell_0 = 0$ on a mesh run out to $R + z_0$) and the Robin condition ($\ell_0 = z_0$ at the physical surface $R$) without a branch. The extrapolated form is used below, since it is what the analytic relations of Question 3 assume, making the comparison a test of the numerics alone.
 
@@ -485,6 +486,57 @@ The residual is discretisation error alone. The scheme is second order: refining
 
 The two approximations differ from each other far more than either differs from its own analytic solution, and the gap is entirely in the relaxation length. Classical diffusion gives the larger radius throughout, by $1.1\,\%$ at $c = 1.02$ rising to $14.8\,\%$ at $c = 2$, because $1/\sqrt{3(c-1)}$ is only the $c \to 1$ limit of $|\nu_0(c)|$.
 
+\subsection{Verification}
+
+Three further checks, independent of the comparison in Table~\ref{tab:q4}.
+
+\paragraph{Convergence rate of the iteration.} The error of source iteration falls by the dominance ratio $k_1/k_0$ per sweep. With the spherical modes $B_n = n\pi/r_{\text{out}}$ this is $(\Sigma_a + DB_1^2)/(\Sigma_a + DB_2^2)$, which at a \emph{critical} radius collapses. Criticality means $\Sigma_a + DB_1^2 = \nu\Sigma_f$, and $B_2 = 2B_1$, so
+\begin{equation}
+    \frac{k_1}{k_0} = \frac{\nu\Sigma_f}{4\nu\Sigma_f - 3\Sigma_a} = \frac{c}{4c-3}
+    \label{eq:dominance}
+\end{equation}
+The diffusion coefficient has cancelled: \emph{the convergence rate at criticality depends on $c$ alone}. This is borne out exactly --- the measured ratio agrees with \eqref{eq:dominance} to six digits, and the two approximations take an identical number of sweeps at every $c$ despite their different critical radii.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Dominance ratio and sweep count to $|\Delta k| < 10^{-10}k$ at the critical radius. The sweep counts are identical for the classical and asymptotic approximations, as \eqref{eq:dominance} requires.}
+    \label{tab:q4_iteration}
+    \begin{tabular}{lccc}
+        \toprule
+        $c$ & $c/(4c-3)$ & measured ratio & sweeps \\
+        \midrule
+        1.02 & 0.944444 & 0.944444 & 280 \\
+        1.05 & 0.875000 & 0.875000 & 133 \\
+        1.10 & 0.785714 & 0.785714 & \phantom{0}79 \\
+        1.20 & 0.666667 & 0.666667 & \phantom{0}50 \\
+        1.50 & 0.500000 & 0.500000 & \phantom{0}32 \\
+        2.00 & 0.400000 & 0.400000 & \phantom{0}25 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\paragraph{Neutron balance.} For the converged critical flux, production must equal absorption plus leakage. The residual $|P - A - L|/P$ lies between $6\times10^{-16}$ and $1.3\times10^{-13}$ over the whole range, for both approximations. The informative term is the leakage: production and absorption are the same volume integral times a constant, so their ratio $\nu\Sigma_f/(k\Sigma_a)$ holds identically whatever the flux. Leakage, by contrast, is computed from the boundary formula using only $\phi_{N-1}$, and nothing forces it to close the balance unless the discrete operator conserves neutrons cell by cell and the boundary coefficient is exactly right. At $c = 1.5$ classical, $P = 32.2340$, $A = 21.4893$, $L = 10.7447$: about a third of the neutrons leak out, which is why the boundary treatment matters as much as it does below.
+
+\paragraph{Boundary treatment.} Table~\ref{tab:q4_boundary} exercises the second branch of \eqref{eq:leakage_bc} against a second, independent analytic route --- $u \cot u = 1 - u/(B\ell_0)$ from \texttt{critical\_dimensions\_applied\_bc}, which solves the condition on the flux shape instead of extrapolating. The numerical Robin radius reproduces it to $1.5\times10^{-6}$ relative, the same discretisation error as the extrapolated case, confirming the boundary coefficient in both of its limits.
+
+The two treatments are not interchangeable, though: they agree to first order in $B\ell_0$ and separate as the system shrinks, from $0.26\,\%$ apart at $c = 1.02$ to $4.5\,\%$ at $c = 2$. That gap is not solver error but the genuine ambiguity in what ``the surface'' means for a system a few mean free paths across.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Extrapolated zero at $R + z_0$ against the condition $\phi + z_0\phi' = 0$ applied at $R$, classical diffusion, in mean free paths.}
+    \label{tab:q4_boundary}
+    \begin{tabular}{lcccc}
+        \toprule
+        $c$ & extrapolated & Robin & Robin analytic & Robin $-$ extrapolated \\
+        \midrule
+        1.02 & 12.158813 & 12.126930 & 12.126949 & $-0.26\,\%$ \\
+        1.10 & 5.069062  & 5.007865  & 5.007874  & $-1.21\,\%$ \\
+        1.50 & 1.898429  & 1.821650  & 1.821653  & $-4.04\,\%$ \\
+        2.00 & 1.147130  & 1.095638  & 1.095640  & $-4.49\,\%$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figs/q4_critical_radius.pdf}
@@ -535,7 +587,29 @@ Question 5 is Question 4 run with the one-group benchmark cross sections of Sood
 
 Because the mass goes as the cube of the radius, the moderate difference in relaxation length between the two approximations is strongly amplified. The classical radius exceeds the asymptotic one by $12.1\,\%$ for Pu-239 and $9.0\,\%$ for U-235, which becomes a mass ratio of $1.41$ and $1.30$ respectively --- classical diffusion over-predicts the critical mass by 30--40\,\% on these materials, and the discrepancy grows with $c$. The asymptotic values are the ones to quote, since asymptotic diffusion with the exact $z_0(c)$ reproduces the exact-transport criticality relation.
 
-These are one-group, isotropic-scattering results and should not be read as predictions of real critical masses. With a critical radius of only about two mean free paths, the boundary layer occupies a large fraction of the system and diffusion theory of either flavour is being used well outside its regime; the published transport benchmark radii of Sood \emph{et al.} are the appropriate reference against which to judge them.
+\subsection{Sensitivity to the Boundary Treatment}
+
+The masses above use the extrapolated zero. Applying the same condition directly at the physical surface instead moves them by considerably more than any numerical error, again because the mass goes as the cube of a radius only a couple of mean free paths long.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Critical mass under the two boundary treatments. Both reproduce their own analytic result to $1.5\times10^{-6}$, so the spread is model uncertainty, not solver error.}
+    \label{tab:q5_boundary}
+    \begin{tabular}{llccc}
+        \toprule
+        Material & Approximation & $M_c$ extrapolated [kg] & $M_c$ Robin [kg] & difference \\
+        \midrule
+        Pu-239 & classical  & 12.940 & 11.432 & $-11.7\,\%$ \\
+        Pu-239 & asymptotic & \phantom{0}9.188 & \phantom{0}8.307 & $-9.6\,\%$ \\
+        U-235  & classical  & 42.345 & 38.679 & $-8.7\,\%$ \\
+        U-235  & asymptotic & 32.696 & 30.212 & $-7.6\,\%$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+This 8--12\,\% spread is the honest uncertainty of the diffusion model on a system this small, and it is comparable to the difference between the two diffusion approximations themselves. Any single quoted mass should be read with it in mind.
+
+These are one-group, isotropic-scattering results and should not be read as predictions of real critical masses. With a critical radius of only about two mean free paths, the boundary layer occupies a large fraction of the system --- roughly a third of the neutrons leak out --- and diffusion theory of either flavour is being used well outside its regime; the published transport benchmark radii of Sood \emph{et al.} are the appropriate reference against which to judge them. The remaining three rows of the benchmark table (H$_2$O, Fe, Na) have $c \leq 1$ and are non-multiplying, so no bare critical sphere exists for them at any radius.
 
 \paragraph{A note on the U-235 data.} Two U-235 rows were in circulation for this work. The assignment table gives $\Sigma_c = 0.013056$, $\Sigma_s = 0.248064$, $\Sigma_t = 0.32640$, whose own cross sections yield $c = (\nu\Sigma_f + \Sigma_s)/\Sigma_t = 1.3000$, matching the quoted $c$ exactly; these are the values used above. An alternative row ($\Sigma_c = 0.015672$, $\Sigma_s = 0.180448$, $\Sigma_t = 0.26140$) is quoted with $c = 1.50$ but in fact implies $c = 1.3646$, and so is not self-consistent. Run through the same code it gives $R_c = 8.9412$ cm and $M_c = 56.89$ kg classically, or $R_c = 8.1161$ cm and $M_c = 42.55$ kg asymptotically --- roughly $30\,\%$ more mass. The Pu-239 row is identical in both sources and is unaffected.
 

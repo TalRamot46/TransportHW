@@ -120,7 +120,7 @@ def plot_q4_flux_profiles(c_values=(1.05, 1.5, 2.0), n_cells=400, save_path=None
         for c, colour in zip(c_values, CURVE_COLOURS):
             medium = build_medium(1.0, 1.0, c, approximation)
             R = critical_radius(medium, n_cells=n_cells)
-            _, r, phi = k_eigenvalue(R, medium, n_cells=n_cells)
+            r, phi = k_eigenvalue(R, medium, n_cells=n_cells)[1:3]
 
             # np.sinc(y) = sin(pi y) / (pi y), which supplies the r = 0 limit.
             shape = np.sinc(buckling(medium) * r / np.pi)
@@ -163,7 +163,7 @@ def plot_q5_criticality(n_cells=400, save_path=None):
                                   material.nu_sigma_f, approximation)
             R_c = critical_radius(medium, n_cells=n_cells)
             radii = np.linspace(0.4 * R_c, 1.8 * R_c, 40)
-            k = [k_eigenvalue(R, medium, n_cells=n_cells)[0] for R in radii]
+            k = [k_eigenvalue(R, medium, n_cells=n_cells).k for R in radii]
 
             ax.plot(radii, k, color=colour, linewidth=2.2,
                     label=APPROXIMATION_LABELS[approximation])

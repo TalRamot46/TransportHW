@@ -11,3 +11,4 @@ Questions 1–3 are documented in `docs/homework1/STATUS.md` and `plan.md`.
 | [04](04-asymptotic-diffusion-coefficient.md) | The Asymptotic `D` Above `c = 1` | Why `D = (1-c) nu0^2` carries over unchanged to the multiplying branch. |
 | [05](05-critical-mass-results.md) | Critical Masses of U-235 and Pu-239 | The measured radii and masses, and why the two approximations differ by the amount they do. |
 | [06](06-u235-data-discrepancy.md) | The Two U-235 Cross-Section Rows | Which U-235 data is used and why the prompt's row is not self-consistent. |
+| [07](07-neutron-balance.md) | The Neutron Balance Check | What production = absorption + leakage does and does not verify. |

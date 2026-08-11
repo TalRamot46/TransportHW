@@ -37,6 +37,25 @@ than U-235 at `c = 1.3`. The asymptotic values are the ones to quote, since
 asymptotic diffusion with the exact `z0(c)` reproduces the exact-transport
 criticality relation ([03](03-boundary-and-analytic.md)).
 
+## Sensitivity to the boundary treatment
+
+The numbers above use the extrapolated zero. Applying the same condition
+directly at the physical surface instead ([03](03-boundary-and-analytic.md))
+moves them substantially, because the mass goes as the cube of a radius that is
+only a couple of mean free paths:
+
+| material | approximation | `M_c` extrapolated | `M_c` Robin | difference |
+|---|---|---|---|---|
+| Pu-239 | classical | 12.940 kg | 11.432 kg | `-11.7 %` |
+| Pu-239 | asymptotic | 9.188 kg | 8.307 kg | `-9.6 %` |
+| U-235 | classical | 42.345 kg | 38.679 kg | `-8.7 %` |
+| U-235 | asymptotic | 32.696 kg | 30.212 kg | `-7.6 %` |
+
+This 8–12 % spread is not numerical error — both treatments reproduce their own
+analytic results to `1.5e-6`. It is the honest uncertainty of the diffusion
+model on a system this small, and it is larger than most of the other effects
+discussed here. Any single quoted mass should be read with it in mind.
+
 ## Caveats on the physical realism
 
 These are one-group, isotropic-scattering numbers, and should not be read as

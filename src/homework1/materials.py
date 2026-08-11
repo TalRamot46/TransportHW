@@ -1,5 +1,6 @@
 import numpy as np
 from dataclasses import dataclass
+from typing import NamedTuple
 
 from homework1.spherical import build_medium, critical_radius, analytic_critical_radius
 
@@ -64,29 +65,25 @@ def critical_mass(radius, density):
     """Mass of a sphere of the given radius, in kg for radius in cm."""
     return density * (4.0 / 3.0) * np.pi * radius**3 / 1000.0
 
-def solve_material(material, approximation, n_cells=400):
-    """
-    Numerical and analytic critical radius (cm) and mass (kg) for one material
-    under one diffusion approximation.
-    """
+class MaterialResult(NamedTuple):
+    """Critical radius in cm and critical mass in kg, numerical and analytic."""
+    R_numerical: float
+    R_analytic: float
+    mass_numerical: float
+    mass_analytic: float
+
+def solve_material(material, approximation, n_cells=400, boundary='extrapolated'):
+    """Critical radius and mass of one material under one approximation."""
     medium = build_medium(material.sigma_t, material.sigma_a,
                           material.nu_sigma_f, approximation)
-    R_num = critical_radius(medium, n_cells=n_cells)
+    R_num = critical_radius(medium, n_cells=n_cells, boundary=boundary)
     R_ana = analytic_critical_radius(medium)
-    return {
-        'material': material.name,
-        'approximation': approximation,
-        'c': material.c,
-        'D': medium.D,
-        'z0': medium.z0,
-        'R_numerical': R_num,
-        'R_analytic': R_ana,
-        'mass_numerical': critical_mass(R_num, material.density),
-        'mass_analytic': critical_mass(R_ana, material.density),
-    }
+    return MaterialResult(R_num, R_ana,
+                          critical_mass(R_num, material.density),
+                          critical_mass(R_ana, material.density))
 
 def solve_all(materials=None, approximations=('classical', 'asymptotic')):
-    """Runs solve_material over every material and approximation requested."""
+    """Every (material, approximation, result) triple, fissile materials by default."""
     if materials is None:
         materials = [BENCHMARK[name] for name in FISSILE]
-    return [solve_material(m, a) for m in materials for a in approximations]
+    return [(m, a, solve_material(m, a)) for m in materials for a in approximations]

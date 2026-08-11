@@ -11,7 +11,7 @@ from homework1.criticality import (
     MARK_EXTRAPOLATION,
     CASE_TABLE_8_C,
     CASE_TABLE_8_K0,
-)
+)  # MARSHAK_EXTRAPOLATION and critical_dimensions_applied_bc are reused by Q4
 from homework1.plots import (
     create_figs_dir,
     plot_flux_components,
@@ -36,6 +36,9 @@ from homework1.spherical import (
     critical_radius,
     analytic_critical_radius,
     mesh_convergence,
+    k_eigenvalue,
+    dominance_ratio,
+    neutron_balance,
 )
 from homework1.materials import (
     BENCHMARK,
@@ -50,6 +53,62 @@ logging.basicConfig(
     format='%(message)s'
 )
 logger = logging.getLogger(__name__)
+
+def _report_q4_iteration(c_values, n_cells):
+    """Sweeps taken by the source iteration, against the predicted dominance ratio."""
+    logger.info("\nSource-iteration cost at the critical radius. The error falls by the")
+    logger.info("dominance ratio per sweep, so a ratio near 1 means slow convergence.")
+    logger.info("-" * 62)
+    logger.info(f"{'c':<6} | {'approximation':<13} | {'dominance ratio':<16} | {'sweeps':<8}")
+    logger.info("-" * 62)
+    for approximation in ('classical', 'asymptotic'):
+        for c in c_values:
+            medium = build_medium(1.0, 1.0, c, approximation)
+            R = critical_radius(medium, n_cells=n_cells)
+            result = k_eigenvalue(R, medium, n_cells=n_cells)
+            logger.info(f"{c:<6.2f} | {approximation:<13} | "
+                        f"{dominance_ratio(medium, R):<16.6f} | {result.sweeps:<8}")
+    logger.info("-" * 62)
+
+def _report_q4_balance(c_values, n_cells):
+    """Production against absorption + leakage for the converged critical flux."""
+    logger.info("\nNeutron balance at the critical radius: production must equal")
+    logger.info("absorption + leakage.")
+    logger.info("-" * 88)
+    logger.info(f"{'c':<6} | {'approximation':<13} | {'production':<12} | "
+                f"{'absorption':<12} | {'leakage':<12} | {'residual':<10}")
+    logger.info("-" * 88)
+    for approximation in ('classical', 'asymptotic'):
+        for c in c_values:
+            medium = build_medium(1.0, 1.0, c, approximation)
+            R = critical_radius(medium, n_cells=n_cells)
+            production, absorption, leakage, residual = neutron_balance(
+                R, medium, n_cells=n_cells)
+            logger.info(f"{c:<6.2f} | {approximation:<13} | {production:<12.6f} | "
+                        f"{absorption:<12.6f} | {leakage:<12.6f} | {residual:<10.2e}")
+    logger.info("-" * 88)
+
+def _report_q4_boundary(c_values, n_cells):
+    """
+    The extrapolated zero against the Robin condition applied at the physical
+    surface, with the analytic counterpart of each taken from Question 3.
+    """
+    logger.info("\nBoundary treatment: extrapolated zero at R + z0 against the condition")
+    logger.info("phi + z0 phi' = 0 applied at R. Analytic references are Question 3's")
+    logger.info("critical_dimensions ('marshak') and critical_dimensions_applied_bc.")
+    logger.info("-" * 78)
+    logger.info(f"{'c':<6} | {'extrapolated':<13} | {'Robin':<13} | "
+                f"{'Robin analytic':<15} | {'difference %':<12}")
+    logger.info("-" * 78)
+    for c in c_values:
+        medium = build_medium(1.0, 1.0, c, 'classical')
+        R_ext = critical_radius(medium, n_cells=n_cells)
+        R_rob = critical_radius(medium, n_cells=n_cells, boundary='robin')
+        _, R_rob_ana = critical_dimensions_applied_bc(c, MARSHAK_EXTRAPOLATION)
+        delta = (R_rob - R_ext) / R_ext * 100.0
+        logger.info(f"{c:<6.2f} | {R_ext:<13.8f} | {R_rob:<13.8f} | "
+                    f"{R_rob_ana:<15.8f} | {delta:<+12.3f}")
+    logger.info("-" * 78)
 
 def report_q4(figs_dir, n_cells=400):
     """
@@ -82,6 +141,10 @@ def report_q4(figs_dir, n_cells=400):
                 f"over N = {cells[0]} -> {cells[-1]}, ratio per doubling "
                 f"{ratios.min():.2f}-{ratios.max():.2f}")
 
+    _report_q4_iteration(c_values, n_cells)
+    _report_q4_balance(c_values, n_cells)
+    _report_q4_boundary(c_values, n_cells)
+
     logger.info("\nGenerating Question 4 figures...")
     plot_q4_critical_radius(
         c_values, n_cells=n_cells,
@@ -111,13 +174,37 @@ def report_q5(figs_dir, n_cells=400):
             logger.warning(f"  {material.name}: Sigma_t off by {residual:.2e}")
         for approximation in ('classical', 'asymptotic'):
             r = solve_material(material, approximation, n_cells=n_cells)
-            logger.info(f"{material.name:<22} | {approximation:<11} | {r['c']:<7.4f} | "
-                        f"{r['R_numerical']:<10.4f} | {r['R_analytic']:<11.4f} | "
-                        f"{r['mass_numerical']:<9.3f}")
+            logger.info(f"{material.name:<22} | {approximation:<11} | {material.c:<7.4f} | "
+                        f"{r.R_numerical:<10.4f} | {r.R_analytic:<11.4f} | "
+                        f"{r.mass_numerical:<9.3f}")
     logger.info("-" * 94)
     logger.info("'U-235 (prompt variant)' is the cross-section row given in the task")
     logger.info("prompt rather than in the assignment PDF; its own cross sections give")
     logger.info("c = 1.365, not the c = 1.50 quoted alongside them.")
+
+    # The mass goes as R^3, so the boundary treatment is worth quantifying.
+    logger.info("\nSensitivity of the mass to the boundary treatment:")
+    logger.info("-" * 76)
+    logger.info(f"{'material':<10} | {'approx':<11} | {'M extrapolated':<15} | "
+                f"{'M Robin':<10} | {'difference %':<12}")
+    logger.info("-" * 76)
+    for name in FISSILE:
+        material = BENCHMARK[name]
+        for approximation in ('classical', 'asymptotic'):
+            ext = solve_material(material, approximation, n_cells=n_cells)
+            rob = solve_material(material, approximation, n_cells=n_cells,
+                                 boundary='robin')
+            delta = (rob.mass_numerical - ext.mass_numerical) / ext.mass_numerical * 100.0
+            logger.info(f"{name:<10} | {approximation:<11} | "
+                        f"{ext.mass_numerical:<15.3f} | {rob.mass_numerical:<10.3f} | "
+                        f"{delta:<+12.2f}")
+    logger.info("-" * 76)
+
+    # The three non-fissile rows of the benchmark table have c <= 1 and so have
+    # no bare critical size at all; they are listed for completeness.
+    subcritical = [name for name in BENCHMARK if name not in FISSILE]
+    logger.info(f"No bare critical sphere exists for {', '.join(subcritical)} "
+                f"(c <= 1, non-multiplying).")
 
     logger.info("\nGenerating Question 5 figure...")
     plot_q5_criticality(n_cells=n_cells,

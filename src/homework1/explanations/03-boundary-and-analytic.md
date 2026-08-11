@@ -31,9 +31,33 @@ The two treatments are then selected in `_outer_boundary`:
 
 `'extrapolated'` is the default, because it is what the analytic relations of
 Question 3 assume and therefore what makes the comparison a like-for-like test
-of the *numerics* rather than of the boundary model. `'robin'` is the analogue
-of `critical_dimensions_applied_bc` in `criticality.py`; the two agree to first
-order in `B l0` and separate as the system shrinks.
+of the *numerics* rather than of the boundary model.
+
+## The Robin condition as an independent check
+
+`'robin'` is the analogue of `critical_dimensions_applied_bc` in
+`criticality.py`, which solves `u cot u = 1 - u/(B l0)` on the flux shape rather
+than placing an extrapolated zero. That gives a second, completely independent
+analytic route to compare the solver against — one that exercises the boundary
+coefficient itself rather than only the interior operator. Measured for
+classical diffusion:
+
+| `c` | extrapolated `R_c` | Robin `R_c` | Robin analytic | Robin vs. extrapolated |
+|---|---|---|---|---|
+| 1.02 | 12.158813 | 12.126930 | 12.126949 | `-0.26 %` |
+| 1.10 | 5.069062 | 5.007865 | 5.007874 | `-1.21 %` |
+| 1.50 | 1.898429 | 1.821650 | 1.821653 | `-4.04 %` |
+| 2.00 | 1.147130 | 1.095638 | 1.095640 | `-4.49 %` |
+
+The numerical Robin radius reproduces its own analytic counterpart to about
+`1.5e-6` relative — the same discretisation error as the extrapolated case, so
+the boundary coefficient `D A / (l0 + h/2)` is correct in both of its limits.
+
+The two treatments agree to first order in `B l0` and separate as the system
+shrinks, from `0.26 %` apart at `c = 1.02` to `4.5 %` at `c = 2`. That is not
+solver error: it is the genuine ambiguity in what "the surface" means once the
+system is only a few mean free paths across. It propagates to the critical mass
+as an 8–12 % spread — see [05](05-critical-mass-results.md).
 
 ## What the numerical radius is compared against
 

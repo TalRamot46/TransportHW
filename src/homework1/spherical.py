@@ -1,5 +1,6 @@
 import numpy as np
 from dataclasses import dataclass
+from typing import NamedTuple
 from scipy.linalg import solve_banded
 from scipy.optimize import brentq
 
@@ -28,6 +29,13 @@ class SphericalMedium:
     nu_sigma_f: float
     z0: float
     c: float
+
+class KResult(NamedTuple):
+    """One k calculation: the eigenvalue, the flux on its mesh, and its cost."""
+    k: float
+    r: np.ndarray
+    phi: np.ndarray
+    sweeps: int
 
 def build_medium(sigma_t, sigma_a, nu_sigma_f, approximation='classical'):
     """
@@ -118,7 +126,7 @@ def k_eigenvalue(R, medium, n_cells=400, boundary='extrapolated',
     solve the removal operator against the current fission source, then update
     k by the ratio of successive fission-source integrals.
 
-    Returns (k, cell centres, normalised flux).
+    Returns a KResult.
     """
     r_outer, l0 = _outer_boundary(medium, R, boundary)
     centres, areas, volumes, h = _mesh(r_outer, n_cells)
@@ -128,7 +136,7 @@ def k_eigenvalue(R, medium, n_cells=400, boundary='extrapolated',
     fission = medium.nu_sigma_f * phi * volumes
     k = 1.0
 
-    for _ in range(max_iter):
+    for sweep in range(1, max_iter + 1):
         phi_new = solve_banded((1, 1), ab, fission / k)
         fission_new = medium.nu_sigma_f * phi_new * volumes
 
@@ -145,7 +153,38 @@ def k_eigenvalue(R, medium, n_cells=400, boundary='extrapolated',
     else:
         raise RuntimeError(f"k iteration did not converge in {max_iter} sweeps.")
 
-    return k, centres, phi
+    return KResult(k, centres, phi, sweep)
+
+def dominance_ratio(medium, R, boundary='extrapolated'):
+    """
+    Convergence rate of the source iteration, k_1/k_0, from the first two
+    spherical modes B_n = n pi / r_outer. The error falls by this factor per
+    sweep, so it predicts the sweep counts measured by k_eigenvalue.
+    """
+    r_outer, _ = _outer_boundary(medium, R, boundary)
+
+    def k_mode(n):
+        return medium.nu_sigma_f / (medium.sigma_a
+                                    + medium.D * (n * np.pi / r_outer)**2)
+
+    return k_mode(2) / k_mode(1)
+
+def neutron_balance(R, medium, n_cells=400, boundary='extrapolated'):
+    """
+    Production against absorption plus leakage for the converged flux. At a
+    critical radius the two must agree; the relative residual is the check.
+
+    Returns (production, absorption, leakage, relative residual).
+    """
+    result = k_eigenvalue(R, medium, n_cells, boundary)
+    r_outer, l0 = _outer_boundary(medium, R, boundary)
+    _, areas, volumes, h = _mesh(r_outer, n_cells)
+
+    production = (medium.nu_sigma_f * result.phi * volumes).sum() / result.k
+    absorption = (medium.sigma_a * result.phi * volumes).sum()
+    leakage = areas[-1] * medium.D * result.phi[-1] / (l0 + 0.5 * h)
+    residual = abs(production - absorption - leakage) / production
+    return production, absorption, leakage, residual
 
 def _bracket_radius(f, guess, growth=1.05, max_steps=40):
     """
@@ -164,13 +203,13 @@ def _bracket_radius(f, guess, growth=1.05, max_steps=40):
         lo, hi = lo / growth, hi * growth
     raise RuntimeError("Could not bracket a radius with k = 1.")
 
-def critical_radius(medium, n_cells=400, boundary='extrapolated', xtol=1e-10):
+def critical_radius(medium, n_cells=400, boundary='extrapolated', xtol=1e-12):
     """
     Radius at which k = 1, found by bisection (brentq) on k(R) - 1, which is
     monotonically increasing in R. Bracketed around the analytic radius.
     """
     def residual(R):
-        return k_eigenvalue(R, medium, n_cells, boundary)[0] - 1.0
+        return k_eigenvalue(R, medium, n_cells, boundary).k - 1.0
 
     lo, hi = _bracket_radius(residual, analytic_critical_radius(medium))
     return brentq(residual, lo, hi, xtol=xtol)
@@ -180,6 +219,8 @@ def mesh_convergence(medium, cell_counts=(25, 50, 100, 200, 400, 800)):
     Critical radius against mesh refinement, with the relative error of each
     against the analytic radius. The finite-volume scheme is second order, so
     the error should fall by four per doubling.
+
+    Extrapolated boundary only, since analytic_critical_radius is the reference.
     """
     exact = analytic_critical_radius(medium)
     radii = np.array([critical_radius(medium, n_cells=n) for n in cell_counts])

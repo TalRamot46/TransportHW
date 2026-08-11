@@ -33,16 +33,20 @@ from homework1.criticality import (
 
 from homework1.spherical import (
     SphericalMedium,
+    KResult,
     build_medium,
     buckling,
     analytic_critical_radius,
     k_eigenvalue,
     critical_radius,
+    dominance_ratio,
+    neutron_balance,
     mesh_convergence
 )
 
 from homework1.materials import (
     Material,
+    MaterialResult,
     BENCHMARK,
     FISSILE,
     PROMPT_U235,
