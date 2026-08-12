@@ -14,8 +14,8 @@
     perl directly fails identically, because latexmk is not the cause.
 
     Deleting the output before each pass avoids the collision entirely. The same
-    workaround is applied to the figures, in the _savefig helper of
-    src/homework1/plots.py.
+    workaround is applied to the figures, in the savefig helper of
+    src/homework1/figures.py.
 
     A single pdflatex pass succeeds, so the problem only appears when a document
     is rebuilt -- which is also why it went unnoticed until the figures were

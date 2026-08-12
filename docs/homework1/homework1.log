@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.6)  11 AUG 2026 20:23
+=======
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.6)  11 AUG 2026 21:13
+>>>>>>> Stashed changes
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -491,6 +495,7 @@ File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 ) [1
 
 {C:/Users/TLP-001/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}]
+<<<<<<< Updated upstream
 [2] [3{C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super/
 cm-super-ts1.enc}]
 <figs/diffusion_comparison_numerical.pdf, id=164, 859.6821pt x 1136.83167pt>
@@ -500,21 +505,37 @@ Package pdftex.def Info: figs/diffusion_comparison_numerical.pdf  used on input
  line 155.
 (pdftex.def)             Requested size: 399.29463pt x 528.03148pt.
 <figs/diffusion_errors_numerical.pdf, id=165, 859.9007pt x 1136.83167pt>
+=======
+<figs/diffusion_comparison_numerical.pdf, id=104, 859.73296pt x 1154.1765pt>
+File: figs/diffusion_comparison_numerical.pdf Graphic file (type pdf)
+<use figs/diffusion_comparison_numerical.pdf>
+Package pdftex.def Info: figs/diffusion_comparison_numerical.pdf  used on input
+ line 110.
+(pdftex.def)             Requested size: 399.29463pt x 536.05252pt.
+<figs/diffusion_errors_numerical.pdf, id=105, 859.9007pt x 1154.1765pt>
+>>>>>>> Stashed changes
 File: figs/diffusion_errors_numerical.pdf Graphic file (type pdf)
 <use figs/diffusion_errors_numerical.pdf>
 Package pdftex.def Info: figs/diffusion_errors_numerical.pdf  used on input lin
-e 162.
-(pdftex.def)             Requested size: 399.29463pt x 527.89272pt.
- [4] [5 <./figs/diffusion_comparison_numerical.pdf>]
+e 117.
+(pdftex.def)             Requested size: 399.29463pt x 535.94685pt.
 
-LaTeX Warning: Text page 6 contains only floats.
+[2] [3 <./figs/diffusion_comparison_numerical.pdf>]
+Overfull \vbox (44.78955pt too high) has occurred while \output is active []
 
+<<<<<<< Updated upstream
 [6 <./figs/diffusion_errors_numerical.pdf>]
 <figs/q2_solution_comparison.pdf, id=407, 859.80255pt x 758.6789pt>
+=======
+
+[4 <./figs/diffusion_errors_numerical.pdf>]
+<figs/q2_solution_comparison.pdf, id=328, 932.1234pt x 758.6789pt>
+>>>>>>> Stashed changes
 File: figs/q2_solution_comparison.pdf Graphic file (type pdf)
 <use figs/q2_solution_comparison.pdf>
-Package pdftex.def Info: figs/q2_solution_comparison.pdf  used on input line 22
+Package pdftex.def Info: figs/q2_solution_comparison.pdf  used on input line 15
 7.
+<<<<<<< Updated upstream
 (pdftex.def)             Requested size: 422.77664pt x 373.05247pt.
 <figs/q2_error_profiles.pdf, id=408, 859.9007pt x 758.6789pt>
 File: figs/q2_error_profiles.pdf Graphic file (type pdf)
@@ -522,40 +543,68 @@ File: figs/q2_error_profiles.pdf Graphic file (type pdf)
 Package pdftex.def Info: figs/q2_error_profiles.pdf  used on input line 234.
 (pdftex.def)             Requested size: 422.77664pt x 373.01775pt.
 <figs/q2_convergence.pdf, id=409, 860.2785pt x 365.25172pt>
+=======
+(pdftex.def)             Requested size: 422.77664pt x 344.11124pt.
+<figs/q2_error_profiles.pdf, id=329, 932.17068pt x 758.6789pt>
+File: figs/q2_error_profiles.pdf Graphic file (type pdf)
+<use figs/q2_error_profiles.pdf>
+Package pdftex.def Info: figs/q2_error_profiles.pdf  used on input line 164.
+(pdftex.def)             Requested size: 422.77664pt x 344.08809pt.
+<figs/q2_convergence.pdf, id=330, 932.54851pt x 363.44499pt>
+>>>>>>> Stashed changes
 File: figs/q2_convergence.pdf Graphic file (type pdf)
 <use figs/q2_convergence.pdf>
-Package pdftex.def Info: figs/q2_convergence.pdf  used on input line 241.
-(pdftex.def)             Requested size: 422.77664pt x 179.50436pt.
- [7] [8 <./figs/q2_solution_comparison.pdf>]
-
-LaTeX Warning: Text page 9 contains only floats.
+Package pdftex.def Info: figs/q2_convergence.pdf  used on input line 171.
+(pdftex.def)             Requested size: 422.77664pt x 164.76878pt.
 
 
-Overfull \vbox (4.15045pt too high) has occurred while \output is active []
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 180.
 
 
+<<<<<<< Updated upstream
 [9 <./figs/q2_error_profiles.pdf> <./figs/q2_convergence.pdf>] [10]
 <figs/q3_critical_dimensions.pdf, id=746, 932.02654pt x 650.79134pt>
+=======
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 180.
+
+[5] [6 <./figs/q2_solution_comparison.pdf>] [7 <./figs/q2_error_profiles.pdf> <
+./figs/q2_convergence.pdf>]
+<figs/q3_critical_dimensions.pdf, id=642, 932.02654pt x 650.79134pt>
+>>>>>>> Stashed changes
 File: figs/q3_critical_dimensions.pdf Graphic file (type pdf)
 <use figs/q3_critical_dimensions.pdf>
-Package pdftex.def Info: figs/q3_critical_dimensions.pdf  used on input line 31
-9.
+Package pdftex.def Info: figs/q3_critical_dimensions.pdf  used on input line 24
+4.
 (pdftex.def)             Requested size: 469.75502pt x 328.01645pt.
+<<<<<<< Updated upstream
 <figs/q3_extrapolation_distance.pdf, id=747, 533.68268pt x 354.12299pt>
+=======
+<figs/q3_extrapolation_distance.pdf, id=643, 533.68268pt x 354.12299pt>
+>>>>>>> Stashed changes
 File: figs/q3_extrapolation_distance.pdf Graphic file (type pdf)
 <use figs/q3_extrapolation_distance.pdf>
 Package pdftex.def Info: figs/q3_extrapolation_distance.pdf  used on input line
- 326.
+ 251.
 (pdftex.def)             Requested size: 352.31625pt x 233.78671pt.
+<<<<<<< Updated upstream
  [11]
 [12 <./figs/q3_critical_dimensions.pdf>] [13 <./figs/q3_extrapolation_distance.
 pdf>]
 <figs/q3_method_comparison.pdf, id=983, 932.02654pt x 650.79134pt>
+=======
+ [8] [9{C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super
+/cm-super-ts1.enc} <./figs/q3_critical_dimensions.pdf>] [10 <./figs/q3_extrapol
+ation_distance.pdf>]
+<figs/q3_method_comparison.pdf, id=867, 932.02654pt x 650.79134pt>
+>>>>>>> Stashed changes
 File: figs/q3_method_comparison.pdf Graphic file (type pdf)
 <use figs/q3_method_comparison.pdf>
-Package pdftex.def Info: figs/q3_method_comparison.pdf  used on input line 397.
+Package pdftex.def Info: figs/q3_method_comparison.pdf  used on input line 318.
 
 (pdftex.def)             Requested size: 469.75502pt x 328.01645pt.
+<<<<<<< Updated upstream
  [14 <./figs/q3_method_comparison.pdf>] [15]
 Overfull \hbox (7.7856pt too wide) in paragraph at lines 460--462
 \OT1/cmr/m/n/10.95 (-20) Substituting the two pa-ram-e-ter sets re-cov-ers ex-a
@@ -587,12 +636,38 @@ File: figs/q5_criticality.pdf Graphic file (type pdf)
 Package pdftex.def Info: figs/q5_criticality.pdf  used on input line 618.
 (pdftex.def)             Requested size: 469.75502pt x 184.00285pt.
  [21 <./figs/q5_criticality.pdf>]
+=======
+ [11 <./figs/q3_method_comparison.pdf>] [12]
+<figs/q4_critical_radius.pdf, id=1001, 932.73279pt x 650.79134pt>
+File: figs/q4_critical_radius.pdf Graphic file (type pdf)
+<use figs/q4_critical_radius.pdf>
+Package pdftex.def Info: figs/q4_critical_radius.pdf  used on input line 400.
+(pdftex.def)             Requested size: 469.75502pt x 327.75827pt.
+<figs/q4_mesh_convergence.pdf, id=1002, 932.14699pt x 363.87944pt>
+File: figs/q4_mesh_convergence.pdf Graphic file (type pdf)
+<use figs/q4_mesh_convergence.pdf>
+Package pdftex.def Info: figs/q4_mesh_convergence.pdf  used on input line 407.
+(pdftex.def)             Requested size: 469.75502pt x 183.37732pt.
+<figs/q4_flux_profiles.pdf, id=1003, 931.63298pt x 364.0802pt>
+File: figs/q4_flux_profiles.pdf Graphic file (type pdf)
+<use figs/q4_flux_profiles.pdf>
+Package pdftex.def Info: figs/q4_flux_profiles.pdf  used on input line 414.
+(pdftex.def)             Requested size: 469.75502pt x 183.57849pt.
+<figs/q5_criticality.pdf, id=1004, 931.812pt x 363.18134pt>
+File: figs/q5_criticality.pdf Graphic file (type pdf)
+<use figs/q5_criticality.pdf>
+Package pdftex.def Info: figs/q5_criticality.pdf  used on input line 452.
+(pdftex.def)             Requested size: 469.75502pt x 183.09201pt.
+ [13] [14 <./figs/q4_critical_radius.pdf> <./figs/q4_mesh_convergence.pdf>] [15
+ <./figs/q4_flux_profiles.pdf> <./figs/q5_criticality.pdf>]
+>>>>>>> Stashed changes
 (homework1.aux)
  ***********
 LaTeX2e <2026-06-01>
 L3 programming layer <2026-06-18>
  ***********
 Package rerunfilecheck Info: File `homework1.out' has not changed.
+<<<<<<< Updated upstream
 (rerunfilecheck)             Checksum: D94E837419C7E3BF076FA857120D6CD7;7012.
  ) 
 Here is how much of TeX's memory you used:
@@ -601,12 +676,23 @@ Here is how much of TeX's memory you used:
  684971 words of memory out of 5000000
  41903 multiletter control sequences out of 15000+600000
  638902 words of font info for 131 fonts, out of 8000000 for 9000
+=======
+(rerunfilecheck)             Checksum: C4D36D69B91BF51EB7635C51244C5CB1;4739.
+ ) 
+Here is how much of TeX's memory you used:
+ 13007 strings out of 467510
+ 205239 string characters out of 5407823
+ 677693 words of memory out of 5000000
+ 41899 multiletter control sequences out of 15000+600000
+ 639819 words of font info for 131 fonts, out of 8000000 for 9000
+>>>>>>> Stashed changes
  1141 hyphenation exceptions out of 8191
- 74i,9n,79p,1008b,604s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 74i,11n,79p,1008b,548s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
 m/cmbx10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public
 /amsfonts/cm/cmbx12.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/t
 ype1/public/amsfonts/cm/cmex10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiK
+<<<<<<< Updated upstream
 TeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/TLP-001/AppData/Local/P
 rograms/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Users/TLP-001/AppDa
 ta/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Users/TLP
@@ -628,4 +714,28 @@ PDF statistics:
  1708 PDF objects out of 1728 (max. 8388607)
  124 named destinations out of 1000 (max. 500000)
  24349 words of extra memory for PDF output out of 24883 (max. 10000000)
+=======
+TeX/fonts/type1/public/amsfonts/cmextra/cmex8.pfb><C:/Users/TLP-001/AppData/Loc
+al/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Users/TLP-001/
+AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Use
+rs/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi6.p
+fb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmmi8.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public
+/amsfonts/cm/cmr10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/ty
+pe1/public/amsfonts/cm/cmr12.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTe
+X/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Users/TLP-001/AppData/Local/Prog
+rams/MiKTeX/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Users/TLP-001/AppData/L
+ocal/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Users/TLP-001/
+AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Use
+rs/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmsy8.p
+fb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/
+cm/cmti10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/publi
+c/amsfonts/cm/cmtt10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/
+type1/public/cm-super/sfrm1095.pfb>
+Output written on homework1.pdf (15 pages, 849813 bytes).
+PDF statistics:
+ 1539 PDF objects out of 1728 (max. 8388607)
+ 87 named destinations out of 1000 (max. 500000)
+ 24277 words of extra memory for PDF output out of 24883 (max. 10000000)
+>>>>>>> Stashed changes
 

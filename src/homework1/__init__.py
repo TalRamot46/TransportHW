@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 from homework1.exact_solution import (
     compute_nu0_numerical,
     compute_nu0_approx,
@@ -55,3 +56,6 @@ from homework1.materials import (
     solve_all
 )
 
+=======
+"""Assignment 1: Case's exact slab solution, diffusion approximations and criticality."""
+>>>>>>> Stashed changes

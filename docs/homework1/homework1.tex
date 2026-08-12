@@ -20,98 +20,57 @@
 
 \section{Introduction \& Case's Method}
 
-This report presents the solutions to Homework Assignment 1, which focuses on the monoenergetic, steady-state Boltzmann transport equation in slab geometry for an infinite, homogeneous, isotropic medium with an isotropic plane delta-source at $x = 0$. The transport equation is written as:
+The problem is the monoenergetic, steady-state Boltzmann equation in slab geometry, for an infinite homogeneous isotropic medium with an isotropic plane source at $x = 0$:
 \begin{equation}
     \mu \frac{\partial \psi(x, \mu)}{\partial x} + \psi(x, \mu) = \frac{c}{2} \int_{-1}^1 \psi(x, \mu') d\mu' + \frac{1}{4\pi} \delta(x)
 \end{equation}
-where $\psi(x, \mu)$ is the angular flux, $c \in [0, 1)$ is the scattering ratio, and $\mu$ is the cosine of the angle of the particle's velocity with the $x$-axis.
-
-In 1953, Kenneth Case analyzed this equation by searching for separation-of-variables solutions of the form:
-\begin{equation}
-    \psi_\nu(x, \mu) = e^{-x/\nu} \phi_\nu(\mu)
-\end{equation}
-Substituting this ansatz into the homogeneous transport equation leads to the eigenvalue problem:
+with $c \in [0, 1)$ the scattering ratio and $\mu$ the direction cosine. Case (1953) looks for separable solutions $\psi_\nu(x,\mu) = e^{-x/\nu}\phi_\nu(\mu)$, which gives
 \begin{equation}
     (\nu - \mu) \phi_\nu(\mu) = \frac{c\nu}{2} \int_{-1}^1 \phi_\nu(\mu') d\mu'
-\end{equation}
-Normalizing the eigenfunctions such that $\int_{-1}^1 \phi_\nu(\mu') d\mu' = 1$, we obtain:
-\begin{equation}
+    \quad \xrightarrow{\ \int \phi_\nu d\mu = 1\ } \quad
     (\nu - \mu) \phi_\nu(\mu) = \frac{c\nu}{2}
 \end{equation}
-
-Depending on the value of the eigenvalue $\nu$, two cases arise:
+and splits into two spectra:
 \begin{enumerate}
-    \item \textbf{Discrete Spectrum ($\nu \notin [-1, 1]$):} Since $\nu - \mu \neq 0$ for all $\mu \in [-1, 1]$, we can divide directly by $\nu - \mu$, yielding the discrete eigenfunctions:
+    \item \textbf{Discrete ($\nu \notin [-1,1]$).} Division by $\nu - \mu$ is legal, so $\phi_0^{\pm}(\mu) = c\nu_0 / [2(\nu_0 \mp \mu)]$, and normalization gives the characteristic equation
     \begin{equation}
-        \phi_0^{\pm}(\mu) = \frac{c\nu_0}{2(\nu_0 \mp \mu)}
+        1 = c\nu_0 \operatorname{arctanh}(1/\nu_0)
     \end{equation}
-    Integrating these over $[-1, 1]$ and applying the normalization condition yields the transcendental characteristic equation for the discrete eigenvalues $\pm\nu_0$:
-    \begin{equation}
-        1 = c\nu_0 \text{arctanh}(1/\nu_0)
-    \end{equation}
-    For $c \in (0, 1)$, there is exactly one pair of real, positive roots $\pm\nu_0$ with $\nu_0 > 1$.
+    with exactly one pair of real roots $\pm\nu_0$, $\nu_0 > 1$, for $c \in (0,1)$.
 
-    \item \textbf{Continuous Spectrum ($\nu \in [-1, 1]$):} In this case, the term $\nu - \mu$ vanishes at $\mu = \nu$. Thus, we cannot divide by $\nu - \mu$ in the sense of ordinary functions. Instead, in the theory of distributions (generalized functions), the general solution to the equation is:
+    \item \textbf{Continuous ($\nu \in [-1,1]$).} Here $\nu - \mu$ vanishes at $\mu = \nu$, so the solution exists only as a distribution,
     \begin{equation}
-        \phi_\nu(\mu) = \frac{c\nu}{2} \mathcal{P} \frac{1}{\nu - \mu} + \lambda(\nu)\delta(\mu - \nu)
+        \phi_\nu(\mu) = \frac{c\nu}{2} \mathcal{P} \frac{1}{\nu - \mu} + \lambda(\nu)\delta(\mu - \nu),
+        \qquad \lambda(\nu) = 1 - c\nu \operatorname{arctanh}(\nu)
     \end{equation}
-    where $\mathcal{P}$ represents the Cauchy principal value distribution, $\delta(\mu - \nu)$ is the Dirac delta function, and $\lambda(\nu)$ is the dispersion function. Integrating $\phi_\nu(\mu)$ over $\mu \in [-1, 1]$ and setting the integral to 1 determines $\lambda(\nu)$:
-    \begin{equation}
-        \lambda(\nu) = 1 - c\nu \text{arctanh}(\nu)
-    \end{equation}
+    with $\mathcal{P}$ the Cauchy principal value and $\lambda$ fixed by the same normalization.
 \end{enumerate}
 
-\subsection{Intuition Behind the Continuous Spectrum and Generalized Functions}
-
-The presence of the Dirac delta function $\delta(\mu - \nu)$ and the principal value term $\mathcal{P}\frac{1}{\nu-\mu}$ in the continuous eigenfunctions $\phi_\nu(\mu)$ can feel counter-intuitive. 
-
-Physically, the continuous spectrum represents the singular behavior of particles that travel without undergoing collisions (uncollided transport) or undergo highly directional scattering. A particle traveling at a specific direction $\mu = \nu$ represents a singular distribution in angle, which is modeled by the Dirac delta $\delta(\mu - \nu)$. The principal value distribution $\mathcal{P}\frac{1}{\nu - \mu}$ accounts for the strong coupling between nearby angles due to scattering, where the singularity is balanced symmetrically.
-
-However, when we look at the scalar flux $\phi(x)$, which is the angle-integrated quantity:
+The singular objects live in angle only. The scalar flux $\phi(x) = 2\pi\int_{-1}^1 \psi \,d\mu$ integrates them out, since $\int_{-1}^1 \phi_\nu(\mu)d\mu = 1$ by construction, leaving the ordinary integral
 \begin{equation}
-    \phi(x) = 2\pi \int_{-1}^1 \psi(x, \mu) d\mu
-\end{equation}
-these angular singularities are integrated out. Under integration, the distribution $\phi_\nu(\mu)$ acts as a linear functional mapping to a constant:
-\begin{equation}
-    \int_{-1}^1 \phi_\nu(\mu) d\mu = 1
-\end{equation}
-This leads to the transient component of the scalar flux:
-\begin{equation}
-    \phi_{\text{tr}}(x) = \frac{1}{2} \int_0^1 \frac{e^{-|x|/\nu}}{N_\nu} d\nu
-\end{equation}
-where:
-\begin{equation}
+    \phi_{\text{tr}}(x) = \frac{1}{2} \int_0^1 \frac{e^{-|x|/\nu}}{N_\nu} d\nu,
+    \qquad
     N_\nu = \nu \left[ \lambda^2(\nu) + \frac{\pi^2 c^2 \nu^2}{4} \right]
 \end{equation}
-
-Crucially, \textbf{no distributions or generalized functions remain in the scalar flux integral}. The integrand is a regular, smooth function of $\nu$ on the open interval $(0, 1)$. For any $x > 0$, as $\nu \to 0$, the exponential term $e^{-|x|/\nu}$ decays extremely rapidly, making the integrand vanish at 0. As $\nu \to 1$, the dispersion function $\lambda(\nu) \to -\infty$, which causes the normalization factor $N_\nu \to \infty$ and the integrand to vanish at 1. Thus, the numerical integration is highly well-behaved.
-
----
+whose integrand is smooth on $(0,1)$: it vanishes at $\nu \to 0$ through $e^{-|x|/\nu}$ and at $\nu \to 1$ through $\lambda \to -\infty$, so the quadrature is well behaved.
 
 \section{Question 1: Exact Scalar Flux Analysis}
 
-The exact scalar flux is computed as:
+The exact flux is the sum of the two contributions,
 \begin{equation}
-    \phi(x) = \phi_{\text{as}}(x) + \phi_{\text{tr}}(x)
-\end{equation}
-where $\phi_{\text{as}}(x) = \frac{e^{-|x|/\nu_0}}{2 N_0^+}$ is the asymptotic component, and $\phi_{\text{tr}}(x)$ is the transient component.
-The discrete normalization factor is:
-\begin{equation}
+    \phi(x) = \phi_{\text{as}}(x) + \phi_{\text{tr}}(x),
+    \qquad
+    \phi_{\text{as}}(x) = \frac{e^{-|x|/\nu_0}}{2 N_0^+},
+    \qquad
     N_0^+ = \frac{c}{2} \nu_0^3 \left[ \frac{c}{\nu_0^2 - 1} - \frac{1}{\nu_0^2} \right]
 \end{equation}
-
-For $\nu_0$, we can choose to compute it using:
-\begin{itemize}
-    \item \textbf{Numerical Root-Finding:} Solving $\frac{\text{arctanh}(y)}{y} = \frac{1}{c}$ for $y = 1/\nu_0 \in (0, 1)$ using a bisection method, which is extremely stable.
-    \item \textbf{Analytic Approximation:}
-    \begin{equation}
-        \nu_0 \approx \frac{1}{\sqrt{1 - c^{p(c)}}}
-    \end{equation}
-    where:
-    \begin{equation}
-        p(c) = 2.47412 + \frac{0.00363081}{c^2} - 0.0352458c + \frac{0.557498}{c}
-    \end{equation}
-\end{itemize}
+$\nu_0$ is computed two ways: by bisection on $\operatorname{arctanh}(y)/y = 1/c$ with $y = 1/\nu_0 \in (0,1)$, and from the analytic fit
+\begin{equation}
+    \nu_0 \approx \frac{1}{\sqrt{1 - c^{p(c)}}},
+    \qquad
+    p(c) = 2.47412 + \frac{0.00363081}{c^2} - 0.0352458c + \frac{0.557498}{c}
+\end{equation}
+which agree to better than $5 \times 10^{-3}\,\%$ over $c = 0.5 \ldots 0.95$. All figures are produced with both.
 
 \subsection{Question 1a: Asymptotic and Transient Components}
 
@@ -119,11 +78,11 @@ For $\nu_0$, we can choose to compute it using:
 
 \subsection{Question 1b: Classical Diffusion Solution}
 
-The classical diffusion equation (in units of mean free path, where $\Sigma_t = 1$) for a homogeneous, isotropic medium with an isotropic plane delta-source is given by:
+In mean free paths ($\Sigma_t = 1$) the diffusion equation for the same source is
 \begin{equation}
-    - D \frac{d^2 \phi_{\text{class}}(x)}{dx^2} + (1 - c) \phi_{\text{class}}(x) = \delta(x)
+    - D \phi''(x) + (1 - c) \phi(x) = \delta(x)
 \end{equation}
-Using the standard P1 diffusion coefficient $D = 1/3$, the Green's function solution is:
+and with the $P_1$ value $D = 1/3$ its Green's function is
 \begin{equation}
     \phi_{\text{class}}(x) = \frac{\sqrt{3}}{2\sqrt{1-c}} e^{-\sqrt{3(1-c)} |x|}
 \end{equation}
@@ -132,20 +91,16 @@ Using the standard P1 diffusion coefficient $D = 1/3$, the Green's function solu
 
 \subsection{Question 1c: Asymptotic Diffusion Solution}
 
-The asymptotic diffusion approximation matches the diffusion length to the exact discrete transport eigenvalue $\nu_0$, i.e., $L = \nu_0$, which corresponds to an asymptotic diffusion coefficient $D_{\text{as}} = (1 - c) \nu_0^2$. The governing equation is:
-\begin{equation}
-    - D_{\text{as}} \frac{d^2 \phi_{\text{as,diff}}(x)}{dx^2} + (1 - c) \phi_{\text{as,diff}}(x) = \delta(x)
-\end{equation}
-which yields the Green's function solution:
+Matching the diffusion length to the exact eigenvalue, $L = \nu_0$, fixes $D_{\text{as}} = (1-c)\nu_0^2$ and gives
 \begin{equation}
     \phi_{\text{as,diff}}(x) = \frac{1}{2(1-c)\nu_0} e^{-|x|/\nu_0}
 \end{equation}
+which is exactly Case's asymptotic mode: this approximation reproduces $\phi_{\text{as}}$ by construction and errs only by the transient part.
 
 [Insert comparison plots with the asymptotic diffusion solution. Discuss how the asymptotic diffusion solution compares to both the classical diffusion solution and the exact transport asymptotic component $\phi_{\text{as}}(x)$.]
 
 \subsection{Question 1d: Relative Error of Diffusion Approximations}
 
-The relative error of each diffusion approximation relative to the exact transport solution is defined as:
 \begin{equation}
     \text{Relative Error (\%)} = \frac{|\phi_{\text{approx}}(x) - \phi_{\text{exact}}(x)|}{\phi_{\text{exact}}(x)} \times 100\%
 \end{equation}
@@ -153,86 +108,61 @@ The relative error of each diffusion approximation relative to the exact transpo
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.85\textwidth]{figs/diffusion_comparison_numerical.pdf}
-    \caption{Exact scalar flux compared with the classical and asymptotic diffusion approximations, for $c = 0, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95$. Each approximation is shown both as its analytic closed form and as the numerical solution of Question 2; the two coincide to within $2 \times 10^{-8}\,\%$ and are indistinguishable at this scale.}
+    \caption{Exact scalar flux against the classical and asymptotic diffusion approximations, for $c = 0, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95$. Each approximation appears both as its closed form and as the numerical solution of Question 2; the two agree to $2 \times 10^{-8}\,\%$ and are indistinguishable here.}
     \label{fig:diffusion_comparison}
 \end{figure}
 
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.85\textwidth]{figs/diffusion_errors_numerical.pdf}
-    \caption{Two relative errors per approximation. The solid curves compare the numerical solution with the \emph{exact transport} solution, and so measure the error of the diffusion approximation itself (Question 1d). The dotted curves compare it with the \emph{analytic diffusion} solution, and so measure the error of the solver (Question 2). The two differ by roughly ten orders of magnitude: the discretisation error is negligible against the modelling error, so the solid curves may be read as properties of the approximation rather than of the code.}
+    \caption{Two errors per approximation: against the \emph{exact transport} solution (solid), which is the modelling error asked for in 1d, and against the \emph{analytic diffusion} solution (dotted), which is the solver error asked for in Question 2. They differ by about ten orders of magnitude, so the solid curves may be read as properties of the approximation rather than of the code.}
     \label{fig:diffusion_errors}
 \end{figure}
 
 [Insert relative error plots as a function of $x$. Add physical discussion comparing the accuracy of the classical and asymptotic diffusion approximations across the different values of $c$. Analyze why the error behaves as it does near the source and far from it.]
 
----
+\section{Question 2: Numerical Code for the Diffusion Equation}
 
-\section{Question 2: Numerical Code for Diffusion Equation}
-
-To solve the time-independent diffusion equation with a delta-source at $x=0$ numerically, we exploit the symmetry of the medium and integrate over the half-domain $x \in [0, a]$. Since the delta-source is located at $x=0$, the domain $x > 0$ is source-free, governed by the homogeneous equation:
+The medium is symmetric, so the problem is solved on the half-domain $x \in [0,a]$, where it is source-free:
 \begin{equation}
-    - D \frac{d^2 \phi(x)}{dx^2} + (1 - c) \phi(x) = 0
+    - D \phi''(x) + (1 - c) \phi(x) = 0
+    \quad\Longrightarrow\quad
+    \frac{d}{dx} \begin{pmatrix} y_1 \\ y_2 \end{pmatrix} = \begin{pmatrix} y_2 \\ \frac{1-c}{D} y_1 \end{pmatrix},
+    \qquad y_1 = \phi,\; y_2 = \phi'
 \end{equation}
 
-\subsection{Analytical Conversion to a First-Order System}
-We convert this second-order ODE to a linear system of two first-order ODEs. Let:
+\paragraph{The delta source.} It is never discretised. Integrating across the origin gives $-D[\phi'(0^+) - \phi'(0^-)] = 1$, and evenness of the infinite-medium solution gives
 \begin{equation}
-    y_1(x) = \phi(x), \quad y_2(x) = \frac{d\phi(x)}{dx}
+    \phi'(0^+) = -\frac{1}{2D},
+    \qquad\text{i.e.}\qquad
+    J(0^+) = -D\phi'(0^+) = \frac{1}{2}
 \end{equation}
-This yields the first-order system:
-\begin{equation}
-    \frac{d}{dx} \begin{pmatrix} y_1 \\ y_2 \end{pmatrix} = \begin{pmatrix} y_2 \\ \frac{1-c}{D} y_1 \end{pmatrix}
-\end{equation}
+half the source streaming each way. That is how a delta source should be modelled: symmetry converts it into a prescribed current and the singularity never enters the scheme.
 
-\subsection{Modelling the Delta Source}
-The delta source is never discretised. Integrating the governing equation $-D\phi''(x) + (1-c)\phi(x) = \delta(x)$ from $-\epsilon$ to $+\epsilon$ and taking the limit $\epsilon \to 0$ yields the jump condition
+\paragraph{The outer boundary.} $x = a$ is a truncation, not a surface. Zero flux there would force a $100\,\%$ error at $x = a$ that no tolerance removes, so the radiation condition
 \begin{equation}
-    - D \left[ \phi'(0^+) - \phi'(0^-) \right] = 1
+    \phi'(a) = -\kappa \phi(a), \qquad \kappa = \sqrt{\Sigma_a / D}
 \end{equation}
-By symmetry of the infinite-medium solution ($\phi(x) = \phi(-x) \implies \phi'(0^-) = - \phi'(0^+)$), this reduces to a boundary condition at the origin:
-\begin{equation}
-    \phi'(0^+) = -\frac{1}{2D}, \qquad \text{equivalently} \qquad J(0^+) = -D\phi'(0^+) = \frac{1}{2}
-\end{equation}
-that is, half the source neutrons stream in each direction. This is the answer to the question of how a delta-function source should be modelled: symmetry converts it into a prescribed current, the problem is solved on the half-line $x \geq 0$, and the singularity never enters the numerical scheme.
+is used instead: $e^{-\kappa x}$ satisfies it identically, the growing mode is annihilated, and the truncation is exact for any $a$. We take $a = 10/\kappa$.
 
-\subsection{The Outer Boundary}
-The outer boundary is a truncation of an infinite medium, not a physical surface. Imposing a zero-flux condition $\phi(a) = 0$ would force the flux to vanish where the true Green's function is small but non-zero, producing a $100\,\%$ relative error at $x = a$ that does not shrink as the solver tolerance is reduced. We therefore impose the radiation (Robin) condition
-\begin{equation}
-    \phi'(a) = -\kappa \phi(a), \qquad \kappa = \sqrt{\frac{\Sigma_a}{D}}
-\end{equation}
-which the decaying solution $e^{-\kappa x}$ satisfies identically. This annihilates the growing mode $e^{+\kappa x}$, so the truncation is exact for any $a$; we use $a = 10/\kappa$.
-
-\subsection{Solution by a Single Integration}
-Away from the source the equation is linear and homogeneous, so its solution is exactly proportional to its starting amplitude: $y(x; s) = s\, y(x; 1)$. No root-finding is required. We integrate once from $a$ towards $0$ --- the direction in which the solution grows, which is the numerically stable one --- starting from the radiation condition with unit amplitude, $[y_1(a), y_2(a)]^T = [1, -\kappa]^T$, and then rescale the result by
-\begin{equation}
-    \text{scale} = \frac{-1/(2D)}{y_2(0)}
-\end{equation}
-so that the source condition $-D\phi'(0) = 1/2$ is satisfied exactly.
-
-\subsection{Both Diffusion Approximations}
-Classical and asymptotic diffusion are the same equation with different coefficients. Matching the closed form $\phi = e^{-\kappa|x|}/(2D\kappa)$ to Case's asymptotic mode $\phi = e^{-|x|/\nu_0} / (2(1-c)\nu_0)$ requires $\kappa = 1/\nu_0$ and hence
+\paragraph{One integration.} The equation is linear and homogeneous away from the source, so the solution is proportional to its starting amplitude and no root-finding is needed. We integrate once from $a$ to $0$ --- the direction in which the solution grows, which is the stable one --- from $[y_1, y_2]^T = [1, -\kappa]^T$, then rescale by $[-1/(2D)]/y_2(0)$ to enforce the source condition. Both approximations use this one solver, since
 \begin{equation}
     \Sigma_a = 1 - c, \qquad D_{\text{classical}} = \frac{1}{3}, \qquad D_{\text{asymptotic}} = (1-c)\,\nu_0^2
 \end{equation}
-so a single solver covers both by choice of $D$.
 
-\subsection{Comparison with the Analytical Solution}
-The numerical solution reproduces the analytic diffusion Green's function to a maximum relative error of $2 \times 10^{-8}\,\%$ for both approximations at $c = 0.5, 0.7, 0.9$, and conserves neutrons to $\Sigma_a \int \phi \, dx = 0.99998807$; the residual is the physical tail of the Green's function beyond the truncation, not solver error. Both comparisons appear in Figures~\ref{fig:diffusion_comparison} and~\ref{fig:diffusion_errors} above, alongside the exact transport solution.
-
-Because a shooting method has no mesh spacing to refine --- the output grid does not control accuracy --- convergence is demonstrated by tightening the integrator tolerance. Figure~\ref{fig:q2_convergence} shows the relative $L_2$ error falling from $9 \times 10^{-6}$ at $\texttt{rtol} = 10^{-4}$ to $1.3 \times 10^{-12}$ at $\texttt{rtol} = 10^{-11}$, tracking the requested tolerance with unit slope.
+\paragraph{Verification.} The solver reproduces the closed form to $2 \times 10^{-8}\,\%$ for both approximations at $c = 0.5, 0.7, 0.9$ (Figures~\ref{fig:diffusion_comparison}--\ref{fig:q2_error_profiles}), and conserves neutrons to $\Sigma_a \int \phi \, dx = 0.99998807$, the deficit being the physical tail beyond the truncation. A shooting method has no mesh to refine, so convergence is shown against the integrator tolerance: the relative $L_2$ error falls from $9 \times 10^{-6}$ at $\texttt{rtol} = 10^{-4}$ to $1.3 \times 10^{-12}$ at $10^{-11}$, with unit slope (Figure~\ref{fig:q2_convergence}).
 
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.9\textwidth]{figs/q2_solution_comparison.pdf}
-    \caption{Numerical solution against the analytic diffusion Green's function, for both approximations at $c = 0.5, 0.7, 0.9$.}
+    \caption{Numerical solution against the analytic diffusion Green's function, both approximations at $c = 0.5, 0.7, 0.9$.}
     \label{fig:q2_solution_comparison}
 \end{figure}
 
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.9\textwidth]{figs/q2_error_profiles.pdf}
-    \caption{Relative error of the numerical solution across the domain. With the radiation boundary condition the error stays flat instead of diverging at the outer edge.}
+    \caption{Relative error across the domain. With the radiation condition it stays flat instead of diverging at the outer edge.}
     \label{fig:q2_error_profiles}
 \end{figure}
 
@@ -243,47 +173,42 @@ Because a shooting method has no mesh spacing to refine --- the output grid does
     \label{fig:q2_convergence}
 \end{figure}
 
----
-
 \section{Question 3: Critical Half-Thickness and Critical Radius}
 
-This section computes $a/2$ and $R_c$ for $1.02 < c < 2$ from the exact-transport (asymptotic) criticality relations, part 3(a), and from classical diffusion with the Marshak and Mark boundary conditions, parts 3(b) and 3(c). Parts 3(d) and 3(e), the asymptotic diffusion approximation with the exact and the modified-Marshak $\ell_0(c)$, are not covered here.
+Parts 3(a)--3(c) are covered: the exact-transport relations, and classical diffusion with the Marshak and Mark conditions. Parts 3(d)--3(e) are not.
 
-\subsection{The Eigenvalue on the Multiplying Branch}
-For $c > 1$ the discrete eigenvalue leaves the real axis. Writing $\nu_0 = i|\nu_0|$ and $k_0 = 1/|\nu_0|$, and using $\operatorname{arctanh}(ik) = i\arctan(k)$, the transcendental equation $c\,\nu_0 \operatorname{arctanh}(1/\nu_0) = 1$ becomes real again:
+\subsection{The Eigenvalue for $c > 1$}
+The discrete eigenvalue leaves the real axis. With $\nu_0 = i|\nu_0|$, $k_0 = 1/|\nu_0|$ and $\operatorname{arctanh}(ik) = i\arctan(k)$, the characteristic equation becomes real again,
 \begin{equation}
     c \arctan(k_0) = k_0
 \end{equation}
-which is the form tabulated by Case, de Hoffmann \& Placzek (Table 8, Part II). The same analytic fit used in Question 1 continues onto this branch: for $c > 1$ the radicand of $\nu_0 = 1/\sqrt{1 - c^{p(c)}}$ turns negative --- which is precisely the statement that $\nu_0$ has become imaginary --- so
+the form tabulated by Case, de Hoffmann \& Placzek (Table 8, Part II), which the root reproduces to $5 \times 10^{-6}$. The fit of Question 1 continues onto this branch by itself, its radicand simply changing sign:
 \begin{equation}
-    |\nu_0(c)| = \frac{1}{\sqrt{c^{p(c)} - 1}}, \qquad p(c) = 2.47412 + \frac{0.00363081}{c^2} - 0.0352458\,c + \frac{0.557498}{c}
+    |\nu_0(c)| = \frac{1}{\sqrt{c^{p(c)} - 1}}
 \end{equation}
-This reproduces the root of the transcendental equation to $10^{-4}\,\%$ at $c = 1.02$ and $0.10\,\%$ at $c = 2$; the transcendental root itself agrees with every entry of Table 8 Part II to $5 \times 10^{-6}$, the resolution of its printed digits.
-
-An imaginary $\nu_0$ turns the infinite-medium mode $e^{-x/\nu_0}$ into a trigonometric one, which is what makes a finite critical system possible:
+accurate to $10^{-4}\,\%$ at $c = 1.02$ and $0.10\,\%$ at $c = 2$. An imaginary $\nu_0$ makes the asymptotic flux trigonometric, which is what allows a finite critical system:
 \begin{equation}
     \phi_{\text{as}}(x) = A \cos\!\left(\frac{\Sigma_t x}{|\nu_0|}\right), \qquad
     \phi_{\text{as}}(r) = A \frac{\sin\!\left(\Sigma_t r / |\nu_0|\right)}{\Sigma_t r}
 \end{equation}
-the sine being excluded in the slab by symmetry about the mid-plane, and the cosine in the sphere by regularity at the origin.
+the sine being excluded in the slab by symmetry, the cosine in the sphere by regularity.
 
 \subsection{The Criticality Relations}
-The asymptotic flux extrapolates to zero a distance $z_0(c)$ outside the physical surface, $\phi_{\text{as}}(-z_0) = 0$ measured from the boundary. Placing the quarter-wave zero of the cosine and the first zero ($\text{argument} = \pi$) of the sine at that point gives, in mean free paths,
+The asymptotic flux extrapolates to zero a distance $z_0(c)$ outside the surface. Placing the quarter-wave zero of the cosine and the first zero of the sine there gives, in mean free paths,
 \begin{equation}
     \frac{a}{2} = \frac{\pi}{2}\,|\nu_0(c)| - z_0(c), \qquad
     \Sigma_t R_c = \pi\,|\nu_0(c)| - z_0(c)
+    \label{eq:q3relations}
 \end{equation}
-These are ``exact transport'' in that no diffusion coefficient enters: both the eigenvalue and the extrapolation distance are transport quantities. They are still asymptotic, in that the transient part of the flux near the free surface is neglected --- and for the sphere the plane Milne $z_0$ is used without the Winslow curvature correction, so the spherical relation is the weaker of the two for small, strongly multiplying systems.
-
-The extrapolation distance is taken from the expansion about $c = 1$,
+No diffusion coefficient enters, so these are exact transport in that sense; they are still asymptotic, in that the transient flux near the surface is neglected (and the sphere uses the plane Milne $z_0$, without the Winslow curvature correction). The extrapolation distance comes from the expansion about $c = 1$,
 \begin{equation}
     z_0(c) = 0.710446 \left[ \frac{1}{c} + q\,\frac{(1-c)^2}{c} + \mathcal{O}\!\left(\frac{(1-c)^3}{c}\right) \right]
     \label{eq:z0fit}
 \end{equation}
-whose leading term is exact in the sense that $0.710446/c = 0.710446\,\nu_0\operatorname{arctanh}(1/\nu_0)$: all of the first-order $c$-dependence comes from the dispersion relation itself, and $0.710446$ is Hopf's constant, the $c = 1$ Milne result.
+whose leading term is exact in the sense that $0.710446/c = 0.710446\,\nu_0\operatorname{arctanh}(1/\nu_0)$, with $0.710446$ Hopf's constant.
 
 \subsection{The Sign of the Quadratic Correction}
-The course notes print $q = -0.0199$. Case's own Table 23, which tabulates the product $c\,z_0(c)$, shows that the correction must be \emph{positive}: the tabulated product rises away from $0.710446$ on \emph{both} sides of $c = 1$ (Figure~\ref{fig:q3_z0}), whereas a negative $q$ makes it fall on both sides. The magnitude is right --- with $q = +0.0199$ Equation~\eqref{eq:z0fit} reproduces the table to its four printed digits at $c = 0.9$ and $c = 1.1$ --- so the printed minus sign appears to be a transcription error. Over $1.02 < c < 2$ the two signs differ by at most $2.6\,\%$ in $z_0$ and $3.2\,\%$ in $a/2$, with the discrepancy concentrated at the upper end: below $c = 1.2$ the choice moves $a/2$ by less than $0.07\,\%$. Results below are quoted with the printed $q = -0.0199$; both are plotted.
+The notes print $q = -0.0199$, but Case's Table 23 shows $c\,z_0(c)$ rising away from $0.710446$ on \emph{both} sides of $c = 1$ (Figure~\ref{fig:q3_z0}), which a negative $q$ cannot reproduce; with $q = +0.0199$ the fit matches the table to its four printed digits at $c = 0.9$ and $c = 1.1$. The printed minus sign therefore looks like a transcription error. Over $1.02 < c < 2$ the two signs differ by at most $2.6\,\%$ in $z_0$ and $3.2\,\%$ in $a/2$, and by less than $0.07\,\%$ in $a/2$ below $c = 1.2$. Results are quoted with the printed sign; both are plotted.
 
 \subsection{Results}
 \begin{table}[hbt!]
@@ -306,36 +231,36 @@ The course notes print $q = -0.0199$. Case's own Table 23, which tabulates the p
         2.00 & 0.429411 & 0.348154 & 0.326364 & 1.000881 & $3.1859\,\%$ \\
         \bottomrule
     \end{tabular}
-    \caption{Critical dimensions in mean free paths, from the approximate $|\nu_0(c)|$ and the printed $z_0$ fit ($q = -0.0199$). The last column is the departure of $a/2$ from the reference evaluation, which uses the root of the transcendental equation for $|\nu_0|$ and Case's Table 23 for $z_0$.}
+    \caption{Critical dimensions in mean free paths, from the approximate $|\nu_0(c)|$ and the printed $z_0$ fit ($q = -0.0199$). The last column is the departure of $a/2$ from a reference using the transcendental root and Case's Table 23.}
     \label{tab:q3}
 \end{table}
 
-Both dimensions fall steeply with $c$: from $a/2 = 5.67$ and $\Sigma_t R_c = 12.03$ mean free paths at $c = 1.02$ to $0.33$ and $1.00$ at $c = 2$. A system only just above critical multiplication needs to be many mean free paths across, because $|\nu_0| \to \infty$ as $c \to 1^+$ and the flux shape flattens; at $c = 2$ the critical sphere is barely one mean free path in radius, which is also where the neglect of the transient flux is least defensible.
+Both dimensions fall steeply with $c$, from $a/2 = 5.67$, $\Sigma_t R_c = 12.03$ at $c = 1.02$ to $0.33$ and $1.00$ at $c = 2$: a barely multiplying system must be many mean free paths across, because $|\nu_0| \to \infty$ as $c \to 1^+$.
 
-The error introduced by the approximate inputs is dominated by $z_0$, not by $|\nu_0|$: the eigenvalue fit stays below $0.11\,\%$ across the whole range, while the $z_0$ expansion --- a two-term expansion about $c = 1$ evaluated as far as $c = 2$, where $(1-c)^3$ is no smaller than $(1-c)^2$ --- reaches $2.6\,\%$. Because $z_0$ enters both relations as an additive constant while $|\nu_0|$ is multiplied by $\pi$ or $\pi/2$, the same absolute $z_0$ error contaminates $a/2$ about twice as strongly as $R_c$, and it contaminates both increasingly as the system shrinks. This is visible in the lower-right panel of Figure~\ref{fig:q3_critical}: the total error stays under $0.1\,\%$ up to $c \approx 1.25$ and grows to a few percent by $c = 2$.
+The error of the approximate route is dominated by $z_0$, not by $|\nu_0|$ --- the eigenvalue fit stays under $0.11\,\%$, while the two-term $z_0$ expansion reaches $2.6\,\%$ by $c = 2$, where $(1-c)^3$ is no smaller than $(1-c)^2$. Since $z_0$ is subtracted while $|\nu_0|$ is multiplied by $\pi$ or $\pi/2$, the same absolute $z_0$ error hurts $a/2$ about twice as much as $R_c$, and hurts both more as the system shrinks: under $0.1\,\%$ up to $c \approx 1.25$, a few percent by $c = 2$ (Figure~\ref{fig:q3_critical}).
 
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=\textwidth]{figs/q3_critical_dimensions.pdf}
-    \caption{Critical half-thickness and critical radius for $1.02 < c < 2$ (top), and the errors of the approximate inputs and of the resulting dimensions (bottom), against a reference that uses the transcendental root for $|\nu_0|$ and Case's Table 23 for $z_0$.}
+    \caption{Critical half-thickness and radius for $1.02 < c < 2$ (top), and the errors of the approximate inputs and of the resulting dimensions (bottom).}
     \label{fig:q3_critical}
 \end{figure}
 
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.75\textwidth]{figs/q3_extrapolation_distance.pdf}
-    \caption{The tabulated product $c\,z_0(c)$ against the two-term fit with either sign of the quadratic coefficient. The tabulated values rise on both sides of $c = 1$, which fixes the sign as positive.}
+    \caption{The tabulated product $c\,z_0(c)$ against the fit with either sign of $q$. The tabulated values rise on both sides of $c = 1$, which fixes the sign as positive.}
     \label{fig:q3_z0}
 \end{figure}
 
-\subsection{Parts 3(b) and 3(c): Diffusion with Marshak and Mark Conditions}
-In mean free paths classical diffusion has $D = 1/3$, and a multiplying medium has a negative absorption cross section, $\Sigma_a = 1 - c < 0$. The critical equation is then a Helmholtz equation,
+\subsection{Parts 3(b) and 3(c): Marshak and Mark Conditions}
+A multiplying medium has $\Sigma_a = 1 - c < 0$, so classical diffusion gives a Helmholtz equation
 \begin{equation}
     -D \nabla^2 \phi + (1-c)\phi = 0
     \quad\Longrightarrow\quad
     \nabla^2 \phi + B^2 \phi = 0, \qquad B^2 = \frac{c-1}{D} = 3(c-1)
 \end{equation}
-whose solutions in the slab and the sphere are the \emph{same} shapes $\cos(Bx)$ and $\sin(Br)/r$ found above. Diffusion therefore does not change the form of the criticality relations at all; it only replaces the two inputs:
+whose solutions are the \emph{same} shapes $\cos(Bx)$ and $\sin(Br)/r$. Diffusion therefore leaves \eqref{eq:q3relations} unchanged in form and only replaces the two inputs:
 \begin{equation}
     |\nu_0(c)| \;\longrightarrow\; \frac{1}{B} = \frac{1}{\sqrt{3(c-1)}},
     \qquad
@@ -345,9 +270,7 @@ whose solutions in the slab and the sphere are the \emph{same} shapes $\cos(Bx)$
         1/\sqrt{3} & \text{Mark}
     \end{cases}
 \end{equation}
-The Marshak condition sets the incoming partial current to zero at the surface, $J^-(s) = \phi/4 + D\phi'/2 = 0$, i.e.\ $\phi + 2D\phi' = 0$, so $z_0 = \ell_0 = 2D = 2/3$. The Mark condition sets the incoming angular flux to zero along the $P_1$ quadrature direction $\mu = 1/\sqrt{3}$, giving $\phi + \sqrt{3}D\phi' = 0$ and $z_0 = \ell_0 = \sqrt{3}D = 1/\sqrt{3} \approx 0.5774$. For both, the extrapolation distance and the linear extrapolation length coincide.
-
-The essential difference from part 3(a) is that \emph{neither} diffusion input carries the true $c$-dependence: $1/B$ is only the leading term of $|\nu_0(c)|$ as $c \to 1^+$, and the two extrapolation distances are constants, whereas the transport $z_0(c) \approx 0.7104/c$ falls by a factor of two across the range.
+Marshak sets the incoming partial current to zero, $\phi/4 + D\phi'/2 = 0$, so $z_0 = \ell_0 = 2D = 2/3$; Mark sets the incoming angular flux to zero along $\mu = 1/\sqrt{3}$, so $z_0 = \ell_0 = \sqrt{3}D \approx 0.5774$. Neither input carries the true $c$-dependence: $1/B$ is only the $c \to 1^+$ limit of $|\nu_0|$, and both $z_0$ are constants while the transport $z_0(c) \approx 0.7104/c$ halves across the range.
 
 \begin{table}[hbt!]
     \centering
@@ -371,100 +294,87 @@ The essential difference from part 3(a) is that \emph{neither} diffusion input c
         2.00 & 0.326364 & 0.240233 & 0.329549 & 1.000881 & 1.147133 & 1.236449 \\
         \bottomrule
     \end{tabular}
-    \caption{Critical dimensions in mean free paths from the three treatments: exact transport (3a), diffusion with Marshak (3b) and diffusion with Mark (3c) boundary conditions.}
+    \caption{Critical dimensions in mean free paths from the three treatments: exact transport (3a), Marshak diffusion (3b) and Mark diffusion (3c).}
     \label{tab:q3bc}
 \end{table}
 
 \subsection{Comparison}
-All three treatments agree as $c \to 1^+$ and separate as the system shrinks (Figure~\ref{fig:q3_methods}). This is the expected behaviour: near critical multiplication the system is many mean free paths across, the flux is smooth, and the boundary layer is a small correction to a large dimension; at $c = 2$ the critical sphere is barely one mean free path in radius and is boundary layer almost throughout.
-
-Both diffusion inputs err in the same direction, but they enter the two relations with different weights, which produces qualitatively different behaviour in the slab and the sphere:
+All three agree as $c \to 1^+$, where the system is many mean free paths across and the boundary layer is a small correction, and separate as it shrinks (Figure~\ref{fig:q3_methods}). The two diffusion errors act in opposite directions:
 \begin{itemize}
-    \item $1/B$ \emph{over}-estimates the relaxation length --- by $0.8\,\%$ at $c = 1.02$ and $34\,\%$ at $c = 2$ --- which inflates both dimensions.
-    \item The constant $z_0$ \emph{over}-estimates the extrapolation distance once $c$ grows, since the transport $z_0(c)$ falls as $\approx 0.7104/c$ while $2/3$ and $1/\sqrt{3}$ do not. Being subtracted, this deflates both dimensions.
+    \item $1/B$ \emph{over}-estimates the relaxation length --- by $0.8\,\%$ at $c = 1.02$ and $34\,\%$ at $c = 2$ --- inflating both dimensions;
+    \item the constant $z_0$ over-estimates the extrapolation distance as $c$ grows and, being subtracted, deflates both.
 \end{itemize}
-In the slab the relaxation length is multiplied by $\pi/2$ and in the sphere by $\pi$, so the first error is twice as strong in the sphere while the second is identical in both. The result is that Marshak's $a/2$ is non-monotonic in its error --- $+5.5\,\%$ at $c \approx 1.23$, crossing zero near $c = 1.52$, and $-26\,\%$ at $c = 2$, a cancellation rather than an accuracy --- whereas the spherical radius is over-estimated throughout, by $+15\,\%$ (Marshak) and $+24\,\%$ (Mark) at $c = 2$. Mark's smaller extrapolation distance makes it the larger of the two estimates everywhere, and for the slab that accidentally offsets the $1/B$ error rather well, ending at $+1\,\%$ at $c = 2$; for the sphere it merely adds to it.
+The relaxation length is weighted by $\pi$ in the sphere but only $\pi/2$ in the slab, while $z_0$ enters both identically. So the spherical radius is over-estimated throughout, by $+15\,\%$ (Marshak) and $+24\,\%$ (Mark) at $c = 2$, whereas Marshak's $a/2$ is non-monotonic: $+5.5\,\%$ at $c \approx 1.23$, zero near $c = 1.52$, $-26\,\%$ at $c = 2$. Mark's slab result ends at only $+1\,\%$ at $c = 2$, which is cancellation rather than accuracy.
 
-A final caveat on the shortcut $z_0 = \ell_0$. Setting the flux to zero at the extrapolated surface is not the same as imposing $\phi + \ell_0 \phi' = 0$ on the flux shape. The latter gives, for the slab and the sphere,
+That reading is confirmed by dropping the shortcut $z_0 = \ell_0$ and imposing $\phi + \ell_0 \phi' = 0$ on the flux shape itself,
 \begin{equation}
     B\,\frac{a}{2} = \arctan\!\left(\frac{1}{B \ell_0}\right), \qquad
     u \cot u = 1 - \frac{u}{B\ell_0}, \quad u = BR \in (0, \pi)
 \end{equation}
-against $B a/2 = \pi/2 - B\ell_0$ and $u = \pi - B\ell_0$ for the extrapolated form. Since $\arctan(1/y) = \pi/2 - y + \mathcal{O}(y^3)$, the two agree to first order in $B\ell_0$ and hence coincide as $c \to 1$: at $c = 1.02$ they differ by $0.1\,\%$ in the slab and $0.3\,\%$ in the sphere. They part company as the system shrinks --- at $c = 2$ the Marshak slab gives $a/2 = 0.412$ with the condition applied and $0.240$ with the extrapolated zero, a factor of $1.7$ --- and the applied-condition results (dotted in Figure~\ref{fig:q3_methods}) then lie above the transport answer in every case, so the good agreement of the extrapolated Marshak slab at large $c$ really is a cancellation of two separate errors.
+against $B a/2 = \pi/2 - B\ell_0$ and $u = \pi - B\ell_0$ for the extrapolated form. Since $\arctan(1/y) = \pi/2 - y + \mathcal{O}(y^3)$ the two agree to first order and coincide as $c \to 1$ ($0.1\,\%$ in the slab at $c = 1.02$), but part company as the system shrinks: at $c = 2$ the Marshak slab gives $a/2 = 0.412$ applied against $0.240$ extrapolated. The applied-condition results lie \emph{above} the transport answer in every case.
 
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=\textwidth]{figs/q3_method_comparison.pdf}
-    \caption{Exact transport against diffusion with Marshak and Mark boundary conditions (top), and the signed departure of each diffusion result from the transport one (bottom). Dotted curves impose the boundary condition on the flux shape instead of using an extrapolated zero.}
+    \caption{Exact transport against Marshak and Mark diffusion (top), and the signed departure of each from transport (bottom). Dotted curves impose the boundary condition on the flux shape instead of using an extrapolated zero.}
     \label{fig:q3_methods}
 \end{figure}
-
----
 
 \section{Question 4: Numerical Diffusion Code in Spherical Coordinates}
 
 {\color{blue}
 
-The code solves the steady-state diffusion equation with a fission source in a bare sphere,
+The code solves
 \begin{equation}
     -D \frac{1}{r^2} \frac{d}{dr}\left( r^2 \frac{d\phi}{dr} \right) + \Sigma_a \phi(r) = \frac{1}{k} \nu \Sigma_f \phi(r)
     \label{eq:q4_sphere}
 \end{equation}
-and finds the radius at which $k = 1$. Dividing the fission source by $k$ makes a solution exist at every radius, so criticality becomes a root-finding problem on $R$ rather than an eigenvalue search. Both approximations use the same solver and differ only in two constants:
+and finds the radius at which $k = 1$. Dividing the fission source by $k$ makes a solution exist at every radius, so criticality is a root search on $R$ rather than an eigenvalue search. Both approximations use the same solver, differing in two constants:
 \begin{equation}
     \text{classical:} \quad D = \frac{1}{3\Sigma_t}, \quad z_0 = 2D,
     \qquad
     \text{asymptotic:} \quad D = \frac{(c-1)|\nu_0(c)|^2}{\Sigma_t}, \quad z_0 = z_0(c)
 \end{equation}
-The asymptotic coefficient is the continuation above $c = 1$ of the $D = (1-c)\nu_0^2$ of Question 2: with $\nu_0 = i|\nu_0|$ both $\nu_0^2$ and $1-c$ change sign, so $D$ remains positive. Its purpose is to give the diffusion equation the true transport relaxation length, $1/B = |\nu_0|/\Sigma_t$, in place of the classical $1/\sqrt{3(c-1)}$.
+The asymptotic $D$ is the continuation of Question 2's $(1-c)\nu_0^2$ above $c = 1$: both $\nu_0^2$ and $1-c$ change sign, so $D$ stays positive. Its purpose is to give the diffusion equation the true transport relaxation length $|\nu_0|/\Sigma_t$ instead of $1/\sqrt{3(c-1)}$.
 
 \subsection{Discretisation}
 
-The equation is discretised by finite volume on $N$ uniform cell-centred shells. Integrating \eqref{eq:q4_sphere} over cell $i$ turns the divergence term into a difference of surface currents,
+Finite volume on $N$ uniform cell-centred shells. Integrating \eqref{eq:q4_sphere} over cell $i$ turns the divergence into a difference of surface currents,
 \begin{equation}
     A_{i+1/2} J_{i+1/2} - A_{i-1/2} J_{i-1/2} + \Sigma_a V_i \phi_i = S_i V_i,
     \qquad J_{i+1/2} = -D\,\frac{\phi_{i+1} - \phi_i}{h}
 \end{equation}
-with $A = 4\pi r^2$ and $V_i = \frac{4\pi}{3}(r_{i+1/2}^3 - r_{i-1/2}^3)$. Writing the balance rather than the derivatives is what removes the $1/r^2$ singularity at the origin: the innermost face has $A_{1/2} = 0$, so the term vanishes on its own and the symmetry condition $\phi'(0) = 0$ is imposed exactly, with no special case in the code. The resulting matrix is tridiagonal and is solved in $O(N)$.
+with $A = 4\pi r^2$ and $V_i = \frac{4\pi}{3}(r_{i+1/2}^3 - r_{i-1/2}^3)$. The balance form is what removes the $1/r^2$ singularity: the innermost face has $A_{1/2} = 0$, so $\phi'(0) = 0$ is imposed exactly with no special case. The matrix is tridiagonal and solved in $O(N)$.
 
-Both outer boundary treatments are the single condition $\phi + \ell_0 \phi' = 0$. Eliminating the surface flux gives one leakage coefficient,
+Both outer treatments are the single condition $\phi + \ell_0 \phi' = 0$; eliminating the surface flux gives one leakage coefficient
 \begin{equation}
     J_s = \frac{D\,\phi_{N-1}}{\ell_0 + h/2}
     \label{eq:leakage_bc}
 \end{equation}
-which covers the extrapolated zero ($\ell_0 = 0$ on a mesh run out to $R + z_0$) and the Robin condition ($\ell_0 = z_0$ at the physical surface $R$) without a branch. The extrapolated form is used below, since it is what the analytic relations of Question 3 assume, making the comparison a test of the numerics alone.
+covering the extrapolated zero ($\ell_0 = 0$ on a mesh run to $R + z_0$) and the Robin condition ($\ell_0 = z_0$ at $R$) without a branch. The extrapolated form is used, since it is what the Question 3 relations assume, making the comparison a test of the numerics alone.
 
 \subsection{The Iterative Algorithm}
 
-$k$ is obtained by the source iteration of Bell \& Glasstone, pp.~189--192:
-\begin{enumerate}
-    \item start from a flat flux $\phi^{(0)}$ and $k^{(0)} = 1$;
-    \item form the fission source $S^{(n)} = \frac{1}{k^{(n)}} \nu \Sigma_f \phi^{(n)}$;
-    \item solve the removal problem $\left(-D\nabla^2 + \Sigma_a\right)\phi^{(n+1)} = S^{(n)}$, one banded solve;
-    \item update $k$ by the ratio of successive fission-source integrals,
-    \begin{equation}
-        k^{(n+1)} = k^{(n)} \, \frac{\int \nu \Sigma_f \phi^{(n+1)} \, dV}{\int \nu \Sigma_f \phi^{(n)} \, dV}
-    \end{equation}
-    \item repeat until $|k^{(n+1)} - k^{(n)}| < 10^{-10} k^{(n+1)}$.
-\end{enumerate}
-The flux is renormalised to unit maximum after each sweep. Each sweep multiplies its amplitude by roughly $k$, and over the several hundred sweeps this problem needs the iterate would otherwise drift by many orders of magnitude and the convergence test would lose its significant digits. The rescaling is physically irrelevant because the ratio in step 4 is homogeneous in $\phi$.
+$k$ comes from the source iteration of Bell \& Glasstone, pp.~189--192: start from a flat flux and $k = 1$; form $S = \frac{1}{k}\nu\Sigma_f\phi$; solve the removal problem $(-D\nabla^2 + \Sigma_a)\phi^{(n+1)} = S$; update
+\begin{equation}
+    k^{(n+1)} = k^{(n)} \, \frac{\int \nu \Sigma_f \phi^{(n+1)} \, dV}{\int \nu \Sigma_f \phi^{(n)} \, dV}
+\end{equation}
+and repeat until $|k^{(n+1)} - k^{(n)}| < 10^{-10} k^{(n+1)}$. The flux is renormalised each sweep: its amplitude grows by roughly $k$ per sweep, and over several hundred sweeps the convergence test would otherwise lose its significant digits. This is physically irrelevant, since the ratio is homogeneous in $\phi$.
 
-Convergence is at the dominance ratio $k_1/k_0 = (\Sigma_a + DB_0^2)/(\Sigma_a + DB_1^2)$, which tends to unity for a large weakly multiplying sphere --- about $0.94$ at $c = 1.02$, so several hundred sweeps are needed there. The critical radius is then found by bisection (Brent) on $k(R) - 1$, which is monotonically increasing in $R$, bracketed within $\pm 5\%$ of the analytic radius so that $k$ is never evaluated far from criticality.
+Convergence is at the dominance ratio $(\Sigma_a + DB_0^2)/(\Sigma_a + DB_1^2)$, which tends to unity for a large weakly multiplying sphere ($\approx 0.94$ at $c = 1.02$). The critical radius then follows from Brent bisection on $k(R) - 1$, bracketed within $\pm 5\%$ of the analytic radius so that $k$ is never evaluated far from criticality.
 
 \subsection{Comparison with the Analytical Result}
 
-At $k = 1$ equation \eqref{eq:q4_sphere} reduces to a Helmholtz equation with buckling $B^2 = (\nu\Sigma_f - \Sigma_a)/D = \Sigma_t(c-1)/D$, whose regular solution $\sin(Br)/r$ vanishes at the extrapolated radius when
+At $k = 1$ equation \eqref{eq:q4_sphere} is Helmholtz with $B^2 = (\nu\Sigma_f - \Sigma_a)/D = \Sigma_t(c-1)/D$, and its regular solution $\sin(Br)/r$ vanishes at the extrapolated radius when
 \begin{equation}
     R_c = \frac{\pi}{B} - z_0
     \label{eq:q4_analytic}
 \end{equation}
-Substituting the two parameter sets recovers exactly the relations of Question 3: $\Sigma_t R_c = \pi/\sqrt{3(c-1)} - 2/3$ for classical diffusion with Marshak conditions, and $\Sigma_t R_c = \pi|\nu_0| - z_0(c)$ for asymptotic diffusion, the latter being the exact-transport relation of part 3(a). Note that $R_c$ depends on the cross sections only through $c$, since $\Sigma_a$ and $\nu\Sigma_f$ enter \eqref{eq:q4_analytic} only as their difference.
-
-Table~\ref{tab:q4} compares the two. On a 400-cell mesh the numerical radius agrees with \eqref{eq:q4_analytic} to between $1.6\times10^{-4}\,\%$ and $2.4\times10^{-4}\,\%$ over the whole range $1.02 < c < 2$, for both approximations.
+Substituting the two parameter sets recovers the Question 3 relations exactly: $\Sigma_t R_c = \pi/\sqrt{3(c-1)} - 2/3$ classically, and $\Sigma_t R_c = \pi|\nu_0| - z_0(c)$ asymptotically, the latter being part 3(a). Note that $R_c$ depends on the cross sections only through $c$, since $\Sigma_a$ and $\nu\Sigma_f$ enter only as their difference.
 
 \begin{table}[htbp]
     \centering
-    \caption{Critical radius in mean free paths from the $k = 1$ search ($N = 400$) against the analytic result \eqref{eq:q4_analytic}.}
+    \caption{Critical radius in mean free paths from the $k = 1$ search ($N = 400$) against \eqref{eq:q4_analytic}.}
     \label{tab:q4}
     \begin{tabular}{lccccc}
         \toprule
@@ -482,9 +392,9 @@ Table~\ref{tab:q4} compares the two. On a 400-cell mesh the numerical radius agr
     \end{tabular}
 \end{table}
 
-The residual is discretisation error alone. The scheme is second order: refining the mesh at $c = 1.5$ drives the relative error of $R_c$ from $5.28\times10^{-4}$ at $N = 25$ to $5.16\times10^{-7}$ at $N = 800$, a factor of exactly $4.00$ per doubling at every step (Figure~\ref{fig:q4_convergence}). The sign is consistently negative --- the discrete operator is slightly too leaky on a coarse mesh and so reaches $k = 1$ at a marginally smaller radius. Two further checks: $k$ at the returned radius equals $1$ to ten digits, and the converged flux matches the fundamental mode $\sin(Br)/Br$ to $3.2\times10^{-6}$ across the whole mesh (Figure~\ref{fig:q4_flux}).
+The residual is discretisation error alone, and the scheme is second order: at $c = 1.5$ the relative error of $R_c$ falls from $5.28\times10^{-4}$ at $N = 25$ to $5.16\times10^{-7}$ at $N = 800$, a factor of exactly $4.00$ per doubling (Figure~\ref{fig:q4_convergence}). Its sign is consistently negative --- the discrete operator is slightly too leaky on a coarse mesh, so it reaches $k = 1$ at a marginally smaller radius. Two further checks: $k$ at the returned radius is $1$ to ten digits, and the converged flux matches $\sin(Br)/Br$ to $3.2\times10^{-6}$ (Figure~\ref{fig:q4_flux}).
 
-The two approximations differ from each other far more than either differs from its own analytic solution, and the gap is entirely in the relaxation length. Classical diffusion gives the larger radius throughout, by $1.1\,\%$ at $c = 1.02$ rising to $14.8\,\%$ at $c = 2$, because $1/\sqrt{3(c-1)}$ is only the $c \to 1$ limit of $|\nu_0(c)|$.
+The two approximations differ from each other far more than either differs from its own analytic solution, and the gap is entirely in the relaxation length: classical diffusion gives the larger radius throughout, by $1.1\,\%$ at $c = 1.02$ rising to $14.8\,\%$ at $c = 2$.
 
 \subsection{Verification}
 
@@ -540,37 +450,35 @@ The two treatments are not interchangeable, though: they agree to first order in
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figs/q4_critical_radius.pdf}
-    \caption{Critical radius from the $k = 1$ search (markers) against the analytic radius $\pi/B - z_0$ (solid), for both diffusion approximations, with the relative difference below.}
+    \caption{Critical radius from the $k = 1$ search (markers) against $\pi/B - z_0$ (solid), with the relative difference below.}
     \label{fig:q4_radius}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figs/q4_mesh_convergence.pdf}
-    \caption{Mesh convergence of the critical radius. The error follows the second-order guide $\propto N^{-2}$ at every refinement.}
+    \caption{Mesh convergence of the critical radius, following the second-order guide $\propto N^{-2}$ at every refinement.}
     \label{fig:q4_convergence}
 \end{figure}
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figs/q4_flux_profiles.pdf}
-    \caption{Converged critical flux (solid) against the fundamental mode $\sin(Br)/Br$ (dashed), normalised at the centre. The mesh continues past $r/R_c = 1$ to the extrapolated radius $R_c + z_0$, where the flux is driven to zero.}
+    \caption{Converged critical flux (solid) against the fundamental mode $\sin(Br)/Br$ (dashed), normalised at the centre. The mesh continues past $r/R_c = 1$ to the extrapolated radius, where the flux is driven to zero.}
     \label{fig:q4_flux}
 \end{figure}
 
 }
 
----
-
 \section{Question 5: Bare Critical Mass of U-235 and Pu-239}
 
 {\color{blue}
 
-Question 5 is Question 4 run with the one-group benchmark cross sections of Sood, Forster \& Parsons (2003), with the mass following from the radius as $M_c = \rho \frac{4}{3}\pi R_c^3$. Both fissile materials have $\Sigma_t = 0.32640$ cm$^{-1}$, a mean free path of $3.0637$ cm, so both critical spheres are only about two mean free paths in radius.
+Question 5 is Question 4 with the one-group benchmark cross sections of Sood, Forster \& Parsons (2003), the mass following as $M_c = \rho \frac{4}{3}\pi R_c^3$. Both fissile materials have $\Sigma_t = 0.32640$ cm$^{-1}$, a mean free path of $3.0637$ cm, so both critical spheres are about two mean free paths in radius.
 
 \begin{table}[htbp]
     \centering
-    \caption{Bare critical radius and mass, from the $k = 1$ search on a 400-cell mesh. Numerical and analytic radii agree to four decimal places in cm.}
+    \caption{Bare critical radius and mass from the $k = 1$ search on a 400-cell mesh. Numerical and analytic radii agree to four decimals in cm.}
     \label{tab:q5}
     \begin{tabular}{llccccc}
         \toprule
@@ -585,8 +493,9 @@ Question 5 is Question 4 run with the one-group benchmark cross sections of Sood
     \end{tabular}
 \end{table}
 
-Because the mass goes as the cube of the radius, the moderate difference in relaxation length between the two approximations is strongly amplified. The classical radius exceeds the asymptotic one by $12.1\,\%$ for Pu-239 and $9.0\,\%$ for U-235, which becomes a mass ratio of $1.41$ and $1.30$ respectively --- classical diffusion over-predicts the critical mass by 30--40\,\% on these materials, and the discrepancy grows with $c$. The asymptotic values are the ones to quote, since asymptotic diffusion with the exact $z_0(c)$ reproduces the exact-transport criticality relation.
+Because the mass goes as the cube of the radius, the moderate difference in relaxation length is strongly amplified: the classical radius exceeds the asymptotic one by $12.1\,\%$ (Pu-239) and $9.0\,\%$ (U-235), which becomes mass ratios of $1.41$ and $1.30$. Classical diffusion thus over-predicts the critical mass by 30--40\,\% here, and worsens with $c$. The asymptotic values are the ones to quote, since asymptotic diffusion with the exact $z_0(c)$ reproduces the exact-transport relation.
 
+<<<<<<< Updated upstream
 \subsection{Sensitivity to the Boundary Treatment}
 
 The masses above use the extrapolated zero. Applying the same condition directly at the physical surface instead moves them by considerably more than any numerical error, again because the mass goes as the cube of a radius only a couple of mean free paths long.
@@ -610,13 +519,16 @@ The masses above use the extrapolated zero. Applying the same condition directly
 This 8--12\,\% spread is the honest uncertainty of the diffusion model on a system this small, and it is comparable to the difference between the two diffusion approximations themselves. Any single quoted mass should be read with it in mind.
 
 These are one-group, isotropic-scattering results and should not be read as predictions of real critical masses. With a critical radius of only about two mean free paths, the boundary layer occupies a large fraction of the system --- roughly a third of the neutrons leak out --- and diffusion theory of either flavour is being used well outside its regime; the published transport benchmark radii of Sood \emph{et al.} are the appropriate reference against which to judge them. The remaining three rows of the benchmark table (H$_2$O, Fe, Na) have $c \leq 1$ and are non-multiplying, so no bare critical sphere exists for them at any radius.
+=======
+These are one-group, isotropic-scattering results, not predictions of real critical masses: at about two mean free paths the boundary layer is a large fraction of the system, and the transport benchmark radii of Sood \emph{et al.} are the appropriate reference.
+>>>>>>> Stashed changes
 
-\paragraph{A note on the U-235 data.} Two U-235 rows were in circulation for this work. The assignment table gives $\Sigma_c = 0.013056$, $\Sigma_s = 0.248064$, $\Sigma_t = 0.32640$, whose own cross sections yield $c = (\nu\Sigma_f + \Sigma_s)/\Sigma_t = 1.3000$, matching the quoted $c$ exactly; these are the values used above. An alternative row ($\Sigma_c = 0.015672$, $\Sigma_s = 0.180448$, $\Sigma_t = 0.26140$) is quoted with $c = 1.50$ but in fact implies $c = 1.3646$, and so is not self-consistent. Run through the same code it gives $R_c = 8.9412$ cm and $M_c = 56.89$ kg classically, or $R_c = 8.1161$ cm and $M_c = 42.55$ kg asymptotically --- roughly $30\,\%$ more mass. The Pu-239 row is identical in both sources and is unaffected.
+\paragraph{A note on the U-235 data.} Two rows were in circulation. The assignment table ($\Sigma_c = 0.013056$, $\Sigma_s = 0.248064$, $\Sigma_t = 0.32640$) implies $c = 1.3000$, matching its quoted value, and is what is used above. The alternative row ($\Sigma_c = 0.015672$, $\Sigma_s = 0.180448$, $\Sigma_t = 0.26140$) is quoted with $c = 1.50$ but implies $c = 1.3646$, so it is not self-consistent; through the same code it gives $R_c = 8.9412$ cm, $M_c = 56.89$ kg classically and $8.1161$ cm, $42.55$ kg asymptotically --- roughly $30\,\%$ more mass. Pu-239 is identical in both sources.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figs/q5_criticality.pdf}
-    \caption{Multiplication factor against sphere radius for the two fissile benchmark materials, under both diffusion approximations. The circles mark the $k = 1$ crossing that defines the critical radius.}
+    \caption{Multiplication factor against sphere radius for the two fissile materials, both approximations. The circles mark the $k = 1$ crossing.}
     \label{fig:q5}
 \end{figure}
 
