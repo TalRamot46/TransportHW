@@ -1,4 +1,8 @@
-# Corrections to Homework 2, Q1 and Q2
+# 10 — Corrections to Q1 and Q2
+
+**Q1's scaling identity is four lines once three slips are fixed, and the factor `c` does not
+come from the PDE at all; Q2 is not stuck at "evaluate numerically" — it has a closed form in
+the Dawson function, and the `Sigma_t`'s cancel.**
 
 Short version:
 
@@ -7,9 +11,9 @@ Short version:
 
 ---
 
-# Question 1
+## Question 1
 
-## 1.1 The two equations you are relating
+### 1.1 The two equations you are relating
 
 This has to be pinned down first, because the identity is a statement *about a specific pair of equations*. With scattering ratio $c$ (isotropic, one speed), the transport equation is
 
@@ -23,7 +27,7 @@ $$\frac{1}{v}\frac{\partial \Psi}{\partial T} + \mu \frac{\partial \Psi}{\partia
 
 > **Error 1.** Your Eq. (2) has $\tfrac12\int\tilde\psi\,d\mu'$ on the right, with no $\Sigma_t$. The scattering source is $c\Sigma_s^{\rm tot}$-weighted; for $c = 1$ it is $\tfrac{\Sigma_t}{2}\int\Psi\,d\mu'$. Dropping $\Sigma_t$ is what later leaves you with a leftover term $\tfrac{c-1}{v}\tilde\psi$ that cannot cancel against anything — note it has units of $\psi/(\text{length})\cdot(\text{time}/\text{length})$, while every other term carries $\Sigma_t\psi$. The mismatch is the tell.
 
-## 1.2 The chain rule runs the other way
+### 1.2 The chain rule runs the other way
 
 Define
 
@@ -44,7 +48,7 @@ $$\boxed{\;\frac{1}{v}\frac{\partial \tilde\psi}{\partial t} + \mu\frac{\partial
 
 Read (Q1.3) against (Q1.1): they are identical *except* that $\tilde\psi$ has removal $c\Sigma_t$ where $\psi$ has removal $\Sigma_t$. The two right-hand sides already match. So the only job left for the exponential factor is to make up the removal deficit $\Sigma_t - c\Sigma_t = (1-c)\Sigma_t$. That immediately tells you what the exponent must be.
 
-## 1.3 Units of the exponent
+### 1.3 Units of the exponent
 
 $(1-c)t$ is not dimensionless. The factor is
 
@@ -52,7 +56,7 @@ $$e^{-(1-c)\,v\Sigma_t t},$$
 
 which reduces to $e^{-(1-c)t}$ in Paasschens' units $v = \Sigma_t = 1$ (equivalently, $t$ measured in mean free times). Since the rest of the assignment keeps $v$ and $\Sigma_t$ explicit, keep them here too.
 
-## 1.4 The proof
+### 1.4 The proof
 
 Let $a \equiv v\Sigma_t$ and define the candidate
 
@@ -76,7 +80,7 @@ which is exactly (Q1.1). $\blacksquare$
 
 > **Error 3.** In your Eq. (38) the time-derivative term came out as $\frac{c^2}{v}e^{-(1-c)t}\partial_t\tilde\psi$ and the streaming term as $\mu c^2 e^{-(1-c)t}\partial_x\tilde\psi$. The extra factor of $c$ is a chain rule applied twice: once when you defined $\tilde\psi$, and again here. Once $\tilde\psi(x,\mu,t)$ is defined as a function of the unscaled variables, $\partial_t \tilde\psi$ is just $\partial_t\tilde\psi$.
 
-## 1.5 The missing half of the proof — where the factor $c$ comes from
+### 1.5 The missing half of the proof — where the factor $c$ comes from
 
 The PDE is linear and homogeneous, so if $\Phi$ solves it then so does $\lambda\Phi$ for any constant $\lambda$. **The differential equation alone can never produce the prefactor $c$.** It is fixed by the source/initial condition, and a complete proof has to say so.
 
@@ -88,9 +92,9 @@ So the prefactor $c$ is precisely the Jacobian of the spatial rescaling $x \maps
 
 ---
 
-# Question 2
+## Question 2
 
-## 2.1 Bookkeeping errors first
+### 2.1 Bookkeeping errors first
 
 Using $a \equiv v\Sigma_t t$ throughout.
 
@@ -106,7 +110,7 @@ $$\int_{|x|}^{\infty}\!\!(\cdots)\Theta(vt-r)\,dr \;=\; \Theta(vt-|x|)\int_{|x|}
 
 Everything else in the setup is right. In particular your restoration of units in the Paasschens formula — $x_{\rm paper} = \Sigma_t r$, $t_{\rm paper} = v\Sigma_t t$, $(4\pi l ct/3)^{3/2} \to (4\pi v t/(3\Sigma_t))^{3/2}$, and the overall $\Sigma_t^3$ from the density normalization — is correct, and so is the $\xi = r/vt$ substitution in line 51 including the $(vt)^{1/2}$ prefactor. The plane/point superposition relation you use is also right.
 
-## 2.2 The integral is not hard — it is elementary
+### 2.2 The integral is not hard — it is elementary
 
 This is the main point. Your line 51 leaves
 
@@ -123,9 +127,9 @@ $$I = \frac{1}{2}\int_0^{u_0} u^{1/8}\,G\!\left(a\,u^{3/4}\right)du.$$
 $$\boxed{\;I \;=\; \frac{2}{3\,a^{3/2}}\int_0^{w_0}\sqrt{w}\;G(w)\,dw\;},
 \qquad w_0 \equiv a\left(1-\frac{x^2}{(vt)^2}\right)^{3/4}.$$
 
-The awkward fractional powers $\tfrac18$ and $\tfrac34$ were engineered by Paasschens to interpolate between $d=2$ and $d=4$; under $w = au^{3/4}$ they conspire into a plain $\sqrt{w}$. **This also completely removes the endpoint singularity** you were worried about in `planar_spherical_relation.md` — no tanh–sinh quadrature, no $r = t\sqrt{1-w^4}$ trick needed. The note's warning about the $(t-r)^{-1/4}$ behavior is correct as far as it goes, but it is an artifact of the variable, not of the integral.
+The awkward fractional powers $\tfrac18$ and $\tfrac34$ were engineered by Paasschens to interpolate between $d=2$ and $d=4$; under $w = au^{3/4}$ they conspire into a plain $\sqrt{w}$. **This also completely removes the endpoint singularity** flagged in [09](09-planar-spherical-relation.md) — no tanh–sinh quadrature, no $r = t\sqrt{1-w^4}$ trick needed. The note's warning about the $(t-r)^{-1/4}$ behavior is correct as far as it goes, but it is an artifact of the variable, not of the integral.
 
-## 2.3 Assembling it — the $\Sigma_t$'s cancel
+### 2.3 Assembling it — the $\Sigma_t$'s cancel
 
 Putting $I$ back through the prefactor of line 51 (with the missing $2\pi$ restored):
 
@@ -140,7 +144,7 @@ with $a = v\Sigma_t t$, $\;w_0 = a\left(1 - x^2/(vt)^2\right)^{3/4}$, and $\phi_
 
 The uncollided term reduces to the "1", which is a good structural check: the collided part is measured in units of the uncollided plateau.
 
-## 2.4 Closed form
+### 2.4 Closed form
 
 Paasschens' interpolation (his Eq. 36b) is
 
@@ -166,7 +170,7 @@ $$n_{\rm pl}(x,t) = \frac{\Theta(vt-|x|)}{2vt}\left\{ e^{-a} + \sqrt{\tfrac{3}{\
 
 Every factor here is bounded, so this evaluates without overflow out to $t \sim 10^2$ mean free times and beyond. **No quadrature anywhere.**
 
-## 2.5 If you want the exact $G$ rather than the interpolation
+### 2.5 If you want the exact $G$ rather than the interpolation
 
 The same $\sqrt{w}$ reduction also makes the *exact* series integrable term by term. Paasschens' Eq. (36b) is
 
@@ -178,7 +182,7 @@ $$\int_0^{w_0}\sqrt{w}\,G(w)\,dw = \frac{8}{3^{3/2}}\sum_{N=1}^{\infty}\frac{\Ga
 
 (Sum in log-space via `gammaln` to avoid overflow. Note the argument is $\tfrac34 N$, not $\tfrac14 N$ — easy to misread in the scanned PDF; it is forced by the exponent $\tfrac34 N - 1$ in his Eq. 35.)
 
-## 2.6 Verification
+### 2.6 Verification
 
 All checks run against the formulas above.
 
@@ -192,7 +196,7 @@ All checks run against the formulas above.
 
 The exact-normalization result is the strong one: it pins down the overall prefactor $\sqrt{3/\pi}\,/(2vt)$ and the cancellation of $\Sigma_t$ independently of any numerics.
 
-## 2.7 So: is this "the best form you can get to"?
+### 2.7 So: is this "the best form you can get to"?
 
 Yes for the collided integral, and it is better than you thought — you were one substitution away from a closed form, not stuck at a numerical evaluation. What *cannot* be improved:
 

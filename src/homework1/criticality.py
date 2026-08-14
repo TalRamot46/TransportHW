@@ -5,7 +5,7 @@ from scipy.optimize import brentq
 from homework1.exact_solution import compute_nu0_magnitude
 
 HOPF_CONSTANT = 0.710446           # extrapolation distance of the c = 1 Milne problem
-Z0_FIT_CORRECTION = -0.0199        # quadratic coefficient q as printed; explanations/04
+Z0_FIT_CORRECTION = -0.0199        # quadratic coefficient q as printed; explanations/05
 MARSHAK_EXTRAPOLATION = 2.0 / 3.0
 MARK_EXTRAPOLATION = 1.0 / np.sqrt(3.0)
 

@@ -1,8 +1,9 @@
-# Explanations — Assignment 2, Question 3
+# Explanations — Assignment 2
 
 Background notes for the code in `src/homework2/`, whose report is §3 of
 `docs/homework2/homework2.tex`. One idea per file; each file opens with its title and a
-one-line statement of what it settles.
+one-line statement of what it settles. Files 01–08 support Question 3; 09 and 10 are the
+Question 1 and 2 derivations the later work rests on.
 
 | # | Title | What it settles |
 |---|---|---|
@@ -14,6 +15,8 @@ one-line statement of what it settles.
 | [06](06-delta-source-numerics.md) | Discretising a delta source | What the first-cell delta actually costs, and why the time stepping is the real problem |
 | [07](07-solver-implementation.md) | Implementing the numerical solver | A concrete specification for the Question 3(c) code — not built yet |
 | [08](08-time-discretisation.md) | Discretising time | Why `solve_ivp` is a time discretisation too, and which fully-discrete scheme to write instead |
+| [09](09-planar-spherical-relation.md) | The planar–spherical relation (Q2) | Which of the two candidate relations Q2 needs, and why "multiply by `r`" only looks right |
+| [10](10-q1-q2-corrections.md) | Corrections to Q1 and Q2 | Where the scaling proof goes wrong, and the closed form the Q2 integral actually has |
 
 Units throughout: `Sigma_t = v = 1`, as Assignment 2 specifies, so lengths are mean free
 paths, times are mean free times, and the scalar flux equals the number density.

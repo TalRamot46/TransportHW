@@ -21,10 +21,29 @@ as the cube — mass ratios `1.41` (Pu-239) and `1.30` (U-235). The asymptotic v
 ones to quote, since asymptotic diffusion with the exact `z0(c)` reproduces the
 exact-transport criticality relation.
 
+## Sensitivity to the boundary treatment
+
+The masses above use the extrapolated zero. Applying the same condition at the physical
+surface instead ([06](06-spherical-finite-volume.md)) moves them by far more than any
+numerical error, again through the cube:
+
+| material | approximation | `M_c` extrapolated | `M_c` Robin | difference |
+|---|---|---|---|---|
+| Pu-239 | classical | 12.940 kg | 11.432 kg | `-11.7 %` |
+| Pu-239 | asymptotic | 9.188 kg | 8.307 kg | `-9.6 %` |
+| U-235 | classical | 42.345 kg | 38.679 kg | `-8.7 %` |
+| U-235 | asymptotic | 32.696 kg | 30.212 kg | `-7.6 %` |
+
+Both treatments reproduce their own analytic result to `1.5e-6`, so this 8–12 % spread is
+model uncertainty, not solver error — and it is comparable to the difference between the two
+diffusion approximations themselves. Any single quoted mass should be read with it in mind.
+
 These are one-group, isotropic-scattering numbers, not predictions of real critical masses:
-at two mean free paths the boundary layer is a large fraction of the system and diffusion of
-either flavour is outside its regime. The transport benchmark radii of Sood, Forster &
-Parsons (2003) are the right reference to check them against.
+at two mean free paths the boundary layer is a large fraction of the system — about a third
+of the neutrons leak out ([08](08-neutron-balance.md)) — and diffusion of either flavour is
+outside its regime. The transport benchmark radii of Sood, Forster & Parsons (2003) are the
+right reference to check them against. The other three benchmark rows (H2O, Fe, Na) have
+`c <= 1`, so no bare critical sphere exists for them at any radius.
 
 ## The two U-235 rows
 

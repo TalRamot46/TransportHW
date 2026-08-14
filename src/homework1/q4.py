@@ -4,7 +4,9 @@ import os
 import logging
 import numpy as np
 from homework1.spherical import (build_medium, buckling, k_eigenvalue, critical_radius,
-                                 analytic_critical_radius, mesh_convergence)
+                                 analytic_critical_radius, mesh_convergence,
+                                 dominance_ratio, neutron_balance)
+from homework1.criticality import critical_dimensions_applied_bc, MARSHAK_EXTRAPOLATION
 from homework1.figures import subplots, panel, finish, savefig
 from homework1.tables import log_section, log_table
 
@@ -70,7 +72,8 @@ def plot_flux_profiles(save_path):
         for c, color in zip(PROFILE_C, COLORS):
             medium = build_medium(1.0, 1.0, c, approximation)
             R = critical_radius(medium, n_cells=N_CELLS)
-            _, r, phi = k_eigenvalue(R, medium, n_cells=N_CELLS)
+            result = k_eigenvalue(R, medium, n_cells=N_CELLS)
+            r, phi = result.r, result.phi
 
             # np.sinc(y) = sin(pi y) / (pi y), which supplies the r = 0 limit.
             shape = np.sinc(buckling(medium) * r / np.pi)
@@ -87,12 +90,8 @@ def plot_flux_profiles(save_path):
     finish(fig, 'Question 4: critical flux shape vs. the fundamental mode')
     savefig(fig, save_path)
 
-def report(figs):
-    """Prints the radius table and the mesh-refinement check, and writes the figures."""
-    log_section('Homework 1 Question 4',
-                f'k by Bell & Glasstone source iteration on {N_CELLS} cells, critical',
-                'radius by bisection on k(R) - 1. Lengths in mean free paths.')
-
+def _radius_table():
+    """Numerical against analytic critical radius, both approximations."""
     rows = []
     for approximation in APPROXIMATIONS:
         numerical, analytic = _radii(C_VALUES, approximation)
@@ -101,11 +100,69 @@ def report(figs):
                          f'{(R_num - R_ana) / R_ana * 100.0:+.2e}'])
     log_table(['c', 'approximation', 'R_c numerical', 'R_c analytic', 'diff %'], rows)
 
+def _iteration_table():
+    """Sweeps taken at the critical radius, against the predicted dominance ratio.
+
+    At criticality the ratio reduces to c/(4c-3), with D cancelling, so the two
+    approximations must take the same number of sweeps; see explanations/07.
+    """
+    rows = []
+    for approximation in APPROXIMATIONS:
+        for c in C_VALUES:
+            medium = build_medium(1.0, 1.0, c, approximation)
+            R = critical_radius(medium, n_cells=N_CELLS)
+            rows.append([f'{c:.2f}', approximation, f'{c / (4.0 * c - 3.0):.6f}',
+                         f'{dominance_ratio(medium, R):.6f}',
+                         f'{k_eigenvalue(R, medium, n_cells=N_CELLS).sweeps}'])
+    log_table(['c', 'approximation', 'c/(4c-3)', 'measured ratio', 'sweeps'], rows)
+
+def _balance_table():
+    """Production against absorption + leakage for the converged critical flux."""
+    rows = []
+    for approximation in APPROXIMATIONS:
+        for c in C_VALUES:
+            medium = build_medium(1.0, 1.0, c, approximation)
+            R = critical_radius(medium, n_cells=N_CELLS)
+            production, absorption, leakage, residual = neutron_balance(
+                R, medium, n_cells=N_CELLS)
+            rows.append([f'{c:.2f}', approximation, production, absorption, leakage,
+                         f'{residual:.2e}'])
+    log_table(['c', 'approximation', 'production', 'absorption', 'leakage', 'residual'],
+              rows)
+
+def _boundary_table():
+    """The extrapolated zero against the Robin condition applied at the surface,
+    each against its own Question 3 analytic counterpart."""
+    rows = []
+    for c in C_VALUES:
+        medium = build_medium(1.0, 1.0, c, 'classical')
+        R_ext = critical_radius(medium, n_cells=N_CELLS)
+        R_rob = critical_radius(medium, n_cells=N_CELLS, boundary='robin')
+        _, R_rob_ana = critical_dimensions_applied_bc(c, MARSHAK_EXTRAPOLATION)
+        rows.append([f'{c:.2f}', f'{R_ext:.8f}', f'{R_rob:.8f}', f'{R_rob_ana:.8f}',
+                     f'{(R_rob - R_rob_ana) / R_rob_ana:.1e}',
+                     f'{(R_rob - R_ext) / R_ext * 100.0:+.2f}'])
+    log_table(['c', 'extrapolated', 'Robin', 'Robin analytic', 'Robin err',
+               'Robin - extrap %'], rows)
+
+def report(figs):
+    """Prints the radius table, the three verification checks, and writes the figures."""
+    log_section('Homework 1 Question 4',
+                f'k by Bell & Glasstone source iteration on {N_CELLS} cells, critical',
+                'radius by bisection on k(R) - 1. Lengths in mean free paths.')
+    _radius_table()
+
     cells, _, errors = mesh_convergence(build_medium(1.0, 1.0, 1.5, 'classical'))
     ratios = errors[:-1] / errors[1:]
     logger.info(f"Mesh refinement at c = 1.5: error {errors[0]:.2e} -> {errors[-1]:.2e} "
                 f"over N = {cells[0]} -> {cells[-1]}, ratio per doubling "
                 f"{ratios.min():.2f}-{ratios.max():.2f}")
+
+    log_section('Homework 1 Question 4: verification',
+                'Iteration cost, neutron balance, and the two boundary treatments.')
+    _iteration_table()
+    _balance_table()
+    _boundary_table()
 
     plot_critical_radius(os.path.join(figs, 'q4_critical_radius.pdf'))
     plot_mesh_convergence(os.path.join(figs, 'q4_mesh_convergence.pdf'))

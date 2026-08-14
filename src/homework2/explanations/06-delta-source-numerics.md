@@ -116,9 +116,10 @@ turns `dt_eff = h^2/(24Dv)` from a claim into a measurement (verification item 5
 [07](07-solver-implementation.md)).
 
 The instinct behind it is still the right one, and it is the same as Assignment 1, Q2, where
-integrating across the source turned the delta into a boundary current (`plan.md` §2.4: "the
-delta is never discretised"). The difference is that there it *was* the answer, because the
-steady problem has no other way in.
+integrating across the source turned the delta into a boundary current — the delta is never
+discretised (`src/homework1/explanations/03-delta-source-and-boundary.md`, with the measured
+cost of the alternative in `04-solver-history.md`). The difference is that there it *was* the
+answer, because the steady problem has no other way in.
 
 ## What about a spectral method?
 

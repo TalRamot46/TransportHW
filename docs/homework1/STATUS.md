@@ -19,7 +19,7 @@
 | `exact_solution.py` | `nu0` on both branches, `phi_as`, `phi_tr` |
 | `diffusion.py` | diffusion coefficients, Green's function, shooting solver |
 | `criticality.py` | the five Question 3 methods |
-| `spherical.py` | finite volume and the `k` iteration |
+| `spherical.py` | finite volume, the `k` iteration, dominance ratio and neutron balance |
 | `materials.py` | the Sood benchmark table and the mass |
 | `figures.py`, `tables.py` | shared plotting and logging helpers |
 | `q1.py` … `q5.py` | one report plus its figures per question |
@@ -34,14 +34,20 @@ Run with `.\.venv\Scripts\python.exe -m homework1.main` from the repository root
   tracks `rtol` from `9e-06` down to `1.3e-12`.
 - Q3 approximate inputs: error dominated by `z0`, under `0.1 %` in `a/2` to `c ~ 1.25`,
   `3.2 %` at `c = 2`. The printed `q = -0.0199` has the wrong sign — see
-  `explanations/04`.
+  `explanations/05-criticality-relations.md`.
 - Q4 vs. analytic `R_c = pi/B - z0`: `1.6e-4 %` to `2.4e-4 %` at `N = 400`, second order
   at exactly `4.00` per doubling.
-- Q5: Pu-239 `9.19 kg`, U-235 `32.70 kg` asymptotic; 30–40 % more classically.
+- Q4 verification: sweep counts follow `c/(4c-3)` to six digits and are identical for both
+  approximations; neutron balance closes to `1e-13`; the Robin radius matches its own
+  analytic route to `1.5e-6`, `0.26 %` to `4.5 %` away from the extrapolated one.
+- Q5: Pu-239 `9.19 kg`, U-235 `32.70 kg` asymptotic; 30–40 % more classically, and
+  8–12 % less under the Robin boundary — model spread, not solver error.
 
 ## Building the report
 
 `.\docs\build.ps1 homework1`, never `latexmk` — see the header of `docs/build.ps1`. On this
 machine a just-written file cannot immediately be overwritten (Windows EINVAL), so both the
-build script and `figures.savefig` delete the target first. Ruled out as causes: OneDrive,
+build script and `figures.savefig` delete the target first. The log is affected as much as
+the pdf — pdflatex stops on `I can't write on file homework1.log` before it reaches the pdf
+— so the script now deletes both before every pass. Ruled out as causes: OneDrive,
 Controlled Folder Access, antivirus, stale locks.

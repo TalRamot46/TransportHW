@@ -196,9 +196,9 @@ measurement of the spatial order alone.
 
 - **The half-domain factor of 2** in every integral. Easy to lose, and it shows up as a clean
   factor-2 miss in the balance check rather than as anything subtle.
-- **Trapezoid on point values is fine here**; the 1 % balance deficit recorded in `plan.md`
-  §5.2 came from applying it to *cell-averaged* data, which drops a half cell at each end. The
-  node-centred grid avoids that entirely.
+- **Trapezoid on point values is fine here**; the 1 % balance deficit recorded in
+  `src/homework1/explanations/04-solver-history.md` came from applying it to *cell-averaged*
+  data, which drops a half cell at each end. The node-centred grid avoids that entirely.
 - **The grid depends on `D`, hence on both `c` and the approximation.** `L`, `h` and `t0` all
   scale with `D`, so build them per run rather than once. Sharing a grid between `c = 0.6`
   asymptotic (`D0 = 0.486`) and `c = 1.5` asymptotic (`D0 = 0.237`) silently changes the

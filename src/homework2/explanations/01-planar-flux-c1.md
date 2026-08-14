@@ -4,7 +4,7 @@
 
 Implemented in `exact.py`. The derivation itself is in
 [homework2.tex](../../../docs/homework2/homework2.tex) §2 and, in more detail, in
-[explanation.md](../../../explanation.md) §2.2–2.4.
+[10](10-q1-q2-corrections.md) §2.2–2.4.
 
 ## What the source is
 
@@ -67,9 +67,8 @@ sqrt(w) G(w) = e^w sqrt(w + b)
 which is elementary. `int_0^{w0} e^w sqrt(w+b) dw` integrates by parts into `erfi`.
 
 This also disposes of the endpoint singularity flagged in
-[planar_spherical_relation.md](../../../docs/homework2/planar_spherical_relation.md): the
-`(t-r)^{-1/4}` behaviour is real, but it is an artifact of the variable `r`, not of the
-integral. In `w` it is gone.
+[09](09-planar-spherical-relation.md): the `(t-r)^{-1/4}` behaviour is real, but it is an
+artifact of the variable `r`, not of the integral. In `w` it is gone.
 
 ## Why Dawson and not `erfi`
 

@@ -361,7 +361,7 @@ $k$ comes from the source iteration of Bell \& Glasstone, pp.~189--192: start fr
 \end{equation}
 and repeat until $|k^{(n+1)} - k^{(n)}| < 10^{-10} k^{(n+1)}$. The flux is renormalised each sweep: its amplitude grows by roughly $k$ per sweep, and over several hundred sweeps the convergence test would otherwise lose its significant digits. This is physically irrelevant, since the ratio is homogeneous in $\phi$.
 
-Convergence is at the dominance ratio $(\Sigma_a + DB_0^2)/(\Sigma_a + DB_1^2)$, which tends to unity for a large weakly multiplying sphere ($\approx 0.94$ at $c = 1.02$). The critical radius then follows from Brent bisection on $k(R) - 1$, bracketed within $\pm 5\%$ of the analytic radius so that $k$ is never evaluated far from criticality.
+Convergence is at the dominance ratio $k_1/k_0$, which tends to unity for a large weakly multiplying sphere ($\approx 0.94$ at $c = 1.02$) and is derived in \S\ref{sec:q4_verification}. The critical radius then follows from Brent bisection on $k(R) - 1$, bracketed within $\pm 5\%$ of the analytic radius so that $k$ is never evaluated far from criticality.
 
 \subsection{Comparison with the Analytical Result}
 
@@ -397,6 +397,7 @@ The residual is discretisation error alone, and the scheme is second order: at $
 The two approximations differ from each other far more than either differs from its own analytic solution, and the gap is entirely in the relaxation length: classical diffusion gives the larger radius throughout, by $1.1\,\%$ at $c = 1.02$ rising to $14.8\,\%$ at $c = 2$.
 
 \subsection{Verification}
+\label{sec:q4_verification}
 
 Three further checks, independent of the comparison in Table~\ref{tab:q4}.
 
@@ -495,10 +496,9 @@ Question 5 is Question 4 with the one-group benchmark cross sections of Sood, Fo
 
 Because the mass goes as the cube of the radius, the moderate difference in relaxation length is strongly amplified: the classical radius exceeds the asymptotic one by $12.1\,\%$ (Pu-239) and $9.0\,\%$ (U-235), which becomes mass ratios of $1.41$ and $1.30$. Classical diffusion thus over-predicts the critical mass by 30--40\,\% here, and worsens with $c$. The asymptotic values are the ones to quote, since asymptotic diffusion with the exact $z_0(c)$ reproduces the exact-transport relation.
 
-<<<<<<< Updated upstream
 \subsection{Sensitivity to the Boundary Treatment}
 
-The masses above use the extrapolated zero. Applying the same condition directly at the physical surface instead moves them by considerably more than any numerical error, again because the mass goes as the cube of a radius only a couple of mean free paths long.
+The masses above use the extrapolated zero. Applying the same condition directly at the physical surface instead moves them by far more than any numerical error, again because the mass goes as the cube of a radius only a couple of mean free paths long.
 
 \begin{table}[htbp]
     \centering
@@ -516,12 +516,9 @@ The masses above use the extrapolated zero. Applying the same condition directly
     \end{tabular}
 \end{table}
 
-This 8--12\,\% spread is the honest uncertainty of the diffusion model on a system this small, and it is comparable to the difference between the two diffusion approximations themselves. Any single quoted mass should be read with it in mind.
+Both treatments reproduce their own analytic result, so this 8--12\,\% spread is model uncertainty rather than solver error, and it is comparable to the difference between the two diffusion approximations themselves. Any single quoted mass should be read with it in mind.
 
-These are one-group, isotropic-scattering results and should not be read as predictions of real critical masses. With a critical radius of only about two mean free paths, the boundary layer occupies a large fraction of the system --- roughly a third of the neutrons leak out --- and diffusion theory of either flavour is being used well outside its regime; the published transport benchmark radii of Sood \emph{et al.} are the appropriate reference against which to judge them. The remaining three rows of the benchmark table (H$_2$O, Fe, Na) have $c \leq 1$ and are non-multiplying, so no bare critical sphere exists for them at any radius.
-=======
-These are one-group, isotropic-scattering results, not predictions of real critical masses: at about two mean free paths the boundary layer is a large fraction of the system, and the transport benchmark radii of Sood \emph{et al.} are the appropriate reference.
->>>>>>> Stashed changes
+These are one-group, isotropic-scattering results, not predictions of real critical masses: at about two mean free paths the boundary layer is a large fraction of the system --- roughly a third of the neutrons leak out --- so diffusion of either flavour is well outside its regime, and the transport benchmark radii of Sood \emph{et al.} are the appropriate reference. The remaining three benchmark rows (H$_2$O, Fe, Na) have $c \leq 1$ and are non-multiplying, so no bare critical sphere exists for them at any radius.
 
 \paragraph{A note on the U-235 data.} Two rows were in circulation. The assignment table ($\Sigma_c = 0.013056$, $\Sigma_s = 0.248064$, $\Sigma_t = 0.32640$) implies $c = 1.3000$, matching its quoted value, and is what is used above. The alternative row ($\Sigma_c = 0.015672$, $\Sigma_s = 0.180448$, $\Sigma_t = 0.26140$) is quoted with $c = 1.50$ but implies $c = 1.3646$, so it is not self-consistent; through the same code it gives $R_c = 8.9412$ cm, $M_c = 56.89$ kg classically and $8.1161$ cm, $42.55$ kg asymptotically --- roughly $30\,\%$ more mass. Pu-239 is identical in both sources.
 

@@ -46,7 +46,7 @@ BENCHMARK = {
 }
 
 # The U-235 row from the task prompt, whose own cross sections give c = 1.365 and
-# not the c = 1.50 quoted with them. Reported alongside; see explanations/07.
+# not the c = 1.50 quoted with them. Reported alongside; see explanations/09.
 PROMPT_U235 = Material('U-235 (prompt variant)', 2.70, 0.065280, 0.015672,
                        0.180448, 0.26140, 19.0)
 
@@ -56,7 +56,6 @@ def critical_mass(radius, density):
     """Mass of a sphere in kg, for a radius in cm and a density in g/cm^3."""
     return density * (4.0 / 3.0) * np.pi * radius**3 / 1000.0
 
-<<<<<<< Updated upstream
 class MaterialResult(NamedTuple):
     """Critical radius in cm and critical mass in kg, numerical and analytic."""
     R_numerical: float
@@ -66,30 +65,10 @@ class MaterialResult(NamedTuple):
 
 def solve_material(material, approximation, n_cells=400, boundary='extrapolated'):
     """Critical radius and mass of one material under one approximation."""
-=======
-def solve_material(material, approximation, n_cells=400):
-    """Numerical and analytic critical radius (cm) and mass (kg) for one material."""
->>>>>>> Stashed changes
     medium = build_medium(material.sigma_t, material.sigma_a,
                           material.nu_sigma_f, approximation)
     R_num = critical_radius(medium, n_cells=n_cells, boundary=boundary)
     R_ana = analytic_critical_radius(medium)
-<<<<<<< Updated upstream
     return MaterialResult(R_num, R_ana,
                           critical_mass(R_num, material.density),
                           critical_mass(R_ana, material.density))
-
-def solve_all(materials=None, approximations=('classical', 'asymptotic')):
-    """Every (material, approximation, result) triple, fissile materials by default."""
-    if materials is None:
-        materials = [BENCHMARK[name] for name in FISSILE]
-    return [(m, a, solve_material(m, a)) for m in materials for a in approximations]
-=======
-    return {
-        'c': material.c,
-        'R_numerical': R_num,
-        'R_analytic': R_ana,
-        'mass_numerical': critical_mass(R_num, material.density),
-        'mass_analytic': critical_mass(R_ana, material.density),
-    }
->>>>>>> Stashed changes

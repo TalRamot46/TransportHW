@@ -1,4 +1,8 @@
-# The planar–spherical Green's function relation (Assignment 2, Q2)
+# 09 — The Planar–Spherical Relation
+
+**Question 2 needs the source superposition `phi_pl(x) = 2 pi int_{|x|}^inf r phi_pt(r) dr`,
+not the operator identity `grad^2 phi = (1/r) d^2(r phi)/dr^2`; "just multiply by `r`" works
+only for the pure exponential and fails on the Paasschens shapes.**
 
 ## Two different relations
 

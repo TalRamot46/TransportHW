@@ -13,7 +13,8 @@
     collides with the file its first pass just produced. Running latexmk through
     perl directly fails identically, because latexmk is not the cause.
 
-    Deleting the output before each pass avoids the collision entirely. The same
+    Deleting the outputs before each pass avoids the collision entirely -- both
+    the pdf and the log, since pdflatex stops on the log first. The same
     workaround is applied to the figures, in the savefig helper of
     src/homework1/figures.py.
 
@@ -57,8 +58,10 @@ if (-not (Test-Path $texFile)) {
 Push-Location $docDir
 try {
     for ($i = 1; $i -le $Passes; $i++) {
-        # Delete the output first; overwriting it in place is what fails.
-        Remove-Item "$File.pdf" -Force -ErrorAction SilentlyContinue
+        # Delete the outputs first; overwriting them in place is what fails. The
+        # log is as affected as the pdf -- pdflatex stops on "I can't write on
+        # file `<name>.log'" before it ever reaches the pdf.
+        Remove-Item "$File.pdf", "$File.log" -Force -ErrorAction SilentlyContinue
 
         $output = & pdflatex -interaction=nonstopmode "$File.tex" 2>&1
         $blocked = $output | Select-String -Pattern "can't write on file"

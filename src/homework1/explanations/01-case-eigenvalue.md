@@ -25,5 +25,5 @@ which *is* the statement that `nu0` is imaginary, so `|nu0| = 1/sqrt(c^p(c) - 1)
 against the root, that is `1e-4 %` at `c = 1.02` and `0.10 %` at `c = 2`.
 
 An imaginary `nu0` turns the infinite-medium mode `exp(-x/nu0)` into `cos(x/|nu0|)` — the
-flux shape of a finite critical system, which is what [04](04-criticality-relations.md)
+flux shape of a finite critical system, which is what [05](05-criticality-relations.md)
 builds on.

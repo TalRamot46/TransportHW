@@ -27,4 +27,4 @@ What it buys is the true relaxation length: the diffusion buckling becomes
 `B = Sigma_t/|nu0|`, whereas classical diffusion has `1/B = 1/sqrt(3(c-1))`, which is only
 the `c -> 1` limit of `|nu0|` — `0.8 %` high at `c = 1.02` and `34 %` high at `c = 2`. That
 gap is the whole difference between the two critical radii in
-[07](07-critical-masses.md).
+[09](09-critical-masses.md).

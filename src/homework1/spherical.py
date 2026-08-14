@@ -70,7 +70,7 @@ def _banded_operator(medium, areas, volumes, h, l0):
     """Removal operator -D grad^2 + Sigma_a in scipy's banded layout, row = cell balance."""
     conductance = medium.D * areas / h
     # The innermost face has zero area, which is the symmetry condition at r = 0.
-    # The outer face carries the boundary condition; see explanations/05.
+    # The outer face carries the boundary condition; see explanations/06.
     conductance[-1] = medium.D * areas[-1] / (l0 + 0.5 * h)
 
     ab = np.zeros((3, len(volumes)))
@@ -79,24 +79,9 @@ def _banded_operator(medium, areas, volumes, h, l0):
     ab[2, :-1] = -conductance[1:-1]
     return ab
 
-<<<<<<< Updated upstream
-# ---------------------------------------------------------------------------
-# Bell & Glasstone source iteration (pp. 189-192)
-# ---------------------------------------------------------------------------
-
-def k_eigenvalue(R, medium, n_cells=400, boundary='extrapolated',
-                 tol=1e-10, max_iter=20000):
-    """
-    Multiplication factor of a bare sphere of radius R, by source iteration:
-    solve the removal operator against the current fission source, then update
-    k by the ratio of successive fission-source integrals.
-
-    Returns a KResult.
-    """
-=======
 def k_eigenvalue(R, medium, n_cells=400, boundary='extrapolated', tol=1e-10, max_iter=20000):
-    """k of a sphere of radius R by Bell & Glasstone source iteration; see explanations/06."""
->>>>>>> Stashed changes
+    """KResult of a sphere of radius R, by Bell & Glasstone source iteration;
+    see explanations/07."""
     r_outer, l0 = _outer_boundary(medium, R, boundary)
     centres, areas, volumes, h = _mesh(r_outer, n_cells)
     ab = _banded_operator(medium, areas, volumes, h, l0)
@@ -118,17 +103,13 @@ def k_eigenvalue(R, medium, n_cells=400, boundary='extrapolated', tol=1e-10, max
         phi, fission, k = phi_new * scale, fission_new * scale, k_new
 
         if converged:
-            return k, centres, phi
+            return KResult(k, centres, phi, sweep)
 
-<<<<<<< Updated upstream
-    return KResult(k, centres, phi, sweep)
+    raise RuntimeError(f"k iteration did not converge in {max_iter} sweeps.")
 
 def dominance_ratio(medium, R, boundary='extrapolated'):
-    """
-    Convergence rate of the source iteration, k_1/k_0, from the first two
-    spherical modes B_n = n pi / r_outer. The error falls by this factor per
-    sweep, so it predicts the sweep counts measured by k_eigenvalue.
-    """
+    """Convergence rate of the source iteration, k_1/k_0, from the first two
+    spherical modes; at a critical radius it reduces to c/(4c-3)."""
     r_outer, _ = _outer_boundary(medium, R, boundary)
 
     def k_mode(n):
@@ -138,12 +119,8 @@ def dominance_ratio(medium, R, boundary='extrapolated'):
     return k_mode(2) / k_mode(1)
 
 def neutron_balance(R, medium, n_cells=400, boundary='extrapolated'):
-    """
-    Production against absorption plus leakage for the converged flux. At a
-    critical radius the two must agree; the relative residual is the check.
-
-    Returns (production, absorption, leakage, relative residual).
-    """
+    """(production, absorption, leakage, relative residual) of the converged flux,
+    which must balance at a critical radius; see explanations/08."""
     result = k_eigenvalue(R, medium, n_cells, boundary)
     r_outer, l0 = _outer_boundary(medium, R, boundary)
     _, areas, volumes, h = _mesh(r_outer, n_cells)
@@ -151,11 +128,7 @@ def neutron_balance(R, medium, n_cells=400, boundary='extrapolated'):
     production = (medium.nu_sigma_f * result.phi * volumes).sum() / result.k
     absorption = (medium.sigma_a * result.phi * volumes).sum()
     leakage = areas[-1] * medium.D * result.phi[-1] / (l0 + 0.5 * h)
-    residual = abs(production - absorption - leakage) / production
-    return production, absorption, leakage, residual
-=======
-    raise RuntimeError(f"k iteration did not converge in {max_iter} sweeps.")
->>>>>>> Stashed changes
+    return production, absorption, leakage, abs(production - absorption - leakage) / production
 
 def _bracket_radius(f, guess, growth=1.05, max_steps=40):
     """Widens an interval about `guess` until f changes sign; starts narrow, since k
@@ -167,16 +140,8 @@ def _bracket_radius(f, guess, growth=1.05, max_steps=40):
         lo, hi = lo / growth, hi * growth
     raise RuntimeError("Could not bracket a radius with k = 1.")
 
-<<<<<<< Updated upstream
 def critical_radius(medium, n_cells=400, boundary='extrapolated', xtol=1e-12):
-    """
-    Radius at which k = 1, found by bisection (brentq) on k(R) - 1, which is
-    monotonically increasing in R. Bracketed around the analytic radius.
-    """
-=======
-def critical_radius(medium, n_cells=400, boundary='extrapolated', xtol=1e-10):
     """Radius at which k = 1, by brentq on k(R) - 1, bracketed around the analytic one."""
->>>>>>> Stashed changes
     def residual(R):
         return k_eigenvalue(R, medium, n_cells, boundary).k - 1.0
 
@@ -184,17 +149,8 @@ def critical_radius(medium, n_cells=400, boundary='extrapolated', xtol=1e-10):
     return brentq(residual, lo, hi, xtol=xtol)
 
 def mesh_convergence(medium, cell_counts=(25, 50, 100, 200, 400, 800)):
-<<<<<<< Updated upstream
-    """
-    Critical radius against mesh refinement, with the relative error of each
-    against the analytic radius. The finite-volume scheme is second order, so
-    the error should fall by four per doubling.
-
-    Extrapolated boundary only, since analytic_critical_radius is the reference.
-    """
-=======
-    """(cells, radii, relative errors) against the analytic radius; the scheme is 2nd order."""
->>>>>>> Stashed changes
+    """(cells, radii, relative errors) against the analytic radius, which is the
+    extrapolated-boundary reference; the scheme is second order."""
     exact = analytic_critical_radius(medium)
     radii = np.array([critical_radius(medium, n_cells=n) for n in cell_counts])
     return np.array(cell_counts), radii, np.abs(radii - exact) / exact
