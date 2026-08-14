@@ -15,6 +15,10 @@ class SphericalMedium:
     D: float
     sigma_a: float
     nu_sigma_f: float
+    # Surface length: Marshak's 2D for the classical branch, Milne's z0(c) for the
+    # asymptotic one. Used as an extrapolation distance by 'extrapolated' and as a
+    # linear extrapolation length by 'robin'; the two coincide only as B z0 -> 0,
+    # see explanations/07.
     z0: float
     c: float
 
@@ -59,7 +63,8 @@ def _mesh(r_outer, n_cells):
     return centres, 4.0 * np.pi * faces**2, volumes, h
 
 def _outer_boundary(medium, R, boundary):
-    """(outer mesh radius, extrapolation length) for the two boundary treatments."""
+    """(outer mesh radius, extrapolation length) for the two treatments: an extrapolated
+    zero at R + z0, or a Marshak-type condition applied at R. See explanations/07."""
     if boundary == 'extrapolated':
         return R + medium.z0, 0.0
     if boundary == 'robin':
@@ -81,7 +86,7 @@ def _banded_operator(medium, areas, volumes, h, l0):
 
 def k_eigenvalue(R, medium, n_cells=400, boundary='extrapolated', tol=1e-10, max_iter=20000):
     """KResult of a sphere of radius R, by Bell & Glasstone source iteration;
-    see explanations/07."""
+    see explanations/08."""
     r_outer, l0 = _outer_boundary(medium, R, boundary)
     centres, areas, volumes, h = _mesh(r_outer, n_cells)
     ab = _banded_operator(medium, areas, volumes, h, l0)
@@ -120,7 +125,7 @@ def dominance_ratio(medium, R, boundary='extrapolated'):
 
 def neutron_balance(R, medium, n_cells=400, boundary='extrapolated'):
     """(production, absorption, leakage, relative residual) of the converged flux,
-    which must balance at a critical radius; see explanations/08."""
+    which must balance at a critical radius; see explanations/09."""
     result = k_eigenvalue(R, medium, n_cells, boundary)
     r_outer, l0 = _outer_boundary(medium, R, boundary)
     _, areas, volumes, h = _mesh(r_outer, n_cells)

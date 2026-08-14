@@ -40,7 +40,7 @@ diffusion approximations themselves. Any single quoted mass should be read with 
 
 These are one-group, isotropic-scattering numbers, not predictions of real critical masses:
 at two mean free paths the boundary layer is a large fraction of the system — about a third
-of the neutrons leak out ([08](08-neutron-balance.md)) — and diffusion of either flavour is
+of the neutrons leak out ([09](09-neutron-balance.md)) — and diffusion of either flavour is
 outside its regime. The transport benchmark radii of Sood, Forster & Parsons (2003) are the
 right reference to check them against. The other three benchmark rows (H2O, Fe, Na) have
 `c <= 1`, so no bare critical sphere exists for them at any radius.

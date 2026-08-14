@@ -46,7 +46,7 @@ BENCHMARK = {
 }
 
 # The U-235 row from the task prompt, whose own cross sections give c = 1.365 and
-# not the c = 1.50 quoted with them. Reported alongside; see explanations/09.
+# not the c = 1.50 quoted with them. Reported alongside; see explanations/10.
 PROMPT_U235 = Material('U-235 (prompt variant)', 2.70, 0.065280, 0.015672,
                        0.180448, 0.26140, 19.0)
 

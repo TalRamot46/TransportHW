@@ -49,7 +49,7 @@ The Robin radius reproduces its own analytic counterpart to about `1.5e-6` relat
 same discretisation error as the extrapolated case, so `D A / (l0 + h/2)` is right in both
 of its limits. The `0.26 %` to `4.5 %` gap between the two treatments is not solver error
 but the genuine ambiguity in what "the surface" means for a system a few mean free paths
-across; it reaches the critical mass as an 8–12 % spread ([09](09-critical-masses.md)).
+across; it reaches the critical mass as an 8–12 % spread ([10](10-critical-masses.md)).
 
 ## What it is compared against
 

@@ -7,6 +7,7 @@
 \usepackage{hyperref}
 \usepackage{microtype}
 \usepackage{xcolor}
+\usepackage{tikz}
 
 \geometry{margin=1in}
 
@@ -338,13 +339,15 @@ and finds the radius at which $k = 1$. Dividing the fission source by $k$ makes 
 The asymptotic $D$ is the continuation of Question 2's $(1-c)\nu_0^2$ above $c = 1$: both $\nu_0^2$ and $1-c$ change sign, so $D$ stays positive. Its purpose is to give the diffusion equation the true transport relaxation length $|\nu_0|/\Sigma_t$ instead of $1/\sqrt{3(c-1)}$.
 
 \subsection{Discretisation}
+\label{sec:q4_discretisation}
 
-Finite volume on $N$ uniform cell-centred shells. Integrating \eqref{eq:q4_sphere} over cell $i$ turns the divergence into a difference of surface currents,
+Finite volume on $N$ uniform cell-centred shells. Integrating \eqref{eq:q4_sphere} over cell $j$ turns the divergence into a difference of surface currents,
 \begin{equation}
-    A_{i+1/2} J_{i+1/2} - A_{i-1/2} J_{i-1/2} + \Sigma_a V_i \phi_i = S_i V_i,
-    \qquad J_{i+1/2} = -D\,\frac{\phi_{i+1} - \phi_i}{h}
+    A_{j+1/2} J_{j+1/2} - A_{j-1/2} J_{j-1/2} + \Sigma_a V_j \phi_j = S_j V_j,
+    \qquad J_{j+1/2} = -D\,\frac{\phi_{j+1} - \phi_j}{h}
+    \label{eq:q4_fv}
 \end{equation}
-with $A = 4\pi r^2$ and $V_i = \frac{4\pi}{3}(r_{i+1/2}^3 - r_{i-1/2}^3)$. The balance form is what removes the $1/r^2$ singularity: the innermost face has $A_{1/2} = 0$, so $\phi'(0) = 0$ is imposed exactly with no special case. The matrix is tridiagonal and solved in $O(N)$.
+with $A = 4\pi r^2$ and $V_j = \frac{4\pi}{3}(r_{j+1/2}^3 - r_{j-1/2}^3)$. The balance form is what removes the $1/r^2$ singularity: the innermost face has $A_{1/2} = 0$, so $\phi'(0) = 0$ is imposed exactly with no special case. The matrix is tridiagonal and solved in $O(N)$. Appendix~\ref{app:fv} works the mesh, the index map and the assembly through in full.
 
 Both outer treatments are the single condition $\phi + \ell_0 \phi' = 0$; eliminating the surface flux gives one leakage coefficient
 \begin{equation}
@@ -528,6 +531,199 @@ These are one-group, isotropic-scattering results, not predictions of real criti
     \caption{Multiplication factor against sphere radius for the two fissile materials, both approximations. The circles mark the $k = 1$ crossing.}
     \label{fig:q5}
 \end{figure}
+
+}
+
+\appendix
+
+{\color{red}
+
+\section{The Spherical Finite-Volume Scheme in Detail}
+\label{app:fv}
+
+An expansion of \S\ref{sec:q4_discretisation}, following \texttt{src/homework1/spherical.py} line by line: what the mesh looks like, how \texttt{\_banded\_operator} turns it into a matrix, which index means what, and where the boundary conditions and the starting iterate enter.
+
+\subsection{The mesh and its indices}
+
+\texttt{\_mesh} builds $N$ uniform cells on $[0, R_{\text{out}}]$ with $h = R_{\text{out}}/N$. Two families of index run over it and they must not be confused:
+
+\begin{itemize}
+    \item \textbf{Faces}, indexed $i = 0,\dots,N$ --- there are $N+1$ of them, at radius $r_i = i h$, carrying areas $A_i = 4\pi r_i^2$ (\texttt{areas}, length $N+1$).
+    \item \textbf{Cells}, indexed $j = 0,\dots,N-1$ --- there are $N$ of them, cell $j$ spanning $[r_j, r_{j+1}]$, with centre $\bar r_j = (j + \tfrac12)h$ (\texttt{centres}) and volume $V_j = \tfrac{4\pi}{3}(r_{j+1}^3 - r_j^3)$ (\texttt{volumes}), both of length $N$.
+\end{itemize}
+
+Cell $j$ is bounded by face $i = j$ on the inside and face $i = j+1$ on the outside, so the two numberings share their integers. The rule that removes every ambiguity below is: \textbf{a subscript on $A$, $J$ or $C$ is a face; a subscript on $\phi$, $V$ or $S$ is a cell.} Where a relation ties a face to the two cells it separates, the same integer does double duty by construction --- face $i$ has cell $i-1$ immediately inside it and cell $i$ immediately outside. The unknown $\phi_j$ is the average flux over cell $j$; it lives at the centre, not at a face. In the half-index notation of \S\ref{sec:q4_discretisation}, faces $i = j$ and $i = j+1$ are what were written $j - \tfrac12$ and $j + \tfrac12$; the integer form is used here because it is what the code indexes.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=2.4cm, y=1cm]
+    \draw[thick,->] (-0.2,0) -- (4.7,0) node[right] {$r$};
+    \foreach \k in {0,1,2,3,4} \draw[thick] (\k,-0.25) -- (\k,0.25);
+    \foreach \k/\lab in {0/{$r_0 = 0$},1/{$r_1$},2/{$r_2$},3/{$r_3$},4/{$r_4 = R_{\text{out}}$}}
+        \node[below] at (\k,-0.3) {\lab};
+    \foreach \i in {0,1,2,3} \fill (\i+0.5,0) circle (1.7pt);
+    \foreach \i/\lab in {0/{$\phi_0$},1/{$\phi_1$},2/{$\phi_2$},3/{$\phi_3$}}
+        \node[above] at (\i+0.5,0.2) {\lab};
+    \draw[<->] (2,0.95) -- (3,0.95) node[midway,above] {$h$};
+    \node[align=center] at (0,-1.15) {\small $A_0 = 0$:\\[-2pt] \small no special case};
+    \node[align=center] at (4,-1.15) {\small $\phi + \ell_0 \phi' = 0$};
+    \node at (2.5,-0.02) {};
+\end{tikzpicture}
+\caption{The cell-centred mesh for $N = 4$. Faces (ticks) carry areas, cells (dots) carry the unknowns. No unknown sits on a boundary, so both ends are face conditions rather than equations of their own.}
+\label{fig:mesh}
+\end{figure}
+
+\subsection{From the cell balance to a matrix row}
+
+Rather than assume the balance \eqref{eq:q4_fv}, derive it from \eqref{eq:q4_sphere}: multiply by the volume element $4\pi r^2\,dr$ and integrate across cell $j$, from face $r_j$ to face $r_{j+1}$. The leading term is the one that matters, and the $r^2$ of the volume element is exactly what cancels the $1/r^2$ of the operator:
+\begin{equation}
+\begin{aligned}
+    \int_{r_j}^{r_{j+1}} \left[-D\,\frac{1}{r^2}\frac{d}{dr}\!\left(r^2 \frac{d\phi}{dr}\right)\right] 4\pi r^2\,dr
+    &= -4\pi D \int_{r_j}^{r_{j+1}} \frac{d}{dr}\!\left(r^2 \frac{d\phi}{dr}\right) dr \\[2pt]
+    &= -4\pi D \left[\, r^2 \frac{d\phi}{dr} \,\right]_{r_j}^{r_{j+1}}
+     \;=\; A_{j+1} J_{j+1} - A_j J_j
+\end{aligned}
+\label{eq:fv_derivation}
+\end{equation}
+using $A = 4\pi r^2$ and $J = -D\,d\phi/dr$. The integral of a divergence has collapsed onto the two faces --- the divergence theorem for a shell --- which is why nothing is ever evaluated at $r = 0$, where the operator itself is singular.
+
+The other two terms integrate to volume averages by definition of the unknown, $\phi_j \equiv V_j^{-1}\!\int_{\text{cell } j} \phi \, dV$:
+\begin{equation}
+    \int_{r_j}^{r_{j+1}} \Sigma_a \phi \, 4\pi r^2 dr = \Sigma_a V_j \phi_j,
+    \qquad
+    \int_{r_j}^{r_{j+1}} \frac{\nu\Sigma_f \phi}{k} \, 4\pi r^2 dr = S_j V_j,
+    \qquad S_j \equiv \frac{\nu\Sigma_f \phi_j}{k}
+\end{equation}
+Collecting the three gives \eqref{eq:q4_fv}, with the half-indices written as the integer face labels of \S\ref{app:fv}:
+\begin{equation}
+    A_{j+1} J_{j+1} - A_j J_j + \Sigma_a V_j \phi_j = S_j V_j
+    \label{eq:fv_balance}
+\end{equation}
+Nothing has been approximated yet: this is an exact statement about cell averages and true face currents, for any $N$. \textbf{The discretisation enters only in the next step}, where the face current is replaced by a difference between neighbouring cell centres --- which is also where the second-order accuracy of \S\ref{sec:q4_verification} comes from. With Fick's law between adjacent centres, the current through face $i$ --- which separates cells $i-1$ and $i$, a distance $h$ apart --- is
+\begin{equation}
+    J_i = -D\,\frac{\phi_i - \phi_{i-1}}{h}
+    \qquad\Longrightarrow\qquad
+    A_i J_i = -C_i\,(\phi_i - \phi_{i-1}), \qquad
+    \boxed{\;C_i \equiv \frac{D A_i}{h}\;}
+\end{equation}
+The \emph{conductance} $C_i$ is a property of a face, not of a cell --- this is the whole idea of the layout.
+
+Getting from \eqref{eq:fv_balance} to the matrix row takes three small steps, and the index change happens in the first of them. Cell $j$ has two faces, so the face relation is evaluated twice: at the inner face $i = j$, whose neighbours are cells $j-1$ and $j$, and at the outer face $i = j+1$, whose neighbours are cells $j$ and $j+1$. That substitution is where a face index becomes a pair of cell indices:
+\begin{equation}
+    A_j J_j = -C_j\,(\phi_j - \phi_{j-1}),
+    \qquad
+    A_{j+1} J_{j+1} = -C_{j+1}\,(\phi_{j+1} - \phi_j)
+\end{equation}
+Putting both into \eqref{eq:fv_balance}, the inner face carrying the minus sign of the balance and so flipping its bracket,
+\begin{equation}
+    \underbrace{-C_{j+1}\,(\phi_{j+1} - \phi_j)}_{\text{out through face } j+1}
+    \;+\; \underbrace{C_j\,(\phi_j - \phi_{j-1})}_{\text{$-$(in through face } j)}
+    \;+\; \Sigma_a V_j \phi_j = S_j V_j
+\end{equation}
+Expanding the brackets and collecting the three unknowns $\phi_{j-1}$, $\phi_j$, $\phi_{j+1}$:
+\begin{equation}
+    -C_j\,\phi_{j-1}
+    + \left(C_j + C_{j+1} + \Sigma_a V_j\right)\phi_j
+    - C_{j+1}\,\phi_{j+1}
+    = S_j V_j
+    \label{eq:fv_row}
+\end{equation}
+So cell $j$ couples to each neighbour through the conductance of the face it \emph{shares} with that neighbour --- $C_j$ to the left, $C_{j+1}$ to the right --- and both of those same two conductances reappear on the diagonal, because every neutron leaving through a face also leaves the cell it came from.
+Each face appears in exactly the two rows it separates, with the same magnitude and opposite sign. That single fact gives the matrix all three of its useful properties: it is tridiagonal, it is symmetric, and it conserves neutrons exactly (\S\ref{app:properties}).
+
+\subsection{The two ends, and why neither needs a branch}
+
+\paragraph{The origin.} Face $0$ sits at $r = 0$, so $A_0 = 0$ and therefore $C_0 = 0$. The $\phi_{-1}$ term in \eqref{eq:fv_row} vanishes on its own for cell $j = 0$, and no current crosses the centre. The symmetry condition $\phi'(0) = 0$ is thus imposed \emph{exactly}, by geometry, with no code path of its own --- the reason \texttt{\_banded\_operator} can index a plain array at $j = 0$.
+
+\paragraph{The outer surface.} Face $N$ has no cell beyond it. The surface flux $\phi_s$ is eliminated between the boundary condition $\phi + \ell_0 \phi' = 0$ and the one-sided difference over the half cell $h/2$ that separates $\bar r_{N-1}$ from the surface:
+\begin{equation}
+    J_s = -D\phi'(R_{\text{out}}) = \frac{D\phi_s}{\ell_0},
+    \qquad
+    J_s = -D\,\frac{\phi_s - \phi_{N-1}}{h/2}
+\end{equation}
+Equating and solving,
+\begin{equation}
+    \phi_s = \phi_{N-1}\,\frac{\ell_0}{\ell_0 + h/2}
+    \qquad\Longrightarrow\qquad
+    J_s = \frac{D\,\phi_{N-1}}{\ell_0 + h/2},
+    \qquad
+    C_N = \frac{D A_N}{\ell_0 + h/2}
+    \label{eq:CN}
+\end{equation}
+which is the single line assigning \texttt{conductance[-1]}, the code writing $\ell_0$ as the variable \texttt{l0} (a lower-case L, not a one). Because $\ell_0$ appears only in the denominator, $\ell_0 = 0$ is not a special case: it gives $\phi_s = 0$ and $C_N = D A_N/(h/2)$, the zero-flux limit. The two treatments of \texttt{\_outer\_boundary} are then just two choices of $(R_{\text{out}}, \ell_0)$: the extrapolated zero uses $(R + z_0,\, 0)$, and the Robin condition uses $(R,\, z_0)$.
+
+Note where $C_N$ ends up: on the \emph{diagonal} of the last row only. It removes neutrons from cell $N-1$ without coupling it to anything, which is exactly what leakage out of the system is.
+
+\subsection{The banded storage, index by index}
+
+Both indices of the matrix are cells: $M_{mn}$ couples cell $m$ to cell $n$. \texttt{scipy.linalg.solve\_banded((1, 1), ab, b)} expects it in diagonal-ordered form, meaning
+\begin{equation}
+    \texttt{ab}[\,1 + m - n,\; n\,] = M_{mn}, \qquad |m - n| \le 1
+\end{equation}
+so row $0$ of \texttt{ab} holds the superdiagonal, row $1$ the diagonal, row $2$ the subdiagonal --- each stored in the \emph{column} of the entry, which is why the superdiagonal starts one slot in and the subdiagonal stops one slot early. The three assignments read:
+\begin{center}
+\begin{tabular}{ll}
+    \toprule
+    code & meaning \\
+    \midrule
+    \texttt{ab[0, 1:] = -conductance[1:-1]} & $M_{n-1,n} = -C_n$, \quad $n = 1..N{-}1$ \\
+    \texttt{ab[1, :] = conductance[:-1] + conductance[1:]} & $M_{jj} = C_j + C_{j+1} + \Sigma_a V_j$ \\
+    \phantom{\texttt{ab[1, :] = }}\texttt{+ sigma\_a * volumes} & \\
+    \texttt{ab[2, :-1] = -conductance[1:-1]} & $M_{n+1,n} = -C_{n+1}$, \quad $n = 0..N{-}2$ \\
+    \bottomrule
+\end{tabular}
+\end{center}
+The face index survives in the conductance: the entry coupling cells $n-1$ and $n$ is $-C_n$, the conductance of face $i = n$, which is precisely the face they share.
+The slices are the whole trick, and each says something physical:
+\begin{itemize}
+    \item \texttt{conductance[:-1]} is $C_0 \dots C_{N-1}$, the \emph{inner} face of each cell; \texttt{conductance[1:]} is $C_1 \dots C_N$, the \emph{outer} face of each cell. Element $j$ of their sum is the pair of faces bounding cell $j$ --- the diagonal.
+    \item \texttt{conductance[1:-1]} is $C_1 \dots C_{N-1}$, the $N-1$ \emph{interior} faces, i.e.\ precisely those that separate two cells. It is dropped into both off-diagonals unchanged, which is why $M$ comes out symmetric.
+    \item The two excluded entries are the two boundaries: $C_0 = 0$ (nothing to couple across the origin) and $C_N$ (leakage, coupling to nothing).
+\end{itemize}
+For $N = 4$, with $C_0 = 0$ already substituted,
+\begin{equation}
+    M =
+    \begin{pmatrix}
+        C_1 + \Sigma_a V_0 & -C_1 & 0 & 0 \\
+        -C_1 & C_1 + C_2 + \Sigma_a V_1 & -C_2 & 0 \\
+        0 & -C_2 & C_2 + C_3 + \Sigma_a V_2 & -C_3 \\
+        0 & 0 & -C_3 & C_3 + C_4 + \Sigma_a V_3
+    \end{pmatrix}
+\end{equation}
+is stored as
+\begin{equation}
+    \texttt{ab} =
+    \begin{pmatrix}
+        \ast & -C_1 & -C_2 & -C_3 \\
+        C_1 + \Sigma_a V_0 & C_1 + C_2 + \Sigma_a V_1 & C_2 + C_3 + \Sigma_a V_2 & C_3 + C_4 + \Sigma_a V_3 \\
+        -C_1 & -C_2 & -C_3 & \ast
+    \end{pmatrix}
+\end{equation}
+the two $\ast$ entries being the unused corners, left as the zeros \texttt{np.zeros} put there.
+
+\subsection{Two properties to check the assembly against}
+\label{app:properties}
+
+\paragraph{Symmetry and definiteness.} $M = M^{\!\top}$ because both off-diagonals are the same array, and the diagonal dominates strictly once $\Sigma_a > 0$ or $C_N > 0$. So $M$ is positive definite, the LU factorisation inside \texttt{solve\_banded} needs no pivoting, and the solve is $O(N)$.
+
+\paragraph{Row sums are the neutron balance.} Summing row $j$ of \eqref{eq:fv_row}, the conductances cancel in pairs and leave $\Sigma_a V_j$ for every interior row --- and $\Sigma_a V_{N-1} + C_N$ for the last. In matrix form,
+\begin{equation}
+    M \mathbf{1} = \Sigma_a \mathbf{V} + C_N \mathbf{e}_{N-1}
+\end{equation}
+that is: applied to a flat flux, the operator returns absorption plus surface leakage and nothing else. This is the discrete identity behind the balance check of \S\ref{sec:q4_verification}; it holds by construction rather than by luck, which is why that check probes the boundary coefficient \eqref{eq:CN} and little else.
+
+\subsection{The source, $k$, and what plays the role of an initial condition}
+
+Being a steady eigenvalue problem, this has no initial condition in the time-dependent sense. What it has instead is a \emph{starting iterate} for the power iteration, and it is worth being clear about which parts of the setup are physics and which are merely a starting guess:
+
+\begin{itemize}
+    \item \textbf{Baked into the matrix, once:} both boundary conditions. $C_0 = 0$ and $C_N$ are assembled before the first sweep, so every iterate --- converged or not --- satisfies them exactly. They are never re-imposed inside the loop.
+    \item \textbf{The right-hand side} is the \emph{volume-integrated} fission source $F_j = \nu\Sigma_f \phi_j V_j$, divided by $k$; the factor $V_j$ is what makes it dimensionally consistent with the $C_i$'s, which are integrated currents. Compare \eqref{eq:fv_row}: the source term is $S_j V_j$, not $S_j$.
+    \item \textbf{The starting guess} is a flat flux $\phi^{(0)}_j = 1$ with $k^{(0)} = 1$. Power iteration converges to the fundamental mode from any start with a non-zero component along it, which a strictly positive vector certainly has, so the converged $k$ and shape do not depend on this choice --- only the number of sweeps does.
+    \item \textbf{The renormalisation} $\phi \leftarrow \phi/\max\phi$ after each sweep is likewise not physics: the eigenvector is defined only up to scale, and both integrals in the $k$ update are homogeneous in $\phi$, so the factor cancels. It is there to keep the iterate at $O(1)$ so that the convergence test does not lose its significant digits.
+\end{itemize}
+
+The one quantity that does carry a physical scale through the whole calculation is the radius $R$: it fixes $R_{\text{out}}$, hence $h$, hence every area, volume and conductance. That is the sense in which the outer root search of \texttt{critical\_radius} sits outside everything described here --- each evaluation of $k(R)$ rebuilds the mesh and the matrix from scratch.
 
 }
 
