@@ -4,12 +4,12 @@ import numpy as np
 from homework3 import sn
 
 # 100 cells is already mesh converged: at c = 1.5 the S10 radius moves by 7e-6 mfp
-# between 50 and 800 cells. See explanations/04.
+# between 50 and 800 cells. See explanations/06.
 N_CELLS = 100
 
 def angular_coefficients(mu, weights):
     """Carlson's alpha_{m+1/2} = alpha_{m-1/2} - w_m mu_m, zero at both ends; the
-    recursion is what makes a flat flux an exact solution. See explanations/01."""
+    recursion is what makes a flat flux an exact solution. See explanations/02."""
     alpha = np.concatenate(([0.0], -np.cumsum(weights * mu)))
     alpha[-1] = 0.0   # exactly zero by sum(w mu) = 0; set so no current leaks at mu = +1
     return alpha
@@ -32,7 +32,7 @@ class SphereSolver:
 
     def _starting_direction(self, source):
         """Half-angle flux at mu = -1, where the angular derivative drops out and the
-        sweep is the plain slab one; see explanations/01."""
+        sweep is the plain slab one; see explanations/02."""
         psi, psi_in = np.empty(self.n_cells), 0.0
         for i in range(self.n_cells - 1, -1, -1):
             psi[i], (psi_in,) = sn.cell_flux(self.medium.sigma_t * self.dr,

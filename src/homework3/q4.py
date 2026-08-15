@@ -30,7 +30,7 @@ def report(figs):
     scan = plots.scan_orders(sphere.critical_radius, sphere.k_eigenvalue, RADIUS)
     _table(scan)
     logger.info("The slab and the sphere share an extrapolation distance, so R_c and a/2 "
-                "should satisfy R_c + z0 = 2 (a/2 + z0); see explanations/05.")
+                "should satisfy R_c + z0 = 2 (a/2 + z0); see report §4.")
 
     plots.plot_orders(scan, '$R_c$',
                       'Question 4: critical sphere radius by $S_N$',

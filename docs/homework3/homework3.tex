@@ -1,4 +1,4 @@
-\documentclass[11pt]{article}
+     \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{graphicx}
@@ -73,6 +73,186 @@ Dividing the fission source by $k$ makes a solution exist at \emph{every} system
 
 \paragraph{The meaning of $c$.} Questions 3 and 4 specify only $c=(\Sigma_s+\nu\Sigma_f)/\Sigma_t$. At $k=1$ the source bracket collapses to $c\,\Sigma_t\phi$ whatever the split between scattering and fission, so the critical size depends on $c$ alone and the code takes the simplest split, $\Sigma_t=1$, $\Sigma_s=0$, $\nu\Sigma_f=c$. Question 5 has no such freedom and uses the tabulated cross sections directly.
 
+{\color{blue}
+\FloatBarrier
+\section{Critical radius of a reflected sphere}
+
+Question 1 is the one \emph{diffusion} question of this assignment --- the $S_N$ machinery above belongs to Questions 3--5 --- and the only one with two materials. A multiplying core of radius $R_C$ is wrapped in $d \in \{1,2,3,10\}$ mean free paths of reflector, and the cross sections are again the Question 5 table of Assignment 1.
+
+\subsection*{The two regions}
+
+In both regions the substitution $u(r) = r\phi(r)$, which uses $\frac{1}{r^2}\frac{d}{dr}\left(r^2\frac{d\phi}{dr}\right) = \frac{1}{r}\frac{d^2u}{dr^2}$, turns the spherical diffusion equation into a plane one:
+\begin{equation}
+    \frac{d^2 u}{dr^2} - \frac{(1-c)\Sigma_t^2}{D_0}\,u = 0
+\end{equation}
+The core has $c_C > 1$, so the coefficient is negative and the solution oscillates; finiteness at the origin selects the sine. The reflector has $c_R \le 1$ and decays. With
+\begin{equation}
+    B = k_0(c_C)\,\Sigma_{t,C}, \qquad \kappa = \frac{\Sigma_{t,R}}{\nu_0(c_R)}, \qquad R_{\text{ext}} = R_R + \frac{z_0(c_R)}{\Sigma_{t,R}}
+\end{equation}
+the two profiles are
+\begin{equation}
+    \phi_C(r) = A\,\frac{\sin (B r)}{r}, \qquad\qquad
+    \phi_R(r) = F\,\frac{\sinh\!\left[\kappa\left(R_{\text{ext}} - r\right)\right]}{r}
+\end{equation}
+$k_0$ and $\nu_0$ are Case's discrete eigenvalue on its two branches, the same roots Assignment 1 used: $c\,\text{arctan}(k_0) = k_0$ above $c=1$ and $\text{artanh}(1/\nu_0)/(1/\nu_0) = 1/c$ below it.
+
+\subsection*{Matching, and the one criticality equation}
+
+The interface at $r = R_C$ carries a flux relation $\phi_R = g\,\phi_C$ and continuity of the net current $J = -D\,d\phi/dr$. Since $\phi = u/r$ gives $\phi'/\phi = u'/u - 1/r$, and the two logarithmic derivatives are $u_C'/u_C = B\cot(BR_C)$ and $u_R'/u_R = -\kappa\coth(\kappa L)$ with $L = R_{\text{ext}} - R_C$, all three approximations reduce to a single transcendental equation for $R_C$:
+\begin{equation}
+    \boxed{\;D_C B \cot\!\left(B R_C\right) \;+\; g\,D_R \kappa \coth\!\left(\kappa L\right) \;-\; \frac{D_C - g\,D_R}{R_C} \;=\; 0\;}
+    \label{eq:reflcrit}
+\end{equation}
+with $\kappa L = \left[d + z_0(c_R)\right]/\nu_0(c_R)$, so the reflector enters only through its \emph{optical} thickness. The last term has no slab counterpart: $\phi$ falls as $1/r$ even where $u$ is flat, so a jump in $D$ at a curved interface drives a current by itself. Equation~\eqref{eq:reflcrit} runs from $+\infty$ at $R_C \to 0$ to $-\infty$ at $R_C = \pi/B$, the unreflected limit, so the fundamental root is always bracketed by $(0,\pi/B)$ and \texttt{brentq} finds it in one call.
+
+The three approximations differ only in what they put into $D_0$, $z_0$ and $g$:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lccc}
+\toprule
+ & (a) continuous classic & (b) continuous asymptotic & (c) discontinuous asymptotic \\
+\midrule
+$D_0(c)$ & $1/3$ & $|1-c|\,\nu_0^2$ & $|1-c|\,\nu_0^2$ \\
+relaxation rate & $\sqrt{3|1-c|}$ & $k_0(c)$ or $1/\nu_0(c)$ & $k_0(c)$ or $1/\nu_0(c)$ \\
+$z_0(c)$ & $2/3$ & $0.710446\,[1+q(1-c)^2]/c$ & $0.710446\,[1+q(1-c)^2]/c$ \\
+$g = \phi_R/\phi_C$ & $1$ & $1$ & $\mu_0(c_C)/\mu_0(c_R)$ \\
+\bottomrule
+\end{tabular}
+\caption{Only the last row makes (c) different from (b). Since $\mu_0 = 1/2$ for every medium in the classic theory, (a) is automatically continuous, and with no reflector at all (b) and (c) are the same bare sphere.}
+\end{table}
+
+\paragraph{Zimmerman's $\mu_0$.} The discontinuity comes from Zimmerman (UCRL-82792), who writes the partial currents of the asymptotic mode as $\phi_\pm = \tfrac12 \mu_0 \phi_0 \pm \tfrac12 \phi_1$, so that $\mu_0\phi_0 = J_+ + J_-$ is the total traffic across a surface and
+\begin{equation}
+    \mu_0(c) = \frac{c\,\nu_0^2}{2}\ln\!\left(\frac{\nu_0^2}{\nu_0^2-1}\right)
+    \;\xrightarrow[\;c>1\;]{}\;
+    \frac{c}{2k_0^2}\ln\!\left(1+k_0^2\right)
+\end{equation}
+the second form being the exact analytic continuation through $\nu_0 = i/k_0$. It is not an ansatz: integrating the discrete mode $\psi(\mu)\propto(\nu_0-\mu)^{-1}$ over the two half-ranges reproduces it identically, and it returns the two textbook limits $\mu_0 = 1/2$ for an isotropic flux and $\mu_0 = 1$ for a one-way beam. Matching the traffic rather than the flux, $\mu_0(c_C)\phi_C = \mu_0(c_R)\phi_R$, is what makes $\phi$ itself jump. Nothing is lost at the interface --- the same current crosses both faces.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lccccccc}
+\toprule
+material & $c$ & mfp [cm] & $k_0$ or $1/\nu_0$ & $D_0$ & $D$ [cm] & $\mu_0$ & $z_0$ \\
+\midrule
+Pu-239 & 1.5000 & 3.064  & 1.45110 & 0.23745 & 0.7275 & 0.40363 & 0.47127 \\
+U-235  & 1.3000 & 3.064  & 1.05708 & 0.26847 & 0.8225 & 0.43639 & 0.54552 \\
+H$_2$O & 0.9000 & 3.064  & 0.52543 & 0.36222 & 1.1097 & 0.52660 & 0.78923 \\
+Fe     & 0.9980 & 4.300  & 0.07740 & 0.33387 & 1.4356 & 0.50050 & 0.71187 \\
+Na     & 1.0000 & 11.578 & 0.00000 & 0.33333 & 3.8595 & 0.50000 & 0.71045 \\
+\bottomrule
+\end{tabular}
+\caption{Asymptotic parameters of the five materials. Sodium is a pure scatterer, $\Sigma_c = \Sigma_f = 0$, so $c_R = 1$ exactly: $\nu_0$ diverges, $\kappa = 0$, and the reflector solution degenerates to $u_R$ linear in $r$ with $\kappa\coth(\kappa L) \to 1/L$. The code takes that limit explicitly rather than dividing out a near-zero $\kappa$.}
+\end{table}
+
+\FloatBarrier
+\subsection*{Results}
+
+The bare spheres of Assignment 1 Question 5, which every reflected radius below is measured against:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ccccc}
+\toprule
+core & classic $R_c$ [cm] & asympt.\ $R_c$ [cm] & classic $M_c$ [kg] & asympt.\ $M_c$ [kg] \\
+\midrule
+Pu-239 & 5.8163 & 5.1890 & 12.940 & 9.188 \\
+U-235  & 8.1031 & 7.4339 & 42.345 & 32.696 \\
+\bottomrule
+\end{tabular}
+\caption{Bare reference. Theory (a) is compared with the classical column, (b) and (c) with the asymptotic one.}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{cccccccc}
+\toprule
+reflector & $d$ [mfp] & $R_c^{(a)}$ & $R_c^{(b)}$ & $R_c^{(c)}$ & $M_c^{(a)}$ & $M_c^{(b)}$ & $M_c^{(c)}$ \\
+\midrule
+Water  & 1  & 5.3159 & 4.9484 & 4.5400 & 9.879  & 7.968  & 6.154 \\
+Water  & 2  & 5.0855 & 4.7987 & 4.3823 & 8.649  & 7.267  & 5.535 \\
+Water  & 3  & 5.0153 & 4.7499 & 4.3321 & 8.296  & 7.048  & 5.347 \\
+Water  & 10 & 4.9814 & 4.7244 & 4.3061 & 8.129  & 6.935  & 5.251 \\
+\midrule
+Iron   & 1  & 5.4212 & 4.9575 & 4.6450 & 10.478 & 8.013  & 6.591 \\
+Iron   & 2  & 5.1056 & 4.7364 & 4.4182 & 8.753  & 6.988  & 5.672 \\
+Iron   & 3  & 4.9506 & 4.6237 & 4.3059 & 7.979  & 6.501  & 5.250 \\
+Iron   & 10 & 4.6790 & 4.4188 & 4.1070 & 6.737  & 5.674  & 4.556 \\
+\midrule
+Sodium & 1  & 6.4397 & 5.7159 & 5.5171 & 17.562 & 12.281 & 11.044 \\
+Sodium & 2  & 6.3134 & 5.6405 & 5.4318 & 16.549 & 11.801 & 10.540 \\
+Sodium & 3  & 6.2505 & 5.6022 & 5.3892 & 16.059 & 11.563 & 10.293 \\
+Sodium & 10 & 6.1315 & 5.5286 & 5.3080 & 15.159 & 11.113 & 9.835 \\
+\bottomrule
+\end{tabular}
+\caption{Pu-239 core: critical radius in cm and critical mass in kg, under (a) continuous classic, (b) continuous asymptotic and (c) discontinuous asymptotic diffusion. Bare: 5.8163 cm / 12.940 kg classic, 5.1890 cm / 9.188 kg asymptotic.}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{cccccccc}
+\toprule
+reflector & $d$ [mfp] & $R_c^{(a)}$ & $R_c^{(b)}$ & $R_c^{(c)}$ & $M_c^{(a)}$ & $M_c^{(b)}$ & $M_c^{(c)}$ \\
+\midrule
+Water  & 1  & 7.2501 & 6.9113 & 6.5228 & 30.330 & 26.273 & 22.087 \\
+Water  & 2  & 6.9185 & 6.6731 & 6.2694 & 26.355 & 23.649 & 19.611 \\
+Water  & 3  & 6.8146 & 6.5937 & 6.1865 & 25.186 & 22.816 & 18.844 \\
+Water  & 10 & 6.7638 & 6.5520 & 6.1432 & 24.627 & 22.385 & 18.451 \\
+\midrule
+Iron   & 1  & 7.2811 & 6.8392 & 6.5656 & 30.720 & 25.460 & 22.525 \\
+Iron   & 2  & 6.8002 & 6.4625 & 6.1789 & 25.027 & 21.480 & 18.775 \\
+Iron   & 3  & 6.5545 & 6.2644 & 5.9804 & 22.411 & 19.565 & 17.023 \\
+Iron   & 10 & 6.1125 & 5.8970 & 5.6199 & 18.176 & 16.320 & 14.126 \\
+\midrule
+Sodium & 1  & 8.4264 & 7.7951 & 7.6194 & 47.618 & 37.697 & 35.205 \\
+Sodium & 2  & 8.2322 & 7.6564 & 7.4692 & 44.401 & 35.721 & 33.164 \\
+Sodium & 3  & 8.1328 & 7.5844 & 7.3919 & 42.811 & 34.722 & 32.145 \\
+Sodium & 10 & 7.9401 & 7.4425 & 7.2414 & 39.840 & 32.809 & 30.221 \\
+\bottomrule
+\end{tabular}
+\caption{U-235 core, same columns. Bare: 8.1031 cm / 42.345 kg classic, 7.4339 cm / 32.696 kg asymptotic.}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figs/q1_critical_radius.pdf}
+\caption{Critical core radius against reflector optical thickness. Dashed and dotted lines are the two bare references. Water saturates by $d \approx 3$ mfp; iron is still improving at $d = 10$; sodium sits above its bare line throughout.}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figs/q1_flux_profiles.pdf}
+\caption{Critical flux across core and reflector for the Pu-239 core behind 3 mfp, normalised to $\phi(0)=1$; dotted verticals mark each theory's interface. The discontinuous curve drops by the factor $g$ at the interface and is continuous in current, not in flux. Note the horizontal scale of the sodium panel: 3 mfp of sodium is 34.7 cm.}
+\end{figure}
+
+\FloatBarrier
+\subsection*{What the three approximations say}
+
+\paragraph{The reflector saving.} Water and iron behave as reflectors should. Both cores lose 12--17\% of their radius behind water and 12--24\% behind iron by theory (c), which because the mass goes as $R^3$ is a factor of nearly two in critical mass: Pu-239 falls from 9.188 kg bare to 4.556 kg behind 10 mfp of iron. The two reflectors saturate differently, and the reason is $c_R$. Water absorbs ($c_R = 0.90$, $\nu_0 = 1.90$), so a neutron more than about two mean free paths deep never returns and the water columns are flat past $d = 3$. Iron barely absorbs ($c_R = 0.998$, $\nu_0 = 12.9$), so its return keeps improving out to $d = 10$ and beyond --- iron starts as the worse reflector at $d=1$ and ends the better one at $d = 10$.
+
+\paragraph{The ordering of the three theories.} At every entry $R_c^{(a)} > R_c^{(b)} > R_c^{(c)}$. The first gap is inherited from the bare problem: the asymptotic $D_0(c_C)$ and $k_0(c_C)$ already give a smaller sphere than $D_0 = 1/3$ does, by 11\% for Pu-239. The second is the jump itself. Every pair here has $\mu_0(c_C) < \mu_0(c_R)$, so $g < 1$ --- $0.766$ for Pu-239 behind water, $0.873$ for U-235 behind iron --- because the multiplying core has the shorter relaxation length and hence the more forward-peaked angular flux, and so carries more current per unit density. A $g$ below one multiplies down both the leakage term and the curvature term of \eqref{eq:reflcrit}, which is why (c) always predicts the smallest core, by a further 8--9\% for water and iron.
+
+\paragraph{The sodium columns are diffusion theory failing.} Every sodium radius above is \emph{larger} than the corresponding bare sphere, which no reflector can do. The condition is being solved correctly --- \eqref{eq:reflcrit} was checked against an independent two-region spherical finite-volume $k$-eigenvalue solve, 3000 cells with harmonic-mean face diffusion coefficients across the material jump, and the two agree to better than $0.4\%$ on exactly these cases. The fault is in the model. Splitting the interface leakage of the Pu-239 core at $d = 10$ mfp into its two parts, $J/\phi = D_R/R_c + D_R/L$:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{lccccc}
+\toprule
+reflector & $D_R$ [cm] & shell [cm] & geometric $D_R/R_c$ & far-face $D_R/L$ & total vs.\ bare $0.5592$ \\
+\midrule
+Water  & 1.021 & 30.6  & 0.2050 & 0.1826 & 0.3876 \\
+Iron   & 1.433 & 43.0  & 0.3063 & 0.0381 & 0.3444 \\
+Sodium & 3.859 & 115.8 & \textbf{0.6295} & 0.0312 & 0.6607 \\
+\bottomrule
+\end{tabular}
+\caption{Leakage ratio at the interface, in cm$^{-1}$, classic theory. Sodium's far-face return is the best of the three --- 10 mfp of a pure scatterer really does send almost everything back --- but its geometric term alone exceeds what a bare vacuum surface leaks.}
+\end{table}
+
+The geometric term is the current driven by the $1/r$ spreading of $\phi = u/r$, and it is harmless only while $D_R \ll R_c$. Sodium's $\Sigma_t = 0.086368$ cm$^{-1}$ is a mean free path of $11.58$ cm against a core radius near $6$ cm: a neutron entering the reflector travels two core radii before its first collision, which is precisely the regime Fick's law expands away from. None of the three approximations repairs it, because a pure scatterer has $D_0 = 1/3$ in all of them and $D_R = 3.86$ cm throughout. Measured against its own bare sphere at $d = 10$, (a) is $+5.4\%$, (b) $+6.6\%$ and (c) $+2.3\%$ --- only the Zimmerman jump helps, and only because $g = 0.807$ multiplies the offending term. Transport theory would not make this mistake: the shell is optically thick and purely scattering, so its true albedo is high and the true critical radius must lie below the bare $5.1890$ cm.
+}
+
+\FloatBarrier
 \setcounter{section}{2}
 \section{Critical slab half-thickness by $S_N$}
 
@@ -121,6 +301,10 @@ In slab geometry the two are algebraically the same interior equations. Expandin
 With Mark conditions the two agree; with Marshak they do not. Concretely at $c=1.5$: $S_2$ above gives $a/2 = 0.78001$, and $P_1$ with the Mark extrapolation $l_0=1/\sqrt3$ gives $\arctan(1/Bl_0)/B = 0.78001$ --- the same five digits --- while $P_1$ with the Marshak $l_0 = 2/3$ gives $0.72348$, a 7\% spread between two methods that share every interior equation.
 
 A second source of difference is that $S_N$ is a collocation method: it satisfies the equation exactly along $N$ directions and says nothing between them. At the vacuum face the leaked current $\sum_{\mu_m>0} w_m \mu_m \psi_m$ is that of a flux strongly peaked towards $\mu=1$, which a coarse quadrature underestimates --- so the slab has to be made \emph{thicker} than it should be to stay critical, and the table comes down from above.
+
+{\color{blue}
+All of that is a statement about \emph{slabs}. In the sphere the equivalence fails at the interior equations themselves: the angular derivative $\frac{1-\mu^2}{r}\frac{\partial\psi}{\partial\mu}$ couples the Legendre moments in a different pattern from the way the $\alpha$ recursion of \eqref{eq:sphbalance} couples the ordinates, so $P_1$ and $S_2$ are genuinely different approximations there rather than the same one under two boundary conditions. At $c=1.5$, $S_2$ gives $R_c = 1.607$ mean free paths where $P_1$ with the Mark extrapolation gives $1.919$ and with Marshak's $1.822$ --- a spread no choice of boundary condition can close.
+}
 
 \FloatBarrier
 \section{Critical sphere radius by $S_N$}

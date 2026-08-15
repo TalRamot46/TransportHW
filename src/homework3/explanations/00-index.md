@@ -1,19 +1,21 @@
 # 00 — Index
 
-Explanations for the Assignment 3 code in `src/homework3/`, which covers Questions 3, 4 and 5:
-the critical slab half-thickness, the critical sphere radius, and the critical mass of U-235 and
-Pu-239, all by S_N. Results and figures are in `docs/homework3/homework3.tex`.
+**These files explain the code in `src/homework3/`. The physics is in
+`docs/homework3/homework3.tex` — read that first.**
+
+Assignment 3's solved questions are 1 (reflected sphere, by diffusion) and 3–5 (critical slab,
+critical sphere and critical mass, all by S_N). The report derives every formula and reports
+every number. What follows is the map from those formulas to the modules, the internals that
+are not obvious from reading them, and what was done to trust the results.
 
 | # | Title | What it settles |
 |---|---|---|
-| [01](01-sn-discretisation.md) | The S_N Sweep in a Slab and in a Sphere | One cell balance for both geometries, and where the `alpha` recursion comes from. |
-| [02](02-splitting-c.md) | Splitting `c` into Scattering and Fission | Why the critical size does not depend on the split, so `Sigma_s = 0` is free. |
-| [03](03-two-level-iteration.md) | The Two-Level Bell & Glasstone Iteration | What the inner and outer loops each cost, and the two dominance ratios that set it. |
-| [04](04-convergence-and-checks.md) | What Was Checked, and What the Mesh Costs | That the mesh is free, so every tabulated departure is angular truncation. |
-| [05](05-slab-sphere-and-pn.md) | The Slab/Sphere Relation, and `P_N` vs `S_{N+1}` | Why the two geometries converge from opposite sides, and where `P_N` and `S_{N+1}` part. |
-| [06](06-negative-flux-fixup.md) | The Negative-Flux Fixup, and Why It Never Fires Here | That it is correct, and that these problems never reach it. |
+| [01](01-module-map.md) | The Module Map | Which file owns what, and the call path from `main.py` down to one table. |
+| [02](02-sn-solver.md) | The S_N Solver | How one `cell_flux` serves both geometries, and the three traps in the sweep. |
+| [03](03-k-iteration.md) | The Two-Level `k` Iteration | What each loop costs, and which tolerance is the cheap one. |
+| [04](04-reflected-solver.md) | The Reflected-Sphere Solver | How three approximations collapse to one `Region` and one residual. |
+| [05](05-assignment-1-reuse.md) | What Comes From Assignment 1 | Which imports carry physics and which are plumbing. |
+| [06](06-verification.md) | Verification | Every check, in one place, with the number it produced. |
 
-Question 3 is covered by 01–06, Question 4 by 01 and 05, and Question 5 by 02 and 03.
-Assignment 1 is reused throughout: `homework1.criticality` supplies the exact-transport
-reference sizes, `homework1.materials` the benchmark cross sections and the mass formula, and
-`homework1.figures` and `homework1.tables` the output helpers.
+Nothing here re-derives the report. Where a physical result is needed it is cited by its
+equation or table number in `homework3.tex`.

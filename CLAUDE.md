@@ -26,15 +26,23 @@ These are the user's standing preferences. They apply to every file written here
 
 ## Explanations
 
-Every non-trivial explanation — a derivation, a design decision, why a formula is written one
-way rather than another — goes into `src/homeworkN/explanations/` as its own markdown file,
-**not** into a long code comment and not into the chat only.
+`src/homeworkN/explanations/` documents **the code**, not the physics. The intended reading
+flow is the report first, then these: `docs/homeworkN/homeworkN.tex` carries the idea — every
+derivation, every formula, every result — and the explanations carry the map from those
+formulas to the modules that implement them.
+
+So these files hold: the module map and the call path, what each non-obvious internal function
+does and why it is shaped that way, numerical branches and traps, alternatives that were tried
+and rejected, and what was verified and how. They do **not** re-derive anything that belongs in
+the report. If a derivation is missing, it goes in the `.tex`, not here.
 
 - One idea per file, named `NN-short-kebab-title.md`, numbered in reading order.
 - Each file opens with `# NN — Short Title` and a one-line bold statement of what it settles.
 - `00-index.md` is the index: a table of every file with its number, title, and that one-line
   hook. Keep it in sync when adding a file.
+- Cite the report by equation or table number instead of restating its content.
 - Reference measured numbers rather than asserting correctness.
+- Keep them short. A file that repeats the report is worse than no file at all.
 
 ## Physics conventions
 
