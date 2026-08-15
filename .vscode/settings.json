@@ -2,35 +2,71 @@
     "files.associations": {
         "*.tex": "latex"
     },
+
+    // latexmk cannot build in this repository: on this machine a just-written file
+    // cannot immediately be overwritten, and latexmk's second pass always collides
+    // with the output of its first -- it dies on the .log before it reaches the pdf.
+    // docs/build.ps1 deletes both outputs before every pass, which avoids it.
+    // See the header of docs/build.ps1 and docs/homework1/STATUS.md.
     "latex-workshop.latex.tools": [
         {
-            "name": "latexmk (perl)",
-            "command": "C:/Strawberry/perl/bin/perl.exe",
+            "name": "build.ps1",
+            "command": "powershell.exe",
             "args": [
-                "C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/scripts/latexmk/latexmk.pl",
-                "-pdf",
-                "-interaction=nonstopmode",
-                "-synctex=1",
-                "%DOC%"
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-Command",
+                "& '%WORKSPACE_FOLDER%/docs/build.ps1' (Split-Path -Leaf '%DIR%') '%DOCFILE%'"
+            ]
+        },
+        {
+            "name": "build.ps1 (single pass)",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-Command",
+                "& '%WORKSPACE_FOLDER%/docs/build.ps1' (Split-Path -Leaf '%DIR%') '%DOCFILE%' 1"
             ]
         }
     ],
     "latex-workshop.latex.recipes": [
         {
-            "name": "latexmk (perl)",
+            "name": "build.ps1 (3 passes, resolves references)",
             "tools": [
-                "latexmk (perl)"
+                "build.ps1"
+            ]
+        },
+        {
+            "name": "build.ps1 (1 pass, quick look)",
+            "tools": [
+                "build.ps1 (single pass)"
             ]
         }
     ],
     "latex-workshop.latex.recipe.default": "first",
+
+    // Safe to build on save again: the collision that made this fail came from
+    // latexmk, and build.ps1 deletes both outputs before every pass. Measured at
+    // 8.2 s for the 3-pass recipe, 4.0 s for the single pass, on homework1.
+    // To make ctrl+s use the quick recipe instead, set recipe.default to
+    // "lastUsed" and pick it once from Build LaTeX project.
     "latex-workshop.latex.autoBuild.run": "onSave",
+
+    // build.ps1 already removes the outputs it needs to; leave the rest alone so an
+    // interrupted build does not lose the .aux that carries the cross-references.
+    "latex-workshop.latex.autoClean.run": "never",
+
     "latex-workshop.latex.outDir": "%DIR%",
     "latex-workshop.synctex.path": "C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/miktex/bin/x64/synctex.exe",
     "latex-workshop.view.pdf.viewer": "tab",
     "latex-workshop.view.pdf.internal.synctex.keybinding": "ctrl-click",
     "latex-workshop.synctex.afterBuild.enabled": true,
     "latex-workshop.latex.search.rootFiles.include": [
-        "docs/homework4/homework1.tex"
+        "docs/homework1/homework1.tex",
+        "docs/homework2/homework2.tex",
+        "docs/homework4/homework4.tex"
     ]
 }

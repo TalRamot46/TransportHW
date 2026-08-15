@@ -33,6 +33,10 @@ the comparison a test of the numerics rather than of the boundary model.
 
 ## The Robin condition as an independent check
 
+*Historical: the `'robin'` option has since been removed from the code, which now implements
+only the extrapolated zero — see the note in [07](07-boundary-and-initial-conditions.md).
+The measurements below were taken while it existed.*
+
 `'robin'` is the analogue of `critical_dimensions_applied_bc`, which solves
 `u cot u = 1 - u/(B l0)` on the flux shape instead of placing an extrapolated zero. It gives
 a second analytic route that exercises the boundary coefficient itself rather than only the

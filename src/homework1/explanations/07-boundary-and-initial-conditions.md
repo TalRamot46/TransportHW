@@ -31,6 +31,14 @@ cannot represent is compressed into the single number `l0`:
 
 ## The two treatments: same `z0`, spent differently
 
+> **Removed from the code.** Both treatments were implemented and measured, but neither
+> Robin variant could be shown to be more accurate than the extrapolated zero against any
+> reference available here, so the choice was deleted in favour of one unambiguous condition
+> at `r = R`. `k_eigenvalue` now always uses the extrapolated zero. The comparison below is
+> kept because it is what settles what the discarded option *was*, and it is where the
+> `8–12 %` mass spread once quoted for Question 5 came from; the Robin numbers in it are no
+> longer reproducible from the current code.
+
 Both use `N` **uniform** cells of width `h = r_outer/N` — no cell is ever `h + z0` wide.
 What differs is where the mesh stops and what `l0` is:
 

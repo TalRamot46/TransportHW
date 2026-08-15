@@ -63,33 +63,13 @@ def _mass_table():
     log_table(['material', 'approximation', 'c', 'R_c [cm]', 'R analytic [cm]',
                'M_c [kg]'], rows)
 
-def _boundary_table():
-    """The mass under both boundary treatments; it goes as R^3, so the gap is large."""
-    rows = []
-    for name in FISSILE:
-        material = BENCHMARK[name]
-        for approximation in APPROXIMATIONS:
-            extrapolated = solve_material(material, approximation, n_cells=N_CELLS)
-            robin = solve_material(material, approximation, n_cells=N_CELLS,
-                                   boundary='robin')
-            delta = (robin.mass_numerical - extrapolated.mass_numerical)
-            rows.append([name, approximation, f'{extrapolated.mass_numerical:.3f}',
-                         f'{robin.mass_numerical:.3f}',
-                         f'{delta / extrapolated.mass_numerical * 100.0:+.2f}'])
-    log_table(['material', 'approximation', 'M extrapolated [kg]', 'M Robin [kg]',
-               'difference %'], rows)
-
 def report(figs):
-    """Prints the masses and their boundary sensitivity, and writes the Q5 figure."""
+    """Prints the critical radii and masses, and writes the Question 5 figure."""
     log_section('Homework 1 Question 5',
                 'Bare critical sphere from the Sood et al. one-group benchmark data.')
     _mass_table()
     logger.info("The prompt variant is the U-235 row given in the task prompt rather than "
                 "in the assignment PDF; its own cross sections give c = 1.365, not 1.50.")
-
-    log_section('Homework 1 Question 5: sensitivity to the boundary treatment',
-                'Extrapolated zero at R + z0 against phi + z0 phi\' = 0 applied at R.')
-    _boundary_table()
     subcritical = ', '.join(name for name in BENCHMARK if name not in FISSILE)
     logger.info(f"No bare critical sphere exists for {subcritical}: c <= 1, non-multiplying.")
 

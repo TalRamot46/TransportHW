@@ -23,8 +23,13 @@ exact-transport criticality relation.
 
 ## Sensitivity to the boundary treatment
 
+*Historical: the Robin option these numbers came from has since been removed, and the code
+now implements only the extrapolated zero — see the note in
+[07](07-boundary-and-initial-conditions.md). The spread is recorded because it is a real
+property of the model, even though only the left-hand column is still reproducible.*
+
 The masses above use the extrapolated zero. Applying the same condition at the physical
-surface instead ([06](06-spherical-finite-volume.md)) moves them by far more than any
+surface instead ([06](06-spherical-finite-volume.md)) moved them by far more than any
 numerical error, again through the cube:
 
 | material | approximation | `M_c` extrapolated | `M_c` Robin | difference |
@@ -39,9 +44,9 @@ model uncertainty, not solver error — and it is comparable to the difference b
 diffusion approximations themselves. Any single quoted mass should be read with it in mind.
 
 These are one-group, isotropic-scattering numbers, not predictions of real critical masses:
-at two mean free paths the boundary layer is a large fraction of the system — about a third
-of the neutrons leak out ([09](09-neutron-balance.md)) — and diffusion of either flavour is
-outside its regime. The transport benchmark radii of Sood, Forster & Parsons (2003) are the
+at two mean free paths the boundary layer is a large fraction of the system — `61.7 %` of the
+neutrons produced in the Pu-239 sphere leak out of it, and `55.6 %` in U-235
+([09](09-neutron-balance.md)) — and diffusion of either flavour is outside its regime. The transport benchmark radii of Sood, Forster & Parsons (2003) are the
 right reference to check them against. The other three benchmark rows (H2O, Fe, Na) have
 `c <= 1`, so no bare critical sphere exists for them at any radius.
 

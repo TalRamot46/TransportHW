@@ -31,6 +31,23 @@ check: the slab version compares against an analytic tail the truncated domain o
 approximates, whereas this is an exact identity of the discrete system.
 
 At `c = 1.5` classical, with `Sigma_a = 1`: production `32.233965`, absorption `21.489310`,
-leakage `10.744655`, residual `2.3e-14`. Roughly a third of the neutrons leak out of a
-critical sphere this small — the quantitative reason the boundary treatment matters as much
-as it does ([06](06-spherical-finite-volume.md)).
+leakage `10.744655`, residual `2.3e-14`.
+
+## The leakage fraction is fixed by the cross sections alone
+
+At `k = 1` the tautology `A/P = Sigma_a/(nu Sigma_f)` and the balance together give
+
+    L/P = 1 - Sigma_a/(nu Sigma_f)
+
+with no reference to `D`, to the geometry, or to the boundary treatment. For the test media
+(`Sigma_t = Sigma_a = 1`, `nu Sigma_f = c`, hence no scattering) that is `(c-1)/c`, and the
+measured fractions match it to six digits — identically for both approximations, despite
+their different radii.
+
+The `c` in that expression is doing no work of its own, which matters when carrying the
+number across to Question 5: the benchmark materials have the same `c` but plenty of
+scattering, so their fractions come out quite differently — `61.7 %` for Pu-239 (`c = 1.50`)
+and `55.6 %` for U-235, against the `33 %` of the scattering-free test medium at the same
+`c = 1.5`. Two thirds of the neutrons born in a critical Pu-239 sphere never have a chance to
+be absorbed in it, which is the quantitative reason the surface condition matters as much as
+it does ([06](06-spherical-finite-volume.md)).

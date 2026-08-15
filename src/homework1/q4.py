@@ -6,7 +6,6 @@ import numpy as np
 from homework1.spherical import (build_medium, buckling, k_eigenvalue, critical_radius,
                                  analytic_critical_radius, mesh_convergence,
                                  dominance_ratio, neutron_balance)
-from homework1.criticality import critical_dimensions_applied_bc, MARSHAK_EXTRAPOLATION
 from homework1.figures import subplots, panel, finish, savefig
 from homework1.tables import log_section, log_table
 
@@ -130,23 +129,8 @@ def _balance_table():
     log_table(['c', 'approximation', 'production', 'absorption', 'leakage', 'residual'],
               rows)
 
-def _boundary_table():
-    """The extrapolated zero against the Robin condition applied at the surface,
-    each against its own Question 3 analytic counterpart."""
-    rows = []
-    for c in C_VALUES:
-        medium = build_medium(1.0, 1.0, c, 'classical')
-        R_ext = critical_radius(medium, n_cells=N_CELLS)
-        R_rob = critical_radius(medium, n_cells=N_CELLS, boundary='robin')
-        _, R_rob_ana = critical_dimensions_applied_bc(c, MARSHAK_EXTRAPOLATION)
-        rows.append([f'{c:.2f}', f'{R_ext:.8f}', f'{R_rob:.8f}', f'{R_rob_ana:.8f}',
-                     f'{(R_rob - R_rob_ana) / R_rob_ana:.1e}',
-                     f'{(R_rob - R_ext) / R_ext * 100.0:+.2f}'])
-    log_table(['c', 'extrapolated', 'Robin', 'Robin analytic', 'Robin err',
-               'Robin - extrap %'], rows)
-
 def report(figs):
-    """Prints the radius table, the three verification checks, and writes the figures."""
+    """Prints the radius table, the two verification checks, and writes the figures."""
     log_section('Homework 1 Question 4',
                 f'k by Bell & Glasstone source iteration on {N_CELLS} cells, critical',
                 'radius by bisection on k(R) - 1. Lengths in mean free paths.')
@@ -159,10 +143,9 @@ def report(figs):
                 f"{ratios.min():.2f}-{ratios.max():.2f}")
 
     log_section('Homework 1 Question 4: verification',
-                'Iteration cost, neutron balance, and the two boundary treatments.')
+                'Iteration cost against the predicted dominance ratio, and neutron balance.')
     _iteration_table()
     _balance_table()
-    _boundary_table()
 
     plot_critical_radius(os.path.join(figs, 'q4_critical_radius.pdf'))
     plot_mesh_convergence(os.path.join(figs, 'q4_mesh_convergence.pdf'))

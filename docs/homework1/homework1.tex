@@ -349,12 +349,10 @@ Finite volume on $N$ uniform cell-centred shells. Integrating \eqref{eq:q4_spher
 \end{equation}
 with $A = 4\pi r^2$ and $V_j = \frac{4\pi}{3}(r_{j+1/2}^3 - r_{j-1/2}^3)$. The balance form is what removes the $1/r^2$ singularity: the innermost face has $A_{1/2} = 0$, so $\phi'(0) = 0$ is imposed exactly with no special case. The matrix is tridiagonal and solved in $O(N)$. Appendix~\ref{app:fv} works the mesh, the index map and the assembly through in full.
 
-Both outer treatments are the single condition $\phi + \ell_0 \phi' = 0$; eliminating the surface flux gives one leakage coefficient
+The outer boundary is the extrapolated zero: the mesh is run out to $R + z_0$ and the flux driven to zero there, which is what the Question 3 relations assume, so the comparison against them tests the numerics alone. Eliminating the surface flux between $\phi(R + z_0) = 0$ and the half cell separating it from the last centre gives the leakage coefficient
 \begin{equation}
-    J_s = \frac{D\,\phi_{N-1}}{\ell_0 + h/2}
-    \label{eq:leakage_bc}
+    J_s = \frac{D\,\phi_{N-1}}{h/2}
 \end{equation}
-covering the extrapolated zero ($\ell_0 = 0$ on a mesh run to $R + z_0$) and the Robin condition ($\ell_0 = z_0$ at $R$) without a branch. The extrapolated form is used, since it is what the Question 3 relations assume, making the comparison a test of the numerics alone.
 
 \subsection{The Iterative Algorithm}
 
@@ -402,7 +400,7 @@ The two approximations differ from each other far more than either differs from 
 \subsection{Verification}
 \label{sec:q4_verification}
 
-Three further checks, independent of the comparison in Table~\ref{tab:q4}.
+Two further checks, independent of the comparison in Table~\ref{tab:q4}.
 
 \paragraph{Convergence rate of the iteration.} The error of source iteration falls by the dominance ratio $k_1/k_0$ per sweep. With the spherical modes $B_n = n\pi/r_{\text{out}}$ this is $(\Sigma_a + DB_1^2)/(\Sigma_a + DB_2^2)$, which at a \emph{critical} radius collapses. Criticality means $\Sigma_a + DB_1^2 = \nu\Sigma_f$, and $B_2 = 2B_1$, so
 \begin{equation}
@@ -429,27 +427,33 @@ The diffusion coefficient has cancelled: \emph{the convergence rate at criticali
     \end{tabular}
 \end{table}
 
-\paragraph{Neutron balance.} For the converged critical flux, production must equal absorption plus leakage. The residual $|P - A - L|/P$ lies between $6\times10^{-16}$ and $1.3\times10^{-13}$ over the whole range, for both approximations. The informative term is the leakage: production and absorption are the same volume integral times a constant, so their ratio $\nu\Sigma_f/(k\Sigma_a)$ holds identically whatever the flux. Leakage, by contrast, is computed from the boundary formula using only $\phi_{N-1}$, and nothing forces it to close the balance unless the discrete operator conserves neutrons cell by cell and the boundary coefficient is exactly right. At $c = 1.5$ classical, $P = 32.2340$, $A = 21.4893$, $L = 10.7447$: about a third of the neutrons leak out, which is why the boundary treatment matters as much as it does below.
-
-\paragraph{Boundary treatment.} Table~\ref{tab:q4_boundary} exercises the second branch of \eqref{eq:leakage_bc} against a second, independent analytic route --- $u \cot u = 1 - u/(B\ell_0)$ from \texttt{critical\_dimensions\_applied\_bc}, which solves the condition on the flux shape instead of extrapolating. The numerical Robin radius reproduces it to $1.5\times10^{-6}$ relative, the same discretisation error as the extrapolated case, confirming the boundary coefficient in both of its limits.
-
-The two treatments are not interchangeable, though: they agree to first order in $B\ell_0$ and separate as the system shrinks, from $0.26\,\%$ apart at $c = 1.02$ to $4.5\,\%$ at $c = 2$. That gap is not solver error but the genuine ambiguity in what ``the surface'' means for a system a few mean free paths across.
+\paragraph{Neutron balance.} For the converged critical flux, production must equal absorption plus leakage. The informative term is the leakage: production and absorption are the same volume integral times a constant, so their ratio $\nu\Sigma_f/(k\Sigma_a)$ holds identically whatever the flux. Leakage, by contrast, is computed from the boundary formula using only $\phi_{N-1}$, and nothing forces it to close the balance unless the discrete operator conserves neutrons cell by cell and the boundary coefficient is exactly right.
 
 \begin{table}[htbp]
     \centering
-    \caption{Extrapolated zero at $R + z_0$ against the condition $\phi + z_0\phi' = 0$ applied at $R$, classical diffusion, in mean free paths.}
-    \label{tab:q4_boundary}
-    \begin{tabular}{lcccc}
+    \caption{Neutron balance at the critical radius, classical diffusion on a 400-cell mesh, for the test media $\Sigma_t = \Sigma_a = 1$, $\nu\Sigma_f = c$. The flux is normalised to unit maximum, so the absolute values are arbitrary but their ratios are not. The asymptotic branch gives smaller spheres and hence smaller terms, but identical fractions and residuals of the same order.}
+    \label{tab:q4_balance}
+    \begin{tabular}{lrrrccc}
         \toprule
-        $c$ & extrapolated & Robin & Robin analytic & Robin $-$ extrapolated \\
+        $c$ & $P$ & $A$ & $L$ & $L/P$ & $(c-1)/c$ & $|P - A - L|/P$ \\
         \midrule
-        1.02 & 12.158813 & 12.126930 & 12.126949 & $-0.26\,\%$ \\
-        1.10 & 5.069062  & 5.007865  & 5.007874  & $-1.21\,\%$ \\
-        1.50 & 1.898429  & 1.821650  & 1.821653  & $-4.04\,\%$ \\
-        2.00 & 1.147130  & 1.095638  & 1.095640  & $-4.49\,\%$ \\
+        1.02 & 2739.887787 & 2686.164497 & 53.723290 & 0.019608 & 0.019608 & $5.9\times10^{-15}$ \\
+        1.10 & \phantom{0}264.283575 & \phantom{0}240.257796 & 24.025780 & 0.090909 & 0.090909 & $9.6\times10^{-15}$ \\
+        1.20 & \phantom{0}101.932749 & \phantom{00}84.943958 & 16.988792 & 0.166667 & 0.166667 & $1.9\times10^{-14}$ \\
+        1.50 & \phantom{00}32.233965 & \phantom{00}21.489310 & 10.744655 & 0.333333 & 0.333333 & $2.3\times10^{-14}$ \\
+        1.80 & \phantom{00}19.112390 & \phantom{00}10.617995 & \phantom{0}8.494396 & 0.444444 & 0.444444 & $1.1\times10^{-13}$ \\
+        2.00 & \phantom{00}15.195237 & \phantom{000}7.597619 & \phantom{0}7.597619 & 0.500000 & 0.500000 & $5.1\times10^{-14}$ \\
         \bottomrule
     \end{tabular}
 \end{table}
+
+The residual sits at machine precision throughout --- between $6\times10^{-16}$ and $1.3\times10^{-13}$ over the whole sweep, for both approximations --- with no trend in $c$, which is why it is tabulated rather than plotted. The two columns that do carry information are the last but one and its prediction. At criticality $k = 1$, so $A/P = \Sigma_a/(\nu\Sigma_f)$ and the balance forces
+\begin{equation}
+    \frac{L}{P} = 1 - \frac{\Sigma_a}{\nu\Sigma_f} = \frac{c-1}{c}
+    \qquad \text{(the last form for these test media, where } \Sigma_s = 0\text{)}
+    \label{eq:leakfrac}
+\end{equation}
+and the measured fractions reproduce it to every digit shown, identically for both approximations despite their different radii. Only the first equality is a tautology; the second requires the balance to close, so this is the same check as the residual column, read as physics rather than as round-off. Half the neutrons leak out of the critical sphere at $c = 2$, and a third at $c = 1.5$ --- the quantitative reason the surface condition matters as much as it does.
 
 \begin{figure}[htbp]
     \centering
@@ -499,29 +503,7 @@ Question 5 is Question 4 with the one-group benchmark cross sections of Sood, Fo
 
 Because the mass goes as the cube of the radius, the moderate difference in relaxation length is strongly amplified: the classical radius exceeds the asymptotic one by $12.1\,\%$ (Pu-239) and $9.0\,\%$ (U-235), which becomes mass ratios of $1.41$ and $1.30$. Classical diffusion thus over-predicts the critical mass by 30--40\,\% here, and worsens with $c$. The asymptotic values are the ones to quote, since asymptotic diffusion with the exact $z_0(c)$ reproduces the exact-transport relation.
 
-\subsection{Sensitivity to the Boundary Treatment}
-
-The masses above use the extrapolated zero. Applying the same condition directly at the physical surface instead moves them by far more than any numerical error, again because the mass goes as the cube of a radius only a couple of mean free paths long.
-
-\begin{table}[htbp]
-    \centering
-    \caption{Critical mass under the two boundary treatments. Both reproduce their own analytic result to $1.5\times10^{-6}$, so the spread is model uncertainty, not solver error.}
-    \label{tab:q5_boundary}
-    \begin{tabular}{llccc}
-        \toprule
-        Material & Approximation & $M_c$ extrapolated [kg] & $M_c$ Robin [kg] & difference \\
-        \midrule
-        Pu-239 & classical  & 12.940 & 11.432 & $-11.7\,\%$ \\
-        Pu-239 & asymptotic & \phantom{0}9.188 & \phantom{0}8.307 & $-9.6\,\%$ \\
-        U-235  & classical  & 42.345 & 38.679 & $-8.7\,\%$ \\
-        U-235  & asymptotic & 32.696 & 30.212 & $-7.6\,\%$ \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-Both treatments reproduce their own analytic result, so this 8--12\,\% spread is model uncertainty rather than solver error, and it is comparable to the difference between the two diffusion approximations themselves. Any single quoted mass should be read with it in mind.
-
-These are one-group, isotropic-scattering results, not predictions of real critical masses: at about two mean free paths the boundary layer is a large fraction of the system --- roughly a third of the neutrons leak out --- so diffusion of either flavour is well outside its regime, and the transport benchmark radii of Sood \emph{et al.} are the appropriate reference. The remaining three benchmark rows (H$_2$O, Fe, Na) have $c \leq 1$ and are non-multiplying, so no bare critical sphere exists for them at any radius.
+These are one-group, isotropic-scattering results, not predictions of real critical masses: at about two mean free paths the boundary layer is a large fraction of the system. By \eqref{eq:leakfrac} with each material's own $\Sigma_a/\nu\Sigma_f$, $61.7\,\%$ of the neutrons produced in the critical Pu-239 sphere leak out of it, and $55.6\,\%$ in U-235 --- both measured to six digits and identical under either approximation. Diffusion of either flavour is therefore well outside its regime, and the transport benchmark radii of Sood \emph{et al.} are the appropriate reference. The remaining three benchmark rows (H$_2$O, Fe, Na) have $c \leq 1$ and are non-multiplying, so no bare critical sphere exists for them at any radius.
 
 \paragraph{A note on the U-235 data.} Two rows were in circulation. The assignment table ($\Sigma_c = 0.013056$, $\Sigma_s = 0.248064$, $\Sigma_t = 0.32640$) implies $c = 1.3000$, matching its quoted value, and is what is used above. The alternative row ($\Sigma_c = 0.015672$, $\Sigma_s = 0.180448$, $\Sigma_t = 0.26140$) is quoted with $c = 1.50$ but implies $c = 1.3646$, so it is not self-consistent; through the same code it gives $R_c = 8.9412$ cm, $M_c = 56.89$ kg classically and $8.1161$ cm, $42.55$ kg asymptotically --- roughly $30\,\%$ more mass. Pu-239 is identical in both sources.
 
@@ -635,7 +617,7 @@ Each face appears in exactly the two rows it separates, with the same magnitude 
 
 \paragraph{The origin.} Face $0$ sits at $r = 0$, so $A_0 = 0$ and therefore $C_0 = 0$. The $\phi_{-1}$ term in \eqref{eq:fv_row} vanishes on its own for cell $j = 0$, and no current crosses the centre. The symmetry condition $\phi'(0) = 0$ is thus imposed \emph{exactly}, by geometry, with no code path of its own --- the reason \texttt{\_banded\_operator} can index a plain array at $j = 0$.
 
-\paragraph{The outer surface.} Face $N$ has no cell beyond it. The surface flux $\phi_s$ is eliminated between the boundary condition $\phi + \ell_0 \phi' = 0$ and the one-sided difference over the half cell $h/2$ that separates $\bar r_{N-1}$ from the surface:
+\paragraph{The outer surface.} Face $N$ has no cell beyond it. It sits at $R + z_0$, where the flux is driven to zero. Deriving its coefficient for the general condition $\phi + \ell_0 \phi' = 0$ and specialising afterwards is worth the extra line, because it shows the extrapolated zero is the clean $\ell_0 \to 0$ limit rather than a separate case. The surface flux $\phi_s$ is eliminated between that condition and the one-sided difference over the half cell $h/2$ that separates $\bar r_{N-1}$ from the surface:
 \begin{equation}
     J_s = -D\phi'(R_{\text{out}}) = \frac{D\phi_s}{\ell_0},
     \qquad
@@ -650,7 +632,7 @@ Equating and solving,
     C_N = \frac{D A_N}{\ell_0 + h/2}
     \label{eq:CN}
 \end{equation}
-which is the single line assigning \texttt{conductance[-1]}, the code writing $\ell_0$ as the variable \texttt{l0} (a lower-case L, not a one). Because $\ell_0$ appears only in the denominator, $\ell_0 = 0$ is not a special case: it gives $\phi_s = 0$ and $C_N = D A_N/(h/2)$, the zero-flux limit. The two treatments of \texttt{\_outer\_boundary} are then just two choices of $(R_{\text{out}}, \ell_0)$: the extrapolated zero uses $(R + z_0,\, 0)$, and the Robin condition uses $(R,\, z_0)$.
+Because $\ell_0$ appears only in the denominator, $\ell_0 = 0$ is not a special case: it gives $\phi_s = 0$ and $C_N = D A_N/(h/2)$, which is the line \texttt{conductance[-1] = D * areas[-1] / (0.5 * h)} in \texttt{\_banded\_operator} and the only outer condition the code implements. The extrapolation distance has already been spent in placing the mesh boundary at $R_{\text{out}} = R + z_0$, so it does not appear again here.
 
 Note where $C_N$ ends up: on the \emph{diagonal} of the last row only. It removes neutrons from cell $N-1$ without coupling it to anything, which is exactly what leakage out of the system is.
 

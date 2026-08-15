@@ -63,11 +63,11 @@ class MaterialResult(NamedTuple):
     mass_numerical: float
     mass_analytic: float
 
-def solve_material(material, approximation, n_cells=400, boundary='extrapolated'):
+def solve_material(material, approximation, n_cells=400):
     """Critical radius and mass of one material under one approximation."""
     medium = build_medium(material.sigma_t, material.sigma_a,
                           material.nu_sigma_f, approximation)
-    R_num = critical_radius(medium, n_cells=n_cells, boundary=boundary)
+    R_num = critical_radius(medium, n_cells=n_cells)
     R_ana = analytic_critical_radius(medium)
     return MaterialResult(R_num, R_ana,
                           critical_mass(R_num, material.density),
