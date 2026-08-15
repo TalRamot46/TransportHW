@@ -1,0 +1,214 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{placeins}
+
+\geometry{margin=1in}
+
+\title{Homework Assignment 3: Criticality in the $S_N$ Approximation}
+\author{Tal Ramot}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{The method}
+
+All three questions solve the same monoenergetic, steady-state problem,
+\begin{equation}
+    \mu \frac{\partial \psi}{\partial x} + \Sigma_t \psi = \frac{1}{2}\left[\Sigma_s \phi + \frac{1}{k}\nu\Sigma_f \phi\right],
+    \qquad \phi(x) = \int_{-1}^{1}\psi(x,\mu)\,d\mu
+\end{equation}
+with the same three ingredients: a Gauss--Legendre quadrature in angle, diamond differencing in space with a negative-flux fixup, and the Bell \& Glasstone $k$ iteration. Lengths are mean free paths in Questions 3 and 4 and centimetres in Question 5.
+
+\paragraph{Angle.} The $N$ ordinates $\{\mu_m\}$ and weights $\{w_m\}$ are the Gauss--Legendre nodes on $[-1,1]$, so that $\mu_{N-m+1}=-\mu_m$, $\sum_m w_m = 2$, and
+\begin{equation}
+    \phi_i = \sum_{m=1}^{N} w_m \psi_{i,m}
+\end{equation}
+
+\paragraph{Space, slab.} Integrating over cell $i$ and closing with the diamond relation $\psi_{i,m} = \tfrac{1}{2}(\psi_{i+1/2,m}+\psi_{i-1/2,m})$ gives the sweep
+\begin{equation}
+    \psi_{i,m} = \frac{2|\mu_m|\,\psi_{\text{in},m} + \tfrac{1}{2}S_i \Delta x}{\Sigma_t \Delta x + 2|\mu_m|},
+    \qquad
+    \psi_{\text{out},m} = 2\psi_{i,m} - \psi_{\text{in},m}
+    \label{eq:slabsweep}
+\end{equation}
+swept from $x=a/2$ inwards for $\mu_m<0$ and from $x=0$ outwards for $\mu_m>0$.
+
+\paragraph{Space, sphere.} The spherical equation carries an angular redistribution term,
+\begin{equation}
+    \mu \frac{\partial \psi}{\partial r} + \frac{1-\mu^2}{r}\frac{\partial \psi}{\partial \mu} + \Sigma_t \psi = \frac{S}{2}
+\end{equation}
+whose conservative form integrates over the cell to
+\begin{equation}
+    \mu_m\left(A_{i+\frac12}\psi_{i+\frac12,m} - A_{i-\frac12}\psi_{i-\frac12,m}\right)
+    + \frac{A_{i+\frac12}-A_{i-\frac12}}{w_m}\left(\alpha_{m+\frac12}\psi_{i,m+\frac12} - \alpha_{m-\frac12}\psi_{i,m-\frac12}\right)
+    + \Sigma_t V_i \psi_{i,m} = \frac{S_i}{2}V_i
+    \label{eq:sphbalance}
+\end{equation}
+with $A = 4\pi r^2$ and $V_i = \tfrac{4\pi}{3}(r_{i+1/2}^3 - r_{i-1/2}^3)$. This is \eqref{eq:slabsweep} with a second outgoing face, in angle, closed by the same diamond relation $\psi_{i,m}=\tfrac12(\psi_{i,m+1/2}+\psi_{i,m-1/2})$. The angular coefficients follow from demanding that a flat flux solve \eqref{eq:sphbalance} exactly:
+\begin{equation}
+    \alpha_{\frac12} = 0, \qquad \alpha_{m+\frac12} = \alpha_{m-\frac12} - w_m \mu_m,
+    \qquad \alpha_{N+\frac12} = 0 \ \text{ since } \sum_m w_m \mu_m = 0
+\end{equation}
+The recursion needs a starting value $\psi_{i,1/2}$ at $\mu_{1/2}=-1$, where $1-\mu^2=0$ and the angular derivative drops out; what remains, $-\partial \psi/\partial r + \Sigma_t \psi = S/2$, is the plain slab sweep at $|\mu|=1$, run inwards from the vacuum boundary.
+
+\paragraph{Fixup.} Whenever a diamond outgoing flux $2\psi_{i,m}-\psi_{\text{in},m}$ comes out negative it is set to zero and the cell balance is re-solved with it held there, in angle as well as in space. This never occurs in Questions 3--5: the fission source is proportional to the flux itself, so no cell is ever starved, and a critical system is thin enough that $\Sigma_t \Delta x / |\mu_m| < 2$ at every ordinate.
+
+\paragraph{Boundary conditions.} Reflective at the symmetry point, $\psi_{1/2,m} = \psi_{1/2,m'}$ with $\mu_{m'}=-\mu_m$; vacuum at the outer face, $\psi_{I+1/2,m}=0$ for $\mu_m<0$.
+
+\paragraph{Eigenvalue.} Outer iteration $l$ fixes the fission source $Q_{f,i}^{(l)} = \nu\Sigma_{f,i}\phi_i^{(l)}/k^{(l)}$; inner iteration $n$ sweeps $S_i = \Sigma_{s,i}\phi_i^{(n)} + Q_{f,i}^{(l)}$ until $\phi$ settles; then
+\begin{equation}
+    k^{(l+1)} = k^{(l)}\,\frac{P^{(l+1)}}{P^{(l)}},
+    \qquad P^{(l)} = \sum_i \nu\Sigma_{f,i}\,\phi_i^{(l)}\,V_i
+\end{equation}
+Dividing the fission source by $k$ makes a solution exist at \emph{every} system size, so criticality becomes a root search: \texttt{brentq} on $k(\text{size})-1$, which costs 8 evaluations of $k$.
+
+\paragraph{The meaning of $c$.} Questions 3 and 4 specify only $c=(\Sigma_s+\nu\Sigma_f)/\Sigma_t$. At $k=1$ the source bracket collapses to $c\,\Sigma_t\phi$ whatever the split between scattering and fission, so the critical size depends on $c$ alone and the code takes the simplest split, $\Sigma_t=1$, $\Sigma_s=0$, $\nu\Sigma_f=c$. Question 5 has no such freedom and uses the tabulated cross sections directly.
+
+\setcounter{section}{2}
+\section{Critical slab half-thickness by $S_N$}
+
+Reflective at $x=0$, vacuum at $x=a/2$, 200 cells. The reference column is Assignment 1's exact-transport relation $a/2 = \tfrac{\pi}{2}\nu_0 - z_0$, evaluated from Case's tabulated $\nu_0$ and $z_0$.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ccccc}
+\toprule
+$c$ & order & $a/2$ [mfp] & exact transport [mfp] & departure \\
+\midrule
+1.2 & $S_2$    & 1.48499 & 1.28981 & $+15.13\%$ \\
+1.2 & $S_4$    & 1.31855 & 1.28981 & $+2.23\%$ \\
+1.2 & $S_6$    & 1.29861 & 1.28981 & $+0.68\%$ \\
+1.2 & $S_{10}$ & 1.29218 & 1.28981 & $+0.18\%$ \\
+\midrule
+1.5 & $S_2$    & 0.78001 & 0.60762 & $+28.37\%$ \\
+1.5 & $S_4$    & 0.64949 & 0.60762 & $+6.89\%$ \\
+1.5 & $S_6$    & 0.62089 & 0.60762 & $+2.18\%$ \\
+1.5 & $S_{10}$ & 0.60904 & 0.60762 & $+0.23\%$ \\
+\midrule
+1.8 & $S_2$    & 0.54291 & 0.39314 & $+38.09\%$ \\
+1.8 & $S_4$    & 0.43875 & 0.39314 & $+11.60\%$ \\
+1.8 & $S_6$    & 0.41014 & 0.39314 & $+4.32\%$ \\
+1.8 & $S_{10}$ & 0.39459 & 0.39314 & $+0.37\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Critical half-thickness in mean free paths. The departure is entirely angular: the same radii are reproduced to seven digits on meshes from 50 to 800 cells.}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figs/q3_slab_orders.pdf}
+\caption{Left: convergence of $a/2$ with $N$, dashed lines the exact-transport values. Centre: $k$ against half-thickness at $c=1.5$, circles the $k=1$ crossings. Right: the normalised critical flux, which barely moves with $N$ --- the order affects the boundary, not the interior.}
+\end{figure}
+
+The exact one-speed value at $c=1.5$ is $0.605055$ mfp, the Sood \emph{et al.} Pu-239 slab ($1.853722$ cm at $\Sigma_t = 0.32640$ cm$^{-1}$, the same table Assignment 1 Question 5 uses). The $S_N$ sequence walks down onto it monotonically: $0.609042$ at $S_{10}$, $0.606407$ at $S_{16}$, $0.605631$ at $S_{24}$, $0.605195$ at $S_{48}$.
+
+\subsection*{$P_N$ against $S_{N+1}$}
+
+In slab geometry the two are algebraically the same interior equations. Expanding $\psi$ in $N+1$ Legendre moments and truncating gives the same $N+1$ coupled ODEs as collocating at the $N+1$ Gauss--Legendre points, because a Gauss--Legendre rule of order $N+1$ integrates polynomials up to degree $2N+1$ exactly. \textbf{Any difference between $P_N$ and $S_{N+1}$ is therefore a difference of boundary condition}, and it is largest at low $N$ where the boundary is the whole story:
+\begin{itemize}
+    \item $S_{N+1}$ sets $\psi(a/2,\mu_m)=0$ on each incoming ordinate --- the \emph{Mark} condition.
+    \item $P_N$ needs conditions on moments instead. \emph{Marshak}'s, $\int_0^1 P_{2j+1}(\mu)\psi\,d\mu = 0$, weight the whole incoming half-range; Mark's pin the same isolated directions $S_{N+1}$ does.
+\end{itemize}
+With Mark conditions the two agree; with Marshak they do not. Concretely at $c=1.5$: $S_2$ above gives $a/2 = 0.78001$, and $P_1$ with the Mark extrapolation $l_0=1/\sqrt3$ gives $\arctan(1/Bl_0)/B = 0.78001$ --- the same five digits --- while $P_1$ with the Marshak $l_0 = 2/3$ gives $0.72348$, a 7\% spread between two methods that share every interior equation.
+
+A second source of difference is that $S_N$ is a collocation method: it satisfies the equation exactly along $N$ directions and says nothing between them. At the vacuum face the leaked current $\sum_{\mu_m>0} w_m \mu_m \psi_m$ is that of a flux strongly peaked towards $\mu=1$, which a coarse quadrature underestimates --- so the slab has to be made \emph{thicker} than it should be to stay critical, and the table comes down from above.
+
+\FloatBarrier
+\section{Critical sphere radius by $S_N$}
+
+Reflective at $r=0$, vacuum at $r=R$, 100 cells, with the angular redistribution term of \eqref{eq:sphbalance}. The reference is Assignment 1's $\Sigma_t R_c = \pi \nu_0 - z_0$.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ccccc}
+\toprule
+$c$ & order & $R_c$ [mfp] & exact transport [mfp] & departure \\
+\midrule
+1.2 & $S_2$    & 3.06060 & 3.17204 & $-3.51\%$ \\
+1.2 & $S_4$    & 3.14631 & 3.17204 & $-0.81\%$ \\
+1.2 & $S_6$    & 3.15991 & 3.17204 & $-0.38\%$ \\
+1.2 & $S_{10}$ & 3.16728 & 3.17204 & $-0.15\%$ \\
+\midrule
+1.5 & $S_2$    & 1.60725 & 1.69010 & $-4.90\%$ \\
+1.5 & $S_4$    & 1.66739 & 1.69010 & $-1.34\%$ \\
+1.5 & $S_6$    & 1.67934 & 1.69010 & $-0.64\%$ \\
+1.5 & $S_{10}$ & 1.68595 & 1.69010 & $-0.25\%$ \\
+\midrule
+1.8 & $S_2$    & 1.11753 & 1.18295 & $-5.53\%$ \\
+1.8 & $S_4$    & 1.16413 & 1.18295 & $-1.59\%$ \\
+1.8 & $S_6$    & 1.17412 & 1.18295 & $-0.75\%$ \\
+1.8 & $S_{10}$ & 1.17971 & 1.18295 & $-0.27\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Critical radius in mean free paths. Note the sign: the sphere converges from \emph{below}, the slab from above.}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figs/q4_sphere_orders.pdf}
+\caption{The same three panels for the sphere. The $S_2$ curve is the outlier in all three: in curvilinear geometry $S_2$ is not the $P_1$ equation, and the angular redistribution term it misrepresents is a loss from the interior directions.}
+\end{figure}
+
+\paragraph{Cross-check between the two geometries.} Both drive the asymptotic flux to zero at the same extrapolated surface, so $a/2 + z_0 = \tfrac{\pi}{2}\nu_0$ and $R_c + z_0 = \pi \nu_0$, and therefore
+\begin{equation}
+    z_0 = R_c - 2\,(a/2)
+\end{equation}
+which lets the two tables above check each other without any further calculation:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{cccccc}
+\toprule
+$c$ & from $S_2$ & from $S_4$ & from $S_6$ & from $S_{10}$ & Case's table \\
+\midrule
+1.2 & 0.091 & 0.509 & 0.563 & 0.583 & 0.592 \\
+1.5 & 0.047 & 0.368 & 0.438 & 0.468 & 0.475 \\
+1.8 & 0.032 & 0.287 & 0.354 & 0.391 & 0.397 \\
+\bottomrule
+\end{tabular}
+\caption{Extrapolation distance $z_0$ implied by the two geometries, in mean free paths. At $S_{10}$ it is 1.5\% below Case's value at all three $c$ --- the same shortfall three times, which is the relation's own asymptotic error. At $S_2$ it nearly vanishes, which is the sharpest statement of what low-order $S_N$ gets wrong: the boundary, not the interior.}
+\end{table}
+
+\FloatBarrier
+\section{Critical mass of U-235 and Pu-239 by $S_N$}
+
+The cross sections are the Question 5 table of Assignment 1 --- $\Sigma_t = 0.32640$ cm$^{-1}$ for both, giving $c = 1.500$ for Pu-239 and $c = 1.300$ for U-235 --- and the critical mass follows from the converged radius as $M_c = \tfrac{4}{3}\pi R_c^3 \rho$. Here $\Sigma_s > 0$, so the inner iteration does real work: about ten sweeps per outer, against one for the $c$-only problems above. The orders are $S_2$ to $S_{16}$ rather than the $S_2$--$S_{10}$ of the previous questions, since the mass goes as the cube of the radius and is the more demanding quantity.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ccccccc}
+\toprule
+material & order & $c$ & $R_c$ [cm] & $M_c$ [kg] & asympt.\ diffusion $R_c$ [cm] & departure \\
+\midrule
+Pu-239 & $S_2$    & 1.500 & 4.9242 & 7.852 & 5.1890 & $-5.10\%$ \\
+Pu-239 & $S_4$    & 1.500 & 5.1084 & 8.767 & 5.1890 & $-1.55\%$ \\
+Pu-239 & $S_8$    & 1.500 & 5.1586 & 9.028 & 5.1890 & $-0.59\%$ \\
+Pu-239 & $S_{16}$ & 1.500 & 5.1730 & 9.104 & 5.1890 & $-0.31\%$ \\
+\midrule
+U-235 & $S_2$    & 1.300 & 7.1218 & 28.748 & 7.4339 & $-4.20\%$ \\
+U-235 & $S_4$    & 1.300 & 7.3514 & 31.619 & 7.4339 & $-1.11\%$ \\
+U-235 & $S_8$    & 1.300 & 7.4072 & 32.345 & 7.4339 & $-0.36\%$ \\
+U-235 & $S_{16}$ & 1.300 & 7.4231 & 32.553 & 7.4339 & $-0.15\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Critical radius and mass, against the asymptotic diffusion result of Assignment 1 Question 5. The mass is the cube of the radius, so the $5\%$ radius error of $S_2$ is a $14\%$ error in mass.}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figs/q5_critical_mass.pdf}
+\caption{$k$ against sphere radius at $S_{16}$, with the $k=1$ crossing that fixes the critical mass.}
+\end{figure}
+
+Diffusion overestimates both radii, and by more for Pu-239 than for U-235: the surface sits about two mean free paths from the centre in both cases, but the higher $c$ makes the Pu-239 flux fall off faster and its surface angular flux more forward-peaked, which is exactly what a diffusion approximation cannot represent. $S_{16}$ recovers the difference to within $0.3\%$ of the transport-theory radius.
+
+\end{document}
