@@ -5,7 +5,7 @@ correct; each is something that would have failed loudly if it were not.**
 
 ## Question 1 — the reflected sphere
 
-**Against an independent discretisation.** The closed-form root of report equation (11) was
+**Against an independent discretisation.** The closed-form root of report equation (13) was
 checked against a two-region spherical finite-volume `k`-eigenvalue solve — 3000 cells,
 harmonic-mean face diffusion coefficients across the material jump, the same extrapolated-zero
 outer condition — for Pu-239 behind all three reflectors at `d = 1, 3, 10` mfp in both
@@ -61,7 +61,7 @@ starved, and a critical system is thin enough that `Sigma_t dx/|mu| < 2` even on
 **The report's S_N tables can therefore be read as pure diamond-difference results**, with no
 fixup-induced first-order error mixed in.
 
-**The inner tolerance is the cheap knob.** Tightening `inner_iteration`'s tolerance from `1e-6`
+**The inner tolerance is the cheap knob.** Tightening `run_sn`'s tolerance from `1e-6`
 to `1e-11` triples the sweep count (149 to 446) and does not move `k` in its first eight
 digits: an inexact inner solve is absorbed by the next outer. `1e-8` sits comfortably inside
 that plateau.

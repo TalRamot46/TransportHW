@@ -35,12 +35,14 @@ class SphereSolver:
         sweep is the plain slab one; see explanations/02."""
         psi, psi_in = np.empty(self.n_cells), 0.0
         for i in range(self.n_cells - 1, -1, -1):
-            psi[i], (psi_in,) = sn.cell_flux(self.medium.sigma_t * self.dr,
-                                             source[i] * self.dr, [(1.0, 1.0, psi_in)])
+            # One face, at |mu| = 1: the slab row of report eq. (8) with a_out = a_in = 1.
+            psi[i], (psi_in,) = sn.cell_flux(self.medium.sigma_t * self.dr, source[i] * self.dr,
+                                             [sn.Face(1.0, 1.0, psi_in)])
         return psi
 
-    def _direction(self, m, source, psi_low, incoming):
-        """Sweeps one ordinate and returns its flux contribution and its upper half-angle flux."""
+    def _sweep(self, m, source, psi_low, incoming):
+        """One sweep: marches ordinate m across the mesh, returning its flux contribution
+        and its upper half-angle flux."""
         mu, weight = self.mu[m], self.weights[m]
         inward = mu < 0.0
         cells = range(self.n_cells - 1, -1, -1) if inward else range(self.n_cells)
@@ -52,34 +54,37 @@ class SphereSolver:
             inner, outer = self.areas[i], self.areas[i + 1]
             a_out, a_in = (inner, outer) if inward else (outer, inner)
             angular = (outer - inner) / weight
+            # Two faces: the spatial one, weighted by the two shell areas, and the
+            # angular one, weighted by the two alphas of the bin. Report eq. (5).
             psi[i], (psi_in, psi_high[i]) = sn.cell_flux(
                 self.medium.sigma_t * self.volumes[i], source[i] * self.volumes[i],
-                [(abs(mu) * a_out, abs(mu) * a_in, psi_in),
-                 (angular * self.alpha[m + 1], angular * self.alpha[m], psi_low[i])])
+                [sn.Face(abs(mu) * a_out, abs(mu) * a_in, psi_in),
+                 sn.Face(angular * self.alpha[m + 1], angular * self.alpha[m], psi_low[i])])
 
         if inward:
             incoming[len(self.mu) - 1 - m] = psi_in   # reflective boundary at r = 0
         return weight * psi, psi_high
 
-    def sweep(self, source):
-        """Scalar flux produced by one isotropic source S; the ordinates carry S/2."""
+    def sn_iteration(self, source):
+        """One S_N iteration: one sweep per ordinate, summed into the scalar flux.
+        The source S is isotropic, so each ordinate carries S/2."""
         q = 0.5 * source
         psi_low = self._starting_direction(q)
         incoming = np.zeros(len(self.mu))
 
         phi = np.zeros(self.n_cells)
-        # Ascending mu: the angular sweep runs from mu = -1 upwards, and every inward
+        # Ascending mu: the angular recursion runs from mu = -1 upwards, and every inward
         # ordinate is swept before the outward one it feeds through the r = 0 reflection.
         for m in range(len(self.mu)):
-            contribution, psi_low = self._direction(m, q, psi_low, incoming)
+            contribution, psi_low = self._sweep(m, q, psi_low, incoming)
             phi += contribution
         return phi
 
-def k_eigenvalue(radius, medium, n_ordinates, n_cells=N_CELLS):
+def sphere_k_eigenvalue(radius, medium, n_ordinates, n_cells=N_CELLS):
     """KResult of a bare sphere of the given radius."""
     return sn.k_eigenvalue(SphereSolver(radius, medium, n_ordinates, n_cells))
 
 def critical_radius(medium, n_ordinates, guess, n_cells=N_CELLS):
     """Radius at which k = 1."""
     return sn.critical_size(
-        lambda R: k_eigenvalue(R, medium, n_ordinates, n_cells).k, guess)
+        lambda R: sphere_k_eigenvalue(R, medium, n_ordinates, n_cells).k, guess)

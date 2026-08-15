@@ -31,7 +31,7 @@ def report(figs):
                 'difference, negative-flux fixup.',
                 f'Reflective at x = 0, vacuum at x = a/2, {slab.N_CELLS} cells.')
 
-    scan = plots.scan_orders(slab.critical_half_thickness, slab.k_eigenvalue, HALF_THICKNESS)
+    scan = plots.scan_orders(slab.critical_half_thickness, slab.slab_k_eigenvalue, HALF_THICKNESS)
     _table(scan)
     logger.info(f"At c = 1.5 the S_N sequence runs down towards the exact one-speed value "
                 f"{BENCHMARK_C15:.6f} mfp; S10 is off by "

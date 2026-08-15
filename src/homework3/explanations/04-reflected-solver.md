@@ -14,7 +14,7 @@ approximation it is running:
 - `'asymptotic'` and `'zimmerman'` build **identical** `Region`s. They differ only in that
   `jump_ratio` returns `mu0_C/mu0_R` for the second.
 
-`_residual` is report equation (11) transcribed literally. `_setup` exists so that
+`_residual` is report equation (13) transcribed literally. `_setup` exists so that
 `critical_radius` and `flux_profile` cannot disagree about the pair they are solving — the
 flux profile must be evaluated with exactly the `g` that produced the radius, or the interface
 value is inconsistent.

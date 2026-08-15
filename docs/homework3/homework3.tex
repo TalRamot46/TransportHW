@@ -60,6 +60,35 @@ with $A = 4\pi r^2$ and $V_i = \tfrac{4\pi}{3}(r_{i+1/2}^3 - r_{i-1/2}^3)$. This
 \end{equation}
 The recursion needs a starting value $\psi_{i,1/2}$ at $\mu_{1/2}=-1$, where $1-\mu^2=0$ and the angular derivative drops out; what remains, $-\partial \psi/\partial r + \Sigma_t \psi = S/2$, is the plain slab sweep at $|\mu|=1$, run inwards from the vacuum boundary.
 
+{\color{blue}
+\paragraph{One cell solve for both geometries.} Equations \eqref{eq:slabsweep} and \eqref{eq:sphbalance} are the same equation over a different number of faces, and it is worth writing that form down once because it is what the code implements. Let a cell carry a list of outgoing faces $f$, each contributing $a^f_{\text{out}}\psi^f_{\text{out}} - a^f_{\text{in}}\psi^f_{\text{in}}$ to the balance:
+\begin{equation}
+    \sum_f \left(a^f_{\text{out}}\psi^f_{\text{out}} - a^f_{\text{in}}\psi^f_{\text{in}}\right) + \Sigma_t V \psi = \tfrac{1}{2}S\,V
+    \label{eq:cellbalance}
+\end{equation}
+Closing \emph{every} face with the same diamond relation $\psi^f_{\text{out}} = 2\psi - \psi^f_{\text{in}}$ and collecting $\psi$ gives one formula for any geometry:
+\begin{equation}
+    \psi = \frac{\tfrac12 S V + \sum_f \left(a^f_{\text{out}} + a^f_{\text{in}}\right)\psi^f_{\text{in}}}
+                {\Sigma_t V + 2\sum_f a^f_{\text{out}}}
+    \label{eq:cellflux}
+\end{equation}
+The two geometries differ only in what they put in the list:
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+ & faces & $a_{\text{out}}$ & $a_{\text{in}}$ \\
+\midrule
+slab   & space & $|\mu_m|$ & $|\mu_m|$ \\
+sphere & space & $|\mu_m| A_{\text{out}}$ & $|\mu_m| A_{\text{in}}$ \\
+       & angle & $\frac{A_{i+1/2}-A_{i-1/2}}{w_m}\,\alpha_{m+\frac12}$ & $\frac{A_{i+1/2}-A_{i-1/2}}{w_m}\,\alpha_{m-\frac12}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+with $V = \Delta x$ in the slab. \textbf{A face's two coefficients differ only where it is weighted differently on the way in and on the way out} --- the two areas of a spherical shell, the two $\alpha$'s of an angular bin --- which is why the slab's are equal and the distinction looks empty there. Substituting the slab row into \eqref{eq:cellflux} returns \eqref{eq:slabsweep} exactly, and the sphere's two rows return \eqref{eq:sphbalance}. The negative-flux fixup below is the statement that a face whose $\psi_{\text{out}}$ has been clamped to zero drops its $a_{\text{out}}$ from both sums in \eqref{eq:cellflux}, keeping only its inflow.
+}
+
 \paragraph{Fixup.} Whenever a diamond outgoing flux $2\psi_{i,m}-\psi_{\text{in},m}$ comes out negative it is set to zero and the cell balance is re-solved with it held there, in angle as well as in space. This never occurs in Questions 3--5: the fission source is proportional to the flux itself, so no cell is ever starved, and a critical system is thin enough that $\Sigma_t \Delta x / |\mu_m| < 2$ at every ordinate.
 
 \paragraph{Boundary conditions.} Reflective at the symmetry point, $\psi_{1/2,m} = \psi_{1/2,m'}$ with $\mu_{m'}=-\mu_m$; vacuum at the outer face, $\psi_{I+1/2,m}=0$ for $\mu_m<0$.

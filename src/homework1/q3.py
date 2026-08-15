@@ -156,7 +156,7 @@ def report(figs):
     logger.info(f"Eigenvalue check: max |k0 - Case Table 8| = {k0_error:.2e}")
 
     # The printed z0 fit carries a minus sign on the quadratic term, which has the
-    # wrong sign against Table 23; both are reported. See explanations/05.
+    # wrong sign against Table 23; both are reported. See report §3.
     for q in (-0.0199, 0.0199):
         error = max(_error(extrapolation_distance(c, q),
                            critical_dimensions(c, 'transport-ref')[1]) for c in C_VALUES)

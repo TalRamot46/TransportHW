@@ -8,7 +8,7 @@ Both solve the flux-form diffusion equation
 and differ only through D. The 1/v belongs on the time derivative whenever the
 unknown is the flux phi = v n rather than the density n; with Sigma_t = v = 1 the
 two forms coincide, which is why it does not appear in the code below.
-See explanations/03-diffusion-coefficients.md and 04-time-dependent-vs-steady.md.
+See report §3.1 and §3.2.1; the code side is explanations/03.
 """
 
 import numpy as np

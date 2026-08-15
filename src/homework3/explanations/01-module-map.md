@@ -23,18 +23,25 @@ live in `q1.py`.
 
 From the bottom up:
 
-    sn.cell_flux             one cell, one link per outgoing face
-      <- Solver._direction   one ordinate, swept across the mesh
-      <- Solver.sweep        all ordinates -> scalar flux
-      <- sn.inner_iteration  sweeps until the scattering source settles
+    sn.cell_flux             one cell, one Face per outgoing face
+      <- Solver._sweep       one ordinate, marched across the mesh
+      <- Solver.sn_iteration all ordinates once -> scalar flux
+      <- sn.run_sn           repeats that until the scattering source settles
       <- sn.k_eigenvalue     outer loop; returns KResult(k, x, phi, outers)
       <- sn.critical_size    brentq on k(size) - 1
       <- qN.report           table + figure
 
-**`Solver` is a duck type, not a base class.** `sn.k_eigenvalue` touches only `.medium`,
-`.n_cells`, `.volumes`, `.centres` and `.sweep(source)`; `SlabSolver` and `SphereSolver` each
-supply those independently, with no shared parent and no registration. That is why adding the
-sphere required no change at all to `sn.py`, and it is the seam to use for any further geometry.
+The three middle names are deliberately graded, because the distinction is easy to lose:
+**one `_sweep` is one direction**, **one `sn_iteration` is every direction once**, and
+**`run_sn` is the S_N method itself** — it repeats `sn_iteration` to convergence. `run_sn` is
+named for what it is rather than for where it sits, since it is a complete S_N solve at a fixed
+fission source and would still be one if `k_eigenvalue` did not exist.
+
+**`Solver` is a duck type, not a base class.** `sn.k_eigenvalue` and `sn.run_sn` between them
+touch only `.medium`, `.n_cells`, `.volumes`, `.centres` and `.sn_iteration(source)`;
+`SlabSolver` and `SphereSolver` each supply those independently, with no shared parent and no
+registration. That is why adding the sphere required no change at all to `sn.py`, and it is the
+seam to use for any further geometry.
 
 ## The call path, Question 1
 

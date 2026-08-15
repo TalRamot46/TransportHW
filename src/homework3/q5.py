@@ -54,7 +54,7 @@ def plot_criticality(radii, save_path):
         R_c = radii[name][order]
         grid = np.linspace(0.6 * R_c, 1.5 * R_c, CURVE_POINTS)
 
-        ax.plot(grid, [sphere.k_eigenvalue(R, sn_medium(material), order).k for R in grid],
+        ax.plot(grid, [sphere.sphere_k_eigenvalue(R, sn_medium(material), order).k for R in grid],
                 color=COLORS[name], linewidth=2.2, label=f'$S_{{{order}}}$')
         ax.plot([R_c], [1.0], color=COLORS[name], marker='o', markersize=7,
                 markerfacecolor='none', markeredgewidth=1.8)

@@ -7,7 +7,7 @@ fixed `k`, and two lines that look cosmetic are not.**
 
 1. flat flux, `k = 1`;
 2. **outer** — form the fission source density `nu Sigma_f phi / k`;
-3. **inner** (`inner_iteration`) — sweep `phi <- L^-1 (Sigma_s phi + fission)` until `phi` settles;
+3. **inner** (`run_sn`) — sweep `phi <- L^-1 (Sigma_s phi + fission)` until `phi` settles;
 4. `k_new = k * P_new / P_old`, with `P = sum(nu Sigma_f phi V)`;
 5. renormalise by `1/max(phi)`; repeat until `|k_new - k| < 1e-9 |k_new|`.
 
@@ -33,7 +33,7 @@ At the tolerances the code uses (inner `1e-8`, outer `1e-9`, `N = 8`, at a criti
 | sphere, `c = 1.5` | 35 | 35 | 1.0 |
 | sphere, Pu-239 | 24 | 246 | 10.2 |
 
-One sweep per outer is the `Sigma_s == 0` short circuit in `inner_iteration`
+One sweep per outer is the `Sigma_s == 0` short circuit in `run_sn`
 (see [02](02-sn-solver.md)). Pu-239 carries real scattering and pays about ten.
 
 The outer count is predictable in advance, which is useful when deciding whether a slow run is a

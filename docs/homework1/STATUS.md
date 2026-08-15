@@ -1,7 +1,7 @@
 # Homework 1 — Status
 
 `src/homework1` against `instruction_files/Assignment1.pdf`. Derivations are in
-`src/homework1/explanations/`; results and figures in `homework1.tex`.
+`homework1.tex`; the code is documented in `src/homework1/explanations/`.
 
 | Question | Status |
 |---|---|
@@ -34,7 +34,7 @@ Run with `.\.venv\Scripts\python.exe -m homework1.main` from the repository root
   tracks `rtol` from `9e-06` down to `1.3e-12`.
 - Q3 approximate inputs: error dominated by `z0`, under `0.1 %` in `a/2` to `c ~ 1.25`,
   `3.2 %` at `c = 2`. The printed `q = -0.0199` has the wrong sign — see
-  `explanations/05-criticality-relations.md`.
+  the report, §3 "The Sign of the Quadratic Correction".
 - Q4 vs. analytic `R_c = pi/B - z0`: `1.6e-4 %` to `2.4e-4 %` at `N = 400`, second order
   at exactly `4.00` per doubling.
 - Q4 verification: sweep counts follow `c/(4c-3)` to six digits and are identical for both
@@ -43,7 +43,7 @@ Run with `.\.venv\Scripts\python.exe -m homework1.main` from the repository root
 
 The solver has one boundary condition at the outer surface: the extrapolated zero at
 `R + z0`. A second, Robin-type treatment was implemented, measured and then removed —
-see `explanations/07`.
+see `explanations/07-removed-code.md`.
 
 ## Building the report
 

@@ -69,4 +69,4 @@ the report. If a derivation is missing, it goes in the `.tex`, not here.
 
 Reports are LaTeX documents under `docs/`. Match the preamble of the existing ones. When the
 user asks for a "minimal" report, that means the formulas and the figures, with no
-walk-through prose — the derivations live in the assignment write-up and in `explanations/`.
+walk-through prose — but the derivations still belong here rather than in `explanations/`.

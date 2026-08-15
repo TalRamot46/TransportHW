@@ -16,7 +16,7 @@ class SphericalMedium:
     sigma_a: float
     nu_sigma_f: float
     # Extrapolation distance: the flux is driven to zero at R + z0. Marshak's 2D for
-    # the classical branch, Milne's z0(c) for the asymptotic one. See explanations/07.
+    # the classical branch, Milne's z0(c) for the asymptotic one. See explanations/04.
     z0: float
     c: float
 
@@ -38,7 +38,7 @@ def build_medium(sigma_t, sigma_a, nu_sigma_f, approximation='classical'):
         if c <= 1.0:
             raise ValueError("The asymptotic approximation needs c > 1 here.")
         # D = (c-1)|nu0|^2 is the continuation above c = 1 of Question 2's
-        # D = (1-c) nu0^2; both factors flip sign. See explanations/02.
+        # D = (1-c) nu0^2; both factors flip sign. See report §1.
         D = (c - 1.0) * compute_nu0_magnitude(c, method='numerical')**2 / sigma_t
         z0 = float(extrapolation_distance(c)) / sigma_t
         return SphericalMedium(D, sigma_a, nu_sigma_f, z0=z0, c=c)
@@ -65,7 +65,7 @@ def _banded_operator(medium, areas, volumes, h):
     conductance = medium.D * areas / h
     # The innermost face has zero area, which is the symmetry condition at r = 0.
     # The outer face drives the flux to zero half a cell beyond the last centre,
-    # which is the extrapolated-zero condition; see explanations/06.
+    # which is the extrapolated-zero condition; see explanations/04.
     conductance[-1] = medium.D * areas[-1] / (0.5 * h)
 
     ab = np.zeros((3, len(volumes)))
@@ -76,7 +76,7 @@ def _banded_operator(medium, areas, volumes, h):
 
 def k_eigenvalue(R, medium, n_cells=400, tol=1e-10, max_iter=20000):
     """KResult of a sphere of radius R, by Bell & Glasstone source iteration;
-    see explanations/08."""
+    see explanations/05."""
     centres, areas, volumes, h = _mesh(R + medium.z0, n_cells)
     ab = _banded_operator(medium, areas, volumes, h)
 
@@ -114,7 +114,7 @@ def dominance_ratio(medium, R):
 
 def neutron_balance(R, medium, n_cells=400):
     """(production, absorption, leakage, relative residual) of the converged flux,
-    which must balance at a critical radius; see explanations/09."""
+    which must balance at a critical radius; see explanations/08."""
     result = k_eigenvalue(R, medium, n_cells)
     _, areas, volumes, h = _mesh(R + medium.z0, n_cells)
 

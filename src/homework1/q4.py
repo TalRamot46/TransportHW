@@ -103,7 +103,7 @@ def _iteration_table():
     """Sweeps taken at the critical radius, against the predicted dominance ratio.
 
     At criticality the ratio reduces to c/(4c-3), with D cancelling, so the two
-    approximations must take the same number of sweeps; see explanations/08.
+    approximations must take the same number of sweeps; see explanations/05.
     """
     rows = []
     for approximation in APPROXIMATIONS:

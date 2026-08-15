@@ -1,22 +1,24 @@
-# Explanations — Assignment 2
+# 00 — Index
 
-Background notes for the code in `src/homework2/`, whose report is §3 of
-`docs/homework2/homework2.tex`. One idea per file; each file opens with its title and a
-one-line statement of what it settles. Files 01–08 support Question 3; 09 and 10 are the
-Question 1 and 2 derivations the later work rests on.
+**These files explain the code in `src/homework2/`. The physics is in
+`docs/homework2/homework2.tex` — read that first.**
+
+Assignment 2 proves a scaling identity (Q1), derives the planar-source flux from Paasschens'
+point-source solution (Q2), and compares it against classical and asymptotic diffusion (Q3).
+The report derives all of it. What follows is the map from those formulas to the modules, the
+numerical care the closed forms need, and what was verified.
+
+Units throughout: `Sigma_t = v = 1`, so lengths are mean free paths, times are mean free times,
+and the scalar flux equals the number density.
 
 | # | Title | What it settles |
 |---|---|---|
-| [01](01-planar-flux-c1.md) | The planar flux at `c = 1` | Why the Q2 integral is closed-form, and why the code uses Dawson instead of `erfi` |
-| [02](02-scaling-to-general-c.md) | Scaling to general `c` | How the Q1 identity carries the `c = 1` solution to every other `c`, including `c > 1` |
-| [03](03-diffusion-coefficients.md) | The two diffusion coefficients | Where `D0(c) = (1-c) nu0^2` comes from, and why it stays positive above `c = 1` |
-| [04](04-time-dependent-vs-steady.md) | Time-dependent vs. steady | Why Q3(a)(b) needs the Green's function, how the steady formula falls out of it, and where the `1/v` belongs |
-| [05](05-verification.md) | Verification | The six checks in `main.py` and the numbers they produce |
-| [06](06-delta-source-numerics.md) | Discretising a delta source | What the first-cell delta actually costs, and why the time stepping is the real problem |
-| [07](07-solver-implementation.md) | Implementing the numerical solver | A concrete specification for the Question 3(c) code — not built yet |
-| [08](08-time-discretisation.md) | Discretising time | Why `solve_ivp` is a time discretisation too, and which fully-discrete scheme to write instead |
-| [09](09-planar-spherical-relation.md) | The planar–spherical relation (Q2) | Which of the two candidate relations Q2 needs, and why "multiply by `r`" only looks right |
-| [10](10-q1-q2-corrections.md) | Corrections to Q1 and Q2 | Where the scaling proof goes wrong, and the closed form the Q2 integral actually has |
+| [01](01-module-map.md) | The Module Map | Which file owns what, and why `main.py` is a test suite rather than a driver. |
+| [02](02-evaluating-the-closed-form.md) | Evaluating the Closed Form | Why `exact.py` uses Dawson instead of `erfi`, and works in log space. |
+| [03](03-diffusion-module.md) | The Diffusion Module | The one sign trick that makes `D0(c)` a single expression on both sides of `c = 1`. |
+| [04](04-figures.md) | The Figures | The autoscaling heuristic, and why the exact curve is masked past the front. |
+| [05](05-verification.md) | Verification | The six checks in `main.py` and the numbers they produce. |
+| [06](06-q3c-solver-spec.md) | The Q3(c) Solver — Specification | The scheme chosen for code that is not written yet, and why. |
 
-Units throughout: `Sigma_t = v = 1`, as Assignment 2 specifies, so lengths are mean free
-paths, times are mean free times, and the scalar flux equals the number density.
+Nothing here re-derives the report. Where a physical result is needed it is cited by its
+section or equation number in `homework2.tex`.

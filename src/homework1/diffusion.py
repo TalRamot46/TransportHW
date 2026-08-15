@@ -5,10 +5,10 @@ from scipy.integrate import solve_ivp
 from homework1.exact_solution import compute_nu0
 
 CLASSICAL_D = 1.0 / 3.0
-SOURCE_CURRENT = 0.5      # J(0+), half the source streaming each way; explanations/03
+SOURCE_CURRENT = 0.5      # J(0+), half the source streaming each way; report §2
 
 def diffusion_coefficients(c, approximation='classical', D=None, method='numerical'):
-    """(D, Sigma_a) of one approximation; see explanations/02 for D_asymptotic."""
+    """(D, Sigma_a) of one approximation; see report §1 for D_asymptotic."""
     if c < 0.0 or c >= 1.0:
         raise ValueError("Scattering ratio c must be in [0, 1).")
 

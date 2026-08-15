@@ -33,7 +33,7 @@ def compute_nu0(c, method='numerical'):
     return compute_nu0_numerical(c) if method == 'numerical' else compute_nu0_approx(c)
 
 def compute_nu0_magnitude_numerical(c):
-    """|nu0| for c > 1 from the root of c arctan(k0) = k0; see explanations/01."""
+    """|nu0| for c > 1 from the root of c arctan(k0) = k0; see report §3."""
     if c <= 1.0:
         raise ValueError("The imaginary eigenvalue branch requires c > 1.")
 
