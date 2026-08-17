@@ -19,7 +19,7 @@
 
 \geometry{margin=1in}
 
-\title{Homework Assignment 3: Criticality in the $S_N$ Approximation}
+\title{Homework Assignment 3: Critical Systems by Diffusion, $P_N$ and $S_N$}
 \author{Tal Ramot}
 \date{\today}
 
@@ -27,94 +27,11 @@
 
 \maketitle
 
-\section*{The method}
-
-All three questions solve the same monoenergetic, steady-state problem,
-\begin{equation}
-    \mu \frac{\partial \psi}{\partial x} + \Sigma_t \psi = \frac{1}{2}\left[\Sigma_s \phi + \frac{1}{k}\nu\Sigma_f \phi\right],
-    \qquad \phi(x) = \int_{-1}^{1}\psi(x,\mu)\,d\mu
-\end{equation}
-with the same three ingredients: a Gauss--Legendre quadrature in angle, diamond differencing in space with a negative-flux fixup, and the Bell \& Glasstone $k$ iteration. Lengths are mean free paths in Questions 3 and 4 and centimetres in Question 5.
-
-\paragraph{Angle.} The $N$ ordinates $\{\mu_m\}$ and weights $\{w_m\}$ are the Gauss--Legendre nodes on $[-1,1]$, so that $\mu_{N-m+1}=-\mu_m$, $\sum_m w_m = 2$, and
-\begin{equation}
-    \phi_i = \sum_{m=1}^{N} w_m \psi_{i,m}
-\end{equation}
-
-\paragraph{Space, slab.} Integrating over cell $i$ and closing with the diamond relation $\psi_{i,m} = \tfrac{1}{2}(\psi_{i+1/2,m}+\psi_{i-1/2,m})$ gives the sweep
-\begin{equation}
-    \psi_{i,m} = \frac{2|\mu_m|\,\psi_{\text{in},m} + \tfrac{1}{2}S_i \Delta x}{\Sigma_t \Delta x + 2|\mu_m|},
-    \qquad
-    \psi_{\text{out},m} = 2\psi_{i,m} - \psi_{\text{in},m}
-    \label{eq:slabsweep}
-\end{equation}
-swept from $x=a/2$ inwards for $\mu_m<0$ and from $x=0$ outwards for $\mu_m>0$.
-
-\paragraph{Space, sphere.} The spherical equation carries an angular redistribution term,
-\begin{equation}
-    \mu \frac{\partial \psi}{\partial r} + \frac{1-\mu^2}{r}\frac{\partial \psi}{\partial \mu} + \Sigma_t \psi = \frac{S}{2}
-\end{equation}
-whose conservative form integrates over the cell to
-\begin{equation}
-    \mu_m\left(A_{i+\frac12}\psi_{i+\frac12,m} - A_{i-\frac12}\psi_{i-\frac12,m}\right)
-    + \frac{A_{i+\frac12}-A_{i-\frac12}}{w_m}\left(\alpha_{m+\frac12}\psi_{i,m+\frac12} - \alpha_{m-\frac12}\psi_{i,m-\frac12}\right)
-    + \Sigma_t V_i \psi_{i,m} = \frac{S_i}{2}V_i
-    \label{eq:sphbalance}
-\end{equation}
-with $A = 4\pi r^2$ and $V_i = \tfrac{4\pi}{3}(r_{i+1/2}^3 - r_{i-1/2}^3)$. This is \eqref{eq:slabsweep} with a second outgoing face, in angle, closed by the same diamond relation $\psi_{i,m}=\tfrac12(\psi_{i,m+1/2}+\psi_{i,m-1/2})$. The angular coefficients follow from demanding that a flat flux solve \eqref{eq:sphbalance} exactly:
-\begin{equation}
-    \alpha_{\frac12} = 0, \qquad \alpha_{m+\frac12} = \alpha_{m-\frac12} - w_m \mu_m,
-    \qquad \alpha_{N+\frac12} = 0 \ \text{ since } \sum_m w_m \mu_m = 0
-\end{equation}
-The recursion needs a starting value $\psi_{i,1/2}$ at $\mu_{1/2}=-1$, where $1-\mu^2=0$ and the angular derivative drops out; what remains, $-\partial \psi/\partial r + \Sigma_t \psi = S/2$, is the plain slab sweep at $|\mu|=1$, run inwards from the vacuum boundary.
-
-\begin{notebox}[One cell solve for both geometries.][blue]
-Equations \eqref{eq:slabsweep} and \eqref{eq:sphbalance} are the same equation over a different number of faces, and it is worth writing that form down once because it is what the code implements. Let a cell carry a list of outgoing faces $f$, each contributing $a^f_{\text{out}}\psi^f_{\text{out}} - a^f_{\text{in}}\psi^f_{\text{in}}$ to the balance:
-\begin{equation}
-    \sum_f \left(a^f_{\text{out}}\psi^f_{\text{out}} - a^f_{\text{in}}\psi^f_{\text{in}}\right) + \Sigma_t V \psi = \tfrac{1}{2}S\,V
-    \label{eq:cellbalance}
-\end{equation}
-Closing \emph{every} face with the same diamond relation $\psi^f_{\text{out}} = 2\psi - \psi^f_{\text{in}}$ and collecting $\psi$ gives one formula for any geometry:
-\begin{equation}
-    \psi = \frac{\tfrac12 S V + \sum_f \left(a^f_{\text{out}} + a^f_{\text{in}}\right)\psi^f_{\text{in}}}
-                {\Sigma_t V + 2\sum_f a^f_{\text{out}}}
-    \label{eq:cellflux}
-\end{equation}
-The two geometries differ only in what they put in the list:
-
-\begin{center}
-\begin{tabular}{lccc}
-\toprule
- & faces & $a_{\text{out}}$ & $a_{\text{in}}$ \\
-\midrule
-slab   & space & $|\mu_m|$ & $|\mu_m|$ \\
-sphere & space & $|\mu_m| A_{\text{out}}$ & $|\mu_m| A_{\text{in}}$ \\
-       & angle & $\frac{A_{i+1/2}-A_{i-1/2}}{w_m}\,\alpha_{m+\frac12}$ & $\frac{A_{i+1/2}-A_{i-1/2}}{w_m}\,\alpha_{m-\frac12}$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-with $V = \Delta x$ in the slab. Substituting the slab row into \eqref{eq:cellflux} returns \eqref{eq:slabsweep} exactly, and the sphere's two rows return \eqref{eq:sphbalance}.
-\end{notebox}
-
-\paragraph{Fixup.} Whenever a diamond outgoing flux $2\psi_{i,m}-\psi_{\text{in},m}$ comes out negative it is set to zero and the cell balance is re-solved with it held there, in angle as well as in space. This never occurs in Questions 3--5: the fission source is proportional to the flux itself, so no cell is ever starved, and a critical system is thin enough that $\Sigma_t \Delta x / |\mu_m| < 2$ at every ordinate.
-
-\paragraph{Boundary conditions.} Reflective at the symmetry point, $\psi_{1/2,m} = \psi_{1/2,m'}$ with $\mu_{m'}=-\mu_m$; vacuum at the outer face, $\psi_{I+1/2,m}=0$ for $\mu_m<0$.
-
-\paragraph{Eigenvalue.} Outer iteration $l$ fixes the fission source $Q_{f,i}^{(l)} = \nu\Sigma_{f,i}\phi_i^{(l)}/k^{(l)}$; inner iteration $n$ sweeps $S_i = \Sigma_{s,i}\phi_i^{(n)} + Q_{f,i}^{(l)}$ until $\phi$ settles; then
-\begin{equation}
-    k^{(l+1)} = k^{(l)}\,\frac{P^{(l+1)}}{P^{(l)}},
-    \qquad P^{(l)} = \sum_i \nu\Sigma_{f,i}\,\phi_i^{(l)}\,V_i
-\end{equation}
-Dividing the fission source by $k$ makes a solution exist at \emph{every} system size, so criticality becomes a root search: \texttt{brentq} on $k(\text{size})-1$, which costs 8 evaluations of $k$.
-
-\paragraph{The meaning of $c$.} Questions 3 and 4 specify only $c=(\Sigma_s+\nu\Sigma_f)/\Sigma_t$. At $k=1$ the source bracket collapses to $c\,\Sigma_t\phi$ whatever the split between scattering and fission, so the critical size depends on $c$ alone and the code takes the simplest split, $\Sigma_t=1$, $\Sigma_s=0$, $\nu\Sigma_f=c$. Question 5 has no such freedom and uses the tabulated cross sections directly.
-
 {\color{blue}
 \FloatBarrier
-\section{Critical radius of a reflected sphere}
+\section*{Question 1: Critical radius of a reflected sphere}
 
-Question 1 is the one \emph{diffusion} question of this assignment --- the $S_N$ machinery above belongs to Questions 3--5 --- and the only one with two materials. A multiplying core of radius $R_C$ is wrapped in $d \in \{1,2,3,10\}$ mean free paths of reflector, and the cross sections are again the Question 5 table of Assignment 1.
+Question 1 is the one \emph{diffusion} question of this assignment --- the $S_N$ machinery set out before Question 3 belongs to Questions 3--5 --- and the only one with two materials. A multiplying core of radius $R_C$ is wrapped in $d \in \{1,2,3,10\}$ mean free paths of reflector, and the cross sections are again the Question 5 table of Assignment 1.
 
 \subsection*{The two regions}
 
@@ -291,19 +208,19 @@ The geometric term is the current driven by the $1/r$ spreading of $\phi = u/r$,
 
 {\color{green!55!black}
 \FloatBarrier
-\section{Critical slab half-thickness by $P_N$}
+\section*{Question 2: Critical slab half-thickness by $P_N$}
 
 A homogeneous slab of total thickness $2a$, reflective at the midplane $x=0$ and vacuum at
 $x=a$, in mean free paths ($\Sigma_t=1$), for $c\in\{1.2,1.5,1.8\}$ and $N\in\{1,3,5,9\}$.
 The unknown is the half-thickness $a_{\text{crit}}$ at which $k_{\text{eff}}=1$.
 
 \paragraph{A notational warning.} This section's $a$ is the \emph{half}-thickness, so it is
-what \S3 calls $a/2$. The two tables are comparable entry by entry only after that
+what Question 3 calls $a/2$. The two tables are comparable entry by entry only after that
 identification.
 
 \subsection*{The $P_N$ equations}
 
-With isotropic scattering and fission lumped as in the paragraph ``The meaning of $c$'' above,
+With isotropic scattering and fission lumped as in the paragraph ``The meaning of $c$'' before Question 3,
 and the fission source divided by $k$,
 \begin{equation}
     \mu\frac{\partial \psi}{\partial x} + \psi(x,\mu) = \frac{c}{2k}\,\phi_0(x),
@@ -333,7 +250,7 @@ of the $P_N$ approximation. In vector form, with $\boldsymbol{\Phi}=(\phi_0,\dot
 \end{equation}
 $\mathbf{\tilde A}$ is the Jacobi matrix of the Legendre recurrence truncated at order $N$, so
 its $N+1$ eigenvalues are exactly the roots of $P_{N+1}(\mu)$ --- the Gauss--Legendre ordinates
-of $S_{N+1}$. That is the algebraic content of the claim in \S3 that the two methods share
+of $S_{N+1}$. That is the algebraic content of the claim in Question 3 that the two methods share
 their interior equations and differ only at the boundary.
 
 \subsection*{Boundary conditions}
@@ -372,7 +289,7 @@ Counting: \eqref{eq:pnrec} is $N+1$ first-order equations and needs $N+1$ condit
 \eqref{eq:pnsym} supplies $\tfrac{N+1}{2}$ and \eqref{eq:marshak} the other $\tfrac{N+1}{2}$.
 For $N=1$, \eqref{eq:marshak} reads $-\tfrac14\phi_0(a)+\tfrac12\phi_1(a)=0$, i.e.\
 $\phi_0(a)=2\phi_1(a)$: the classical statement that the scalar flux at a vacuum surface is
-twice the net current, and the origin of the extrapolation length $2/3$ quoted in \S3.
+twice the net current, and the origin of the extrapolation length $2/3$ quoted in Question 3.
 
 \subsection*{Method 1: box discretisation and the Bell \& Glasstone $k$ iteration}
 
@@ -396,7 +313,7 @@ gives one $(N+1)$-row block per cell,
 This is the Keller box scheme, and it is the diamond difference of \eqref{eq:slabsweep}
 written in moments rather than in ordinates: the same closure, applied to $N+1$ coupled
 unknowns per node instead of one per ordinate. Two consequences of that coupling: the sweep of
-\S3 is not available, because $\mathbf{\tilde A}$ mixes moments that stream in both directions,
+Question 3 is not available, because $\mathbf{\tilde A}$ mixes moments that stream in both directions,
 so the cells must be solved simultaneously; and there is no negative-flux fixup, because
 $\phi_n$ for $n\ge1$ is legitimately of either sign and a sign change carries no information.
 
@@ -458,7 +375,7 @@ iteration.
 
 \paragraph{Errors.} The box scheme is second order, so the discretisation error in
 $a_{\text{crit}}$ falls as $\Delta x^2$ and is separable from the truncation error in $N$ by
-running the same $N$ on a refined mesh --- the check reported in \S3 for $S_N$, and the
+running the same $N$ on a refined mesh --- the check reported in Question 3 for $S_N$, and the
 quantity that Method 2 removes altogether.
 
 \subsection*{Method 2: modal elimination, as an $N$-exact benchmark}
@@ -492,7 +409,7 @@ equation eliminates the odd moments and leaves a coupled Helmholtz system,
 The minus sign is not cosmetic and is the easiest thing to lose: the elimination produces
 $\mathbf{A}\mathbf{B}\,\boldsymbol{\Phi}_{\text{e}}''=\mathbf{\Sigma}_0\boldsymbol{\Phi}_{\text{e}}$,
 and moving that to the form \eqref{eq:helm} flips it. At $N=1$ it reads $\phi_0''+3(c-1)\phi_0=0$,
-the classic diffusion buckling $B=\sqrt{3(c-1)}$ of the table in \S1 --- with the sign dropped
+the classic diffusion buckling $B=\sqrt{3(c-1)}$ of the table in Question 1 --- with the sign dropped
 one gets $\cosh$ where $\cos$ belongs and no critical thickness at all.
 
 \paragraph{The spectrum of $\mathbf{K}^2$.} Since
@@ -552,25 +469,108 @@ $\phi_1=-\tfrac13\phi_0'$ give $\cot(Ba)=\tfrac23B$, that is
 \centering
 \begin{tabular}{cccccc}
 \toprule
-$c$ & $B=\sqrt{3(c-1)}$ & $P_1$ Marshak & $P_1$ Mark & $S_2$ of \S3 & exact transport \\
+$c$ & $B=\sqrt{3(c-1)}$ & $P_1$ Marshak & $P_1$ Mark & $S_2$ of Q3 & exact transport \\
 \midrule
 1.2 & 0.774597 & 1.412499 & 1.484982 & 1.48499 & 1.28981 \\
 1.5 & 1.224745 & 0.723479 & 0.780013 & 0.78001 & 0.60762 \\
 1.8 & 1.549193 & 0.496559 & 0.542907 & 0.54291 & 0.39314 \\
 \bottomrule
 \end{tabular}
-\caption{Analytic $P_1$ half-thickness in mean free paths, against \S3's $S_2$ column (there
+\caption{Analytic $P_1$ half-thickness in mean free paths, against Question 3's $S_2$ column (there
 tabulated as $a/2$). The Mark column, $\arctan(\sqrt3/B)/B$, is the same equation with the
 extrapolation length $1/\sqrt3$ in place of $2/3$, and it reproduces the $S_2$ entry to five
-digits --- the demonstration promised in \S3 that $P_N$ and $S_{N+1}$ differ in slab geometry
+digits --- the demonstration promised in Question 3 that $P_N$ and $S_{N+1}$ differ in slab geometry
 by their boundary condition alone. Both are the $N=1$ target that Method 1 must approach as
 $\Delta x\to0$ and that Method 2 must return outright.}
 \end{table}
 }
 
 \FloatBarrier
-\setcounter{section}{2}
-\section{Critical slab half-thickness by $S_N$}
+\section*{The $S_N$ method of Questions 3--5}
+
+All three questions solve the same monoenergetic, steady-state problem,
+\begin{equation}
+    \mu \frac{\partial \psi}{\partial x} + \Sigma_t \psi = \frac{1}{2}\left[\Sigma_s \phi + \frac{1}{k}\nu\Sigma_f \phi\right],
+    \qquad \phi(x) = \int_{-1}^{1}\psi(x,\mu)\,d\mu
+\end{equation}
+with the same three ingredients: a Gauss--Legendre quadrature in angle, diamond differencing in space with a negative-flux fixup, and the Bell \& Glasstone $k$ iteration. Lengths are mean free paths in Questions 3 and 4 and centimetres in Question 5.
+
+\paragraph{Angle.} The $N$ ordinates $\{\mu_m\}$ and weights $\{w_m\}$ are the Gauss--Legendre nodes on $[-1,1]$, so that $\mu_{N-m+1}=-\mu_m$, $\sum_m w_m = 2$, and
+\begin{equation}
+    \phi_i = \sum_{m=1}^{N} w_m \psi_{i,m}
+\end{equation}
+
+\paragraph{Space, slab.} Integrating over cell $i$ and closing with the diamond relation $\psi_{i,m} = \tfrac{1}{2}(\psi_{i+1/2,m}+\psi_{i-1/2,m})$ gives the sweep
+\begin{equation}
+    \psi_{i,m} = \frac{2|\mu_m|\,\psi_{\text{in},m} + \tfrac{1}{2}S_i \Delta x}{\Sigma_t \Delta x + 2|\mu_m|},
+    \qquad
+    \psi_{\text{out},m} = 2\psi_{i,m} - \psi_{\text{in},m}
+    \label{eq:slabsweep}
+\end{equation}
+swept from $x=a/2$ inwards for $\mu_m<0$ and from $x=0$ outwards for $\mu_m>0$.
+
+\paragraph{Space, sphere.} The spherical equation carries an angular redistribution term,
+\begin{equation}
+    \mu \frac{\partial \psi}{\partial r} + \frac{1-\mu^2}{r}\frac{\partial \psi}{\partial \mu} + \Sigma_t \psi = \frac{S}{2}
+\end{equation}
+whose conservative form integrates over the cell to
+\begin{equation}
+    \mu_m\left(A_{i+\frac12}\psi_{i+\frac12,m} - A_{i-\frac12}\psi_{i-\frac12,m}\right)
+    + \frac{A_{i+\frac12}-A_{i-\frac12}}{w_m}\left(\alpha_{m+\frac12}\psi_{i,m+\frac12} - \alpha_{m-\frac12}\psi_{i,m-\frac12}\right)
+    + \Sigma_t V_i \psi_{i,m} = \frac{S_i}{2}V_i
+    \label{eq:sphbalance}
+\end{equation}
+with $A = 4\pi r^2$ and $V_i = \tfrac{4\pi}{3}(r_{i+1/2}^3 - r_{i-1/2}^3)$. This is \eqref{eq:slabsweep} with a second outgoing face, in angle, closed by the same diamond relation $\psi_{i,m}=\tfrac12(\psi_{i,m+1/2}+\psi_{i,m-1/2})$. The angular coefficients follow from demanding that a flat flux solve \eqref{eq:sphbalance} exactly:
+\begin{equation}
+    \alpha_{\frac12} = 0, \qquad \alpha_{m+\frac12} = \alpha_{m-\frac12} - w_m \mu_m,
+    \qquad \alpha_{N+\frac12} = 0 \ \text{ since } \sum_m w_m \mu_m = 0
+\end{equation}
+The recursion needs a starting value $\psi_{i,1/2}$ at $\mu_{1/2}=-1$, where $1-\mu^2=0$ and the angular derivative drops out; what remains, $-\partial \psi/\partial r + \Sigma_t \psi = S/2$, is the plain slab sweep at $|\mu|=1$, run inwards from the vacuum boundary.
+
+\begin{notebox}[One cell solve for both geometries.][blue]
+Equations \eqref{eq:slabsweep} and \eqref{eq:sphbalance} are the same equation over a different number of faces, and it is worth writing that form down once because it is what the code implements. Let a cell carry a list of outgoing faces $f$, each contributing $a^f_{\text{out}}\psi^f_{\text{out}} - a^f_{\text{in}}\psi^f_{\text{in}}$ to the balance:
+\begin{equation}
+    \sum_f \left(a^f_{\text{out}}\psi^f_{\text{out}} - a^f_{\text{in}}\psi^f_{\text{in}}\right) + \Sigma_t V \psi = \tfrac{1}{2}S\,V
+    \label{eq:cellbalance}
+\end{equation}
+Closing \emph{every} face with the same diamond relation $\psi^f_{\text{out}} = 2\psi - \psi^f_{\text{in}}$ and collecting $\psi$ gives one formula for any geometry:
+\begin{equation}
+    \psi = \frac{\tfrac12 S V + \sum_f \left(a^f_{\text{out}} + a^f_{\text{in}}\right)\psi^f_{\text{in}}}
+                {\Sigma_t V + 2\sum_f a^f_{\text{out}}}
+    \label{eq:cellflux}
+\end{equation}
+The two geometries differ only in what they put in the list:
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+ & faces & $a_{\text{out}}$ & $a_{\text{in}}$ \\
+\midrule
+slab   & space & $|\mu_m|$ & $|\mu_m|$ \\
+sphere & space & $|\mu_m| A_{\text{out}}$ & $|\mu_m| A_{\text{in}}$ \\
+       & angle & $\frac{A_{i+1/2}-A_{i-1/2}}{w_m}\,\alpha_{m+\frac12}$ & $\frac{A_{i+1/2}-A_{i-1/2}}{w_m}\,\alpha_{m-\frac12}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+with $V = \Delta x$ in the slab. Substituting the slab row into \eqref{eq:cellflux} returns \eqref{eq:slabsweep} exactly, and the sphere's two rows return \eqref{eq:sphbalance}.
+\end{notebox}
+
+\paragraph{Fixup.} Whenever a diamond outgoing flux $2\psi_{i,m}-\psi_{\text{in},m}$ comes out negative it is set to zero and the cell balance is re-solved with it held there, in angle as well as in space. This never occurs in Questions 3--5: the fission source is proportional to the flux itself, so no cell is ever starved, and a critical system is thin enough that $\Sigma_t \Delta x / |\mu_m| < 2$ at every ordinate.
+
+\paragraph{Boundary conditions.} Reflective at the symmetry point, $\psi_{1/2,m} = \psi_{1/2,m'}$ with $\mu_{m'}=-\mu_m$; vacuum at the outer face, $\psi_{I+1/2,m}=0$ for $\mu_m<0$.
+
+\paragraph{Eigenvalue.} Outer iteration $l$ fixes the fission source $Q_{f,i}^{(l)} = \nu\Sigma_{f,i}\phi_i^{(l)}/k^{(l)}$; inner iteration $n$ sweeps $S_i = \Sigma_{s,i}\phi_i^{(n)} + Q_{f,i}^{(l)}$ until $\phi$ settles; then
+\begin{equation}
+    k^{(l+1)} = k^{(l)}\,\frac{P^{(l+1)}}{P^{(l)}},
+    \qquad P^{(l)} = \sum_i \nu\Sigma_{f,i}\,\phi_i^{(l)}\,V_i
+\end{equation}
+Dividing the fission source by $k$ makes a solution exist at \emph{every} system size, so criticality becomes a root search: \texttt{brentq} on $k(\text{size})-1$, which costs 8 evaluations of $k$.
+
+\paragraph{The meaning of $c$.} Questions 3 and 4 specify only $c=(\Sigma_s+\nu\Sigma_f)/\Sigma_t$. At $k=1$ the source bracket collapses to $c\,\Sigma_t\phi$ whatever the split between scattering and fission, so the critical size depends on $c$ alone and the code takes the simplest split, $\Sigma_t=1$, $\Sigma_s=0$, $\nu\Sigma_f=c$. Question 5 has no such freedom and uses the tabulated cross sections directly.
+
+\FloatBarrier
+\section*{Question 3: Critical slab half-thickness by $S_N$}
 
 Reflective at $x=0$, vacuum at $x=a/2$, 200 cells. The reference column is Assignment 1's exact-transport relation $a/2 = \tfrac{\pi}{2}\nu_0 - z_0$, evaluated from Case's tabulated $\nu_0$ and $z_0$.
 
@@ -623,7 +623,7 @@ All of that is a statement about \emph{slabs}. In the sphere the equivalence fai
 }
 
 \FloatBarrier
-\section{Critical sphere radius by $S_N$}
+\section*{Question 4: Critical sphere radius by $S_N$}
 
 Reflective at $r=0$, vacuum at $r=R$, 100 cells, with the angular redistribution term of \eqref{eq:sphbalance}. The reference is Assignment 1's $\Sigma_t R_c = \pi \nu_0 - z_0$.
 
@@ -679,7 +679,7 @@ $c$ & from $S_2$ & from $S_4$ & from $S_6$ & from $S_{10}$ & Case's table \\
 \end{table}
 
 \FloatBarrier
-\section{Critical mass of U-235 and Pu-239 by $S_N$}
+\section*{Question 5: Critical mass of U-235 and Pu-239 by $S_N$}
 
 The cross sections are the Question 5 table of Assignment 1 --- $\Sigma_t = 0.32640$ cm$^{-1}$ for both, giving $c = 1.500$ for Pu-239 and $c = 1.300$ for U-235 --- and the critical mass follows from the converged radius as $M_c = \tfrac{4}{3}\pi R_c^3 \rho$. Here $\Sigma_s > 0$, so the inner iteration does real work: about ten sweeps per outer, against one for the $c$-only problems above. The orders are $S_2$ to $S_{16}$ rather than the $S_2$--$S_{10}$ of the previous questions, since the mass goes as the cube of the radius and is the more demanding quantity.
 
