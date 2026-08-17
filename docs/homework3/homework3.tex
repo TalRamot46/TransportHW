@@ -1,4 +1,4 @@
-     \documentclass[11pt]{article}
+\documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{graphicx}
@@ -7,7 +7,15 @@
 \usepackage{hyperref}
 \usepackage{microtype}
 \usepackage{xcolor}
+\usepackage[most]{tcolorbox}
 \usepackage{placeins}
+
+\DeclareTColorBox{notebox}{ O{Note} O{blue} }{
+  colback=#2!5!white,
+  colframe=#2!75!black,
+  fonttitle=\bfseries,
+  title={#1}
+}
 
 \geometry{margin=1in}
 
@@ -60,8 +68,8 @@ with $A = 4\pi r^2$ and $V_i = \tfrac{4\pi}{3}(r_{i+1/2}^3 - r_{i-1/2}^3)$. This
 \end{equation}
 The recursion needs a starting value $\psi_{i,1/2}$ at $\mu_{1/2}=-1$, where $1-\mu^2=0$ and the angular derivative drops out; what remains, $-\partial \psi/\partial r + \Sigma_t \psi = S/2$, is the plain slab sweep at $|\mu|=1$, run inwards from the vacuum boundary.
 
-{\color{blue}
-\paragraph{One cell solve for both geometries.} Equations \eqref{eq:slabsweep} and \eqref{eq:sphbalance} are the same equation over a different number of faces, and it is worth writing that form down once because it is what the code implements. Let a cell carry a list of outgoing faces $f$, each contributing $a^f_{\text{out}}\psi^f_{\text{out}} - a^f_{\text{in}}\psi^f_{\text{in}}$ to the balance:
+\begin{notebox}[One cell solve for both geometries.][blue]
+Equations \eqref{eq:slabsweep} and \eqref{eq:sphbalance} are the same equation over a different number of faces, and it is worth writing that form down once because it is what the code implements. Let a cell carry a list of outgoing faces $f$, each contributing $a^f_{\text{out}}\psi^f_{\text{out}} - a^f_{\text{in}}\psi^f_{\text{in}}$ to the balance:
 \begin{equation}
     \sum_f \left(a^f_{\text{out}}\psi^f_{\text{out}} - a^f_{\text{in}}\psi^f_{\text{in}}\right) + \Sigma_t V \psi = \tfrac{1}{2}S\,V
     \label{eq:cellbalance}
@@ -86,8 +94,8 @@ sphere & space & $|\mu_m| A_{\text{out}}$ & $|\mu_m| A_{\text{in}}$ \\
 \end{tabular}
 \end{center}
 
-with $V = \Delta x$ in the slab. \textbf{A face's two coefficients differ only where it is weighted differently on the way in and on the way out} --- the two areas of a spherical shell, the two $\alpha$'s of an angular bin --- which is why the slab's are equal and the distinction looks empty there. Substituting the slab row into \eqref{eq:cellflux} returns \eqref{eq:slabsweep} exactly, and the sphere's two rows return \eqref{eq:sphbalance}. The negative-flux fixup below is the statement that a face whose $\psi_{\text{out}}$ has been clamped to zero drops its $a_{\text{out}}$ from both sums in \eqref{eq:cellflux}, keeping only its inflow.
-}
+with $V = \Delta x$ in the slab. Substituting the slab row into \eqref{eq:cellflux} returns \eqref{eq:slabsweep} exactly, and the sphere's two rows return \eqref{eq:sphbalance}.
+\end{notebox}
 
 \paragraph{Fixup.} Whenever a diamond outgoing flux $2\psi_{i,m}-\psi_{\text{in},m}$ comes out negative it is set to zero and the cell balance is re-solved with it held there, in angle as well as in space. This never occurs in Questions 3--5: the fission source is proportional to the flux itself, so no cell is ever starved, and a critical system is thin enough that $\Sigma_t \Delta x / |\mu_m| < 2$ at every ordinate.
 
@@ -279,6 +287,285 @@ Sodium & 3.859 & 115.8 & \textbf{0.6295} & 0.0312 & 0.6607 \\
 \end{table}
 
 The geometric term is the current driven by the $1/r$ spreading of $\phi = u/r$, and it is harmless only while $D_R \ll R_c$. Sodium's $\Sigma_t = 0.086368$ cm$^{-1}$ is a mean free path of $11.58$ cm against a core radius near $6$ cm: a neutron entering the reflector travels two core radii before its first collision, which is precisely the regime Fick's law expands away from. None of the three approximations repairs it, because a pure scatterer has $D_0 = 1/3$ in all of them and $D_R = 3.86$ cm throughout. Measured against its own bare sphere at $d = 10$, (a) is $+5.4\%$, (b) $+6.6\%$ and (c) $+2.3\%$ --- only the Zimmerman jump helps, and only because $g = 0.807$ multiplies the offending term. Transport theory would not make this mistake: the shell is optically thick and purely scattering, so its true albedo is high and the true critical radius must lie below the bare $5.1890$ cm.
+}
+
+{\color{green!55!black}
+\FloatBarrier
+\section{Critical slab half-thickness by $P_N$}
+
+A homogeneous slab of total thickness $2a$, reflective at the midplane $x=0$ and vacuum at
+$x=a$, in mean free paths ($\Sigma_t=1$), for $c\in\{1.2,1.5,1.8\}$ and $N\in\{1,3,5,9\}$.
+The unknown is the half-thickness $a_{\text{crit}}$ at which $k_{\text{eff}}=1$.
+
+\paragraph{A notational warning.} This section's $a$ is the \emph{half}-thickness, so it is
+what \S3 calls $a/2$. The two tables are comparable entry by entry only after that
+identification.
+
+\subsection*{The $P_N$ equations}
+
+With isotropic scattering and fission lumped as in the paragraph ``The meaning of $c$'' above,
+and the fission source divided by $k$,
+\begin{equation}
+    \mu\frac{\partial \psi}{\partial x} + \psi(x,\mu) = \frac{c}{2k}\,\phi_0(x),
+    \qquad \phi_n(x) = \int_{-1}^{1} P_n(\mu)\,\psi(x,\mu)\,d\mu
+    \label{eq:pntransport}
+\end{equation}
+Expanding $\psi(x,\mu)=\sum_{n\ge0}\frac{2n+1}{2}\phi_n(x)P_n(\mu)$, multiplying
+\eqref{eq:pntransport} by $P_n(\mu)$ and integrating over $\mu$ turns the streaming term into
+a three-term coupling through the Legendre recurrence
+$(2n+1)\mu P_n = (n+1)P_{n+1} + n P_{n-1}$, while the collision term is diagonal and the
+isotropic source reaches only $n=0$:
+\begin{equation}
+    \frac{n+1}{2n+1}\frac{d\phi_{n+1}}{dx} + \frac{n}{2n+1}\frac{d\phi_{n-1}}{dx}
+    + \phi_n(x) = \delta_{n0}\,\frac{c}{k}\,\phi_0(x),
+    \qquad n=0,\dots,N
+    \label{eq:pnrec}
+\end{equation}
+The system closes on itself once $\phi_{N+1}\equiv 0$ is imposed, which is the entire content
+of the $P_N$ approximation. In vector form, with $\boldsymbol{\Phi}=(\phi_0,\dots,\phi_N)^{T}$,
+\begin{equation}
+    \mathbf{\tilde A}\,\frac{d\boldsymbol{\Phi}}{dx} + \mathbf{\Sigma}(k)\,\boldsymbol{\Phi} = 0,
+    \qquad
+    \tilde A_{n,n+1}=\frac{n+1}{2n+1},\quad \tilde A_{n,n-1}=\frac{n}{2n+1},
+    \qquad
+    \mathbf{\Sigma}(k) = \mathbf{I} - \frac{c}{k}\,\mathbf{e}_0\mathbf{e}_0^{T}
+    \label{eq:pnmatrix}
+\end{equation}
+$\mathbf{\tilde A}$ is the Jacobi matrix of the Legendre recurrence truncated at order $N$, so
+its $N+1$ eigenvalues are exactly the roots of $P_{N+1}(\mu)$ --- the Gauss--Legendre ordinates
+of $S_{N+1}$. That is the algebraic content of the claim in \S3 that the two methods share
+their interior equations and differ only at the boundary.
+
+\subsection*{Boundary conditions}
+
+At the midplane the flux is even in $\mu$, so every odd moment vanishes:
+\begin{equation}
+    \phi_{2m+1}(0) = 0, \qquad m=0,\dots,\tfrac{N-1}{2}
+    \label{eq:pnsym}
+\end{equation}
+Equivalently $d\phi_{2m}/dx|_{0}=0$, which \eqref{eq:pnrec} then delivers for free; only one of
+the two families may be imposed or the problem is over-determined.
+
+At $x=a$ no neutron enters, $\psi(a,\mu)=0$ for $\mu<0$, which $N+1$ moments cannot satisfy
+pointwise. Marshak's choice is to annihilate the $\tfrac{N+1}{2}$ lowest odd moments of the
+incoming half-range,
+\begin{equation}
+    \int_{-1}^{0}\mu^{2m-1}\psi(a,\mu)\,d\mu = 0
+    \;\Longrightarrow\;
+    \sum_{n=0}^{N} c_{mn}\,\phi_n(a) = 0,
+    \qquad
+    c_{mn} = \frac{2n+1}{2}\int_{-1}^{0}\mu^{2m-1}P_n(\mu)\,d\mu
+    \label{eq:marshak}
+\end{equation}
+for $m=1,\dots,\tfrac{N+1}{2}$. Weighting with $P_{2m-1}(\mu)$ instead of $\mu^{2m-1}$ gives
+the same set of conditions, since the odd Legendre polynomials up to degree $N$ and the odd
+monomials up to degree $N$ span the same space; the two differ by an invertible mixing of the
+rows and have the same null space. The coefficients follow from
+$P_n(-\mu)=(-1)^nP_n(\mu)$,
+\begin{equation}
+    c_{mn} = (-1)^{n+1}\,\frac{2n+1}{2}\int_{0}^{1}\mu^{2m-1}P_n(\mu)\,d\mu
+\end{equation}
+whose integrand is a polynomial of degree at most $2N$, so an $(N+1)$-point Gauss--Legendre
+rule mapped to $[0,1]$ evaluates it exactly rather than approximately.
+
+Counting: \eqref{eq:pnrec} is $N+1$ first-order equations and needs $N+1$ conditions;
+\eqref{eq:pnsym} supplies $\tfrac{N+1}{2}$ and \eqref{eq:marshak} the other $\tfrac{N+1}{2}$.
+For $N=1$, \eqref{eq:marshak} reads $-\tfrac14\phi_0(a)+\tfrac12\phi_1(a)=0$, i.e.\
+$\phi_0(a)=2\phi_1(a)$: the classical statement that the scalar flux at a vacuum surface is
+twice the net current, and the origin of the extrapolation length $2/3$ quoted in \S3.
+
+\subsection*{Method 1: box discretisation and the Bell \& Glasstone $k$ iteration}
+
+\paragraph{The scheme.} Divide $[0,a]$ into $J$ cells of width $\Delta x = a/J$ with nodes
+$x_j=j\Delta x$. Integrating \eqref{eq:pnmatrix} over one cell and closing it with the
+midpoint rule --- derivative by the difference across the cell, value by the average of the
+two faces ---
+\begin{equation}
+    \left.\frac{d\phi_n}{dx}\right|_{j+\frac12}\!\!\approx \frac{\phi_{n,j+1}-\phi_{n,j}}{\Delta x},
+    \qquad
+    \phi_{n,j+\frac12}\approx \frac{\phi_{n,j+1}+\phi_{n,j}}{2}
+\end{equation}
+gives one $(N+1)$-row block per cell,
+\begin{equation}
+    \left(\frac{\mathbf{\tilde A}}{\Delta x}+\frac{\mathbf{I}}{2}\right)\boldsymbol{\Phi}_{j+1}
+    +\left(\frac{\mathbf{I}}{2}-\frac{\mathbf{\tilde A}}{\Delta x}\right)\boldsymbol{\Phi}_{j}
+    = q_{j+\frac12}\,\mathbf{e}_0,
+    \qquad j=0,\dots,J-1
+    \label{eq:box}
+\end{equation}
+This is the Keller box scheme, and it is the diamond difference of \eqref{eq:slabsweep}
+written in moments rather than in ordinates: the same closure, applied to $N+1$ coupled
+unknowns per node instead of one per ordinate. Two consequences of that coupling: the sweep of
+\S3 is not available, because $\mathbf{\tilde A}$ mixes moments that stream in both directions,
+so the cells must be solved simultaneously; and there is no negative-flux fixup, because
+$\phi_n$ for $n\ge1$ is legitimately of either sign and a sign change carries no information.
+
+\paragraph{The linear system.} Stacking the $J+1$ nodal vectors gives $(J+1)(N+1)$ unknowns.
+Equation \eqref{eq:box} supplies $J(N+1)$ rows, \eqref{eq:pnsym} supplies $\tfrac{N+1}{2}$ rows
+acting on $\boldsymbol{\Phi}_0$ and \eqref{eq:marshak} the last $\tfrac{N+1}{2}$ acting on
+$\boldsymbol{\Phi}_J$; the count closes exactly. Ordered node by node the matrix is
+block-bidiagonal with two boundary blocks, i.e.\ banded with half-bandwidth $N+1$, and one
+banded (or sparse) LU factorisation solves it. Call that matrix $\mathbf{L}$: it carries
+streaming, collision and both boundary conditions, and it does \emph{not} depend on $k$.
+
+\paragraph{Why the source must stay on the right.} The $c/k$ term cannot be absorbed into
+$\mathbf{L}$. If it were, the system would be homogeneous and would admit a non-trivial
+solution only at the critical $k$ --- which is the answer, not a way of computing it. Left on
+the right-hand side it becomes a fission source lagged one iteration,
+\begin{equation}
+    \mathbf{L}\,\boldsymbol{\Phi}^{(\ell+1)} = \frac{c}{k^{(\ell)}}\,\mathbf{F}\,\boldsymbol{\Phi}^{(\ell)},
+    \qquad
+    q^{(\ell)}_{j+\frac12}=\frac{c}{k^{(\ell)}}\cdot\frac{\phi^{(\ell)}_{0,j+1}+\phi^{(\ell)}_{0,j}}{2}
+\end{equation}
+which is the power method on $\mathbf{L}^{-1}\mathbf{F}$, whose dominant eigenvalue is
+$k_{\text{eff}}$. Because $c$ lumps scattering and fission into one isotropic term, there is no
+separate scattering source and hence no inner iteration at all: one factorisation, then one
+back-substitution per outer step, against the ten sweeps per outer that Question 5 needs.
+
+\paragraph{The $k$ update.} Bell \& Glasstone update $k$ by the ratio of successive fission
+productions,
+\begin{equation}
+    k^{(\ell+1)} = k^{(\ell)}\,\frac{\displaystyle\int_0^a \phi_0^{(\ell+1)}\,dx}
+                                    {\displaystyle\int_0^a \phi_0^{(\ell)}\,dx}
+    \label{eq:kupdate}
+\end{equation}
+the constant $c$ cancelling between numerator and denominator. The integral is taken as
+$\Delta x\sum_j \phi_{0,j+1/2}$, which is the trapezoid rule on the nodes; this matters,
+because it is the same midpoint average the source \eqref{eq:box} uses, so \eqref{eq:kupdate}
+is exactly the Rayleigh ratio of the discrete operator and not a second, inconsistent
+discretisation of the same integral. The iterate is then rescaled by $\max_j\phi_{0,j}$, which
+has no effect on \eqref{eq:kupdate} --- it only keeps the vector from drifting towards $0$ or
+$\infty$ as $k^{\ell}$ compounds --- and the loop stops on $|k^{(\ell+1)}-k^{(\ell)}|<\epsilon_k$.
+Convergence is linear at the dominance ratio of the two leading eigenvalues, which for a bare
+slab is well separated, and the starting guess
+\begin{equation}
+    \phi_0^{(0)}(x)=\cos\!\left(\frac{\pi x}{2\,(a+0.7104)}\right),\qquad k^{(0)}=1
+\end{equation}
+is the diffusion fundamental mode with the asymptotic extrapolation distance, already almost
+the answer.
+
+\paragraph{The outer loop.} Dividing the fission source by $k$ makes a solution exist at every
+thickness, so criticality is a root search on
+\begin{equation}
+    f(a) = k(a) - 1
+\end{equation}
+exactly as in Questions 3--5. $k(a)$ is monotone increasing --- a thicker slab leaks a smaller
+fraction --- and runs from $k\to0$ as $a\to0$ to the infinite-medium value $k\to c$ as
+$a\to\infty$. So for every $c>1$ a root exists and is unique, and any bracket
+$[a_{\text{lo}},a_{\text{hi}}]$ straddling the diffusion estimate below is admissible;
+\texttt{brentq} closes it in a handful of evaluations, each of which is one full power
+iteration.
+
+\paragraph{Errors.} The box scheme is second order, so the discretisation error in
+$a_{\text{crit}}$ falls as $\Delta x^2$ and is separable from the truncation error in $N$ by
+running the same $N$ on a refined mesh --- the check reported in \S3 for $S_N$, and the
+quantity that Method 2 removes altogether.
+
+\subsection*{Method 2: modal elimination, as an $N$-exact benchmark}
+
+Method 1 carries two errors, one in $N$ and one in $\Delta x$. Method 2 removes the second by
+solving \eqref{eq:pnmatrix} in closed form at $k=1$ and imposing criticality directly on the
+boundary conditions.
+
+Split the $N+1$ moments into $M=\tfrac{N+1}{2}$ even and $M$ odd,
+$\boldsymbol{\Phi}_{\text{e}}=(\phi_0,\phi_2,\dots)$ and
+$\boldsymbol{\Phi}_{\text{o}}=(\phi_1,\phi_3,\dots)$. Every derivative in \eqref{eq:pnrec}
+changes the parity of its index, so the even-$n$ and odd-$n$ equations separate:
+\begin{equation}
+    \mathbf{A}\frac{d\boldsymbol{\Phi}_{\text{o}}}{dx} + \mathbf{\Sigma}_0(k)\,\boldsymbol{\Phi}_{\text{e}} = 0,
+    \qquad
+    \mathbf{B}\frac{d\boldsymbol{\Phi}_{\text{e}}}{dx} + \boldsymbol{\Phi}_{\text{o}} = 0,
+    \qquad
+    \mathbf{\Sigma}_0(k)=\text{diag}\!\left(1-\tfrac{c}{k},1,\dots,1\right)
+\end{equation}
+$\mathbf{A}$ and $\mathbf{B}$ being the two off-diagonal blocks of $\mathbf{\tilde A}$ under
+that reordering, $\mathbf{\tilde A}=\left(\begin{smallmatrix}0&\mathbf{A}\\\mathbf{B}&0\end{smallmatrix}\right)$,
+with rows $A_{m,\cdot}$ from $n=2m$ and $B_{m,\cdot}$ from $n=2m+1$. Substituting
+$\boldsymbol{\Phi}_{\text{o}}=-\mathbf{B}\,\boldsymbol{\Phi}_{\text{e}}'$ into the first
+equation eliminates the odd moments and leaves a coupled Helmholtz system,
+\begin{equation}
+    \frac{d^2\boldsymbol{\Phi}_{\text{e}}}{dx^2} + \mathbf{K}^2(k)\,\boldsymbol{\Phi}_{\text{e}} = 0,
+    \qquad
+    \mathbf{K}^2(k) = -\,(\mathbf{A}\mathbf{B})^{-1}\mathbf{\Sigma}_0(k)
+    \label{eq:helm}
+\end{equation}
+The minus sign is not cosmetic and is the easiest thing to lose: the elimination produces
+$\mathbf{A}\mathbf{B}\,\boldsymbol{\Phi}_{\text{e}}''=\mathbf{\Sigma}_0\boldsymbol{\Phi}_{\text{e}}$,
+and moving that to the form \eqref{eq:helm} flips it. At $N=1$ it reads $\phi_0''+3(c-1)\phi_0=0$,
+the classic diffusion buckling $B=\sqrt{3(c-1)}$ of the table in \S1 --- with the sign dropped
+one gets $\cosh$ where $\cos$ belongs and no critical thickness at all.
+
+\paragraph{The spectrum of $\mathbf{K}^2$.} Since
+$\mathbf{\tilde A}^2=\left(\begin{smallmatrix}\mathbf{AB}&0\\0&\mathbf{BA}\end{smallmatrix}\right)$ and the
+eigenvalues of $\mathbf{\tilde A}$ are the $N+1$ roots $\pm\mu_i$ of $P_{N+1}$, the matrix
+$\mathbf{A}\mathbf{B}$ has the $M$ eigenvalues $\mu_i^2>0$ and is similar to a positive definite
+matrix. By Sylvester's law of inertia the eigenvalues of \eqref{eq:helm} then carry the signs of
+$-\mathbf{\Sigma}_0$, which for $c>1$ at $k=1$ has one negative and $M-1$ positive entries:
+\textbf{exactly one eigenvalue $\lambda_1^2=B_0^2>0$, and $M-1$ eigenvalues
+$\lambda_j^2=-\kappa_j^2<0$}. The one oscillatory mode is the fundamental; the rest are the
+boundary layers, and at $c=1$ the positive one collapses to $B_0=0$, an infinite critical slab.
+
+\paragraph{Assembling the criticality condition.} Diagonalise
+$\mathbf{K}^2(1)=\mathbf{V}\mathbf{\Lambda}\mathbf{V}^{-1}$. The solution even about $x=0$,
+which satisfies \eqref{eq:pnsym} identically because
+$\boldsymbol{\Phi}_{\text{o}}=-\mathbf{B}\boldsymbol{\Phi}_{\text{e}}'$ vanishes wherever
+$\boldsymbol{\Phi}_{\text{e}}'$ does, is
+\begin{align}
+    \boldsymbol{\Phi}_{\text{e}}(x) &= C_1\mathbf{v}_1\cos(B_0x)
+        + \sum_{j=2}^{M} C_j\mathbf{v}_j\cosh(\kappa_jx) \\
+    \boldsymbol{\Phi}_{\text{o}}(x) &= C_1(\mathbf{B}\mathbf{v}_1)B_0\sin(B_0x)
+        - \sum_{j=2}^{M} C_j(\mathbf{B}\mathbf{v}_j)\kappa_j\sinh(\kappa_jx)
+\end{align}
+$M$ free constants against the $M$ Marshak conditions \eqref{eq:marshak}. Splitting the
+coefficient matrix $c_{mn}$ into its even and odd columns
+$\mathbf{M}_{\text{e}},\mathbf{M}_{\text{o}}$ and evaluating at $x=a$ gives $M$ homogeneous
+equations $\mathbf{H}(a)\mathbf{C}=\mathbf{0}$ with
+\begin{equation}
+    \mathbf{H}_{\cdot1}=\mathbf{M}_{\text{e}}\mathbf{v}_1\cos(B_0a)
+        +\mathbf{M}_{\text{o}}(\mathbf{B}\mathbf{v}_1)B_0\sin(B_0a),
+    \quad
+    \mathbf{H}_{\cdot j}=\mathbf{M}_{\text{e}}\mathbf{v}_j\cosh(\kappa_ja)
+        -\mathbf{M}_{\text{o}}(\mathbf{B}\mathbf{v}_j)\kappa_j\sinh(\kappa_ja)
+\end{equation}
+and a non-trivial flux exists only where
+\begin{equation}
+    \boxed{\;\det\mathbf{H}(a)=0\;}
+    \label{eq:hdet}
+\end{equation}
+$a_{\text{crit}}$ is its smallest positive root. Two numerical points: the $\cosh$ and $\sinh$
+columns overflow once $\kappa_ja\gtrsim700$, so each is divided by its own $\cosh(\kappa_ja)$,
+which leaves $\mathbf{v}_j$ and $-(\mathbf{B}\mathbf{v}_j)\kappa_j\tanh(\kappa_ja)$ and cannot
+move a zero of the determinant, a column scaling being a non-zero factor of it; and the
+determinant itself spans many orders of magnitude across the bracket, so it is the sign change
+that is tracked, not the value.
+
+\subsection*{The two methods against $P_1$ in closed form}
+
+At $N=1$ everything above is elementary and both methods must reproduce it. With
+$B=\sqrt{3(c-1)}$ and $\phi_0=\cos(Bx)$, the Marshak condition $\phi_0(a)=2\phi_1(a)$ and
+$\phi_1=-\tfrac13\phi_0'$ give $\cot(Ba)=\tfrac23B$, that is
+\begin{equation}
+    a_{\text{crit}}^{P_1} = \frac{1}{B}\arctan\!\left(\frac{3}{2B}\right)
+\end{equation}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{cccccc}
+\toprule
+$c$ & $B=\sqrt{3(c-1)}$ & $P_1$ Marshak & $P_1$ Mark & $S_2$ of \S3 & exact transport \\
+\midrule
+1.2 & 0.774597 & 1.412499 & 1.484982 & 1.48499 & 1.28981 \\
+1.5 & 1.224745 & 0.723479 & 0.780013 & 0.78001 & 0.60762 \\
+1.8 & 1.549193 & 0.496559 & 0.542907 & 0.54291 & 0.39314 \\
+\bottomrule
+\end{tabular}
+\caption{Analytic $P_1$ half-thickness in mean free paths, against \S3's $S_2$ column (there
+tabulated as $a/2$). The Mark column, $\arctan(\sqrt3/B)/B$, is the same equation with the
+extrapolation length $1/\sqrt3$ in place of $2/3$, and it reproduces the $S_2$ entry to five
+digits --- the demonstration promised in \S3 that $P_N$ and $S_{N+1}$ differ in slab geometry
+by their boundary condition alone. Both are the $N=1$ target that Method 1 must approach as
+$\Delta x\to0$ and that Method 2 must return outright.}
+\end{table}
 }
 
 \FloatBarrier

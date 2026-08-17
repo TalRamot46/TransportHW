@@ -14,7 +14,7 @@ THEORY_LABELS = {
     'asymptotic': 'Continuous asymptotic',
     'zimmerman': 'Discontinuous asymptotic',
 }
-
+    
 @dataclass(frozen=True)
 class Region:
     """Diffusion parameters of one medium: D0, mu0 and z0 dimensionless, rate in mfp^-1."""
