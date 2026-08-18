@@ -483,6 +483,83 @@ digits --- the demonstration promised in Question 3 that $P_N$ and $S_{N+1}$ dif
 by their boundary condition alone. Both are the $N=1$ target that Method 1 must approach as
 $\Delta x\to0$ and that Method 2 must return outright.}
 \end{table}
+
+\FloatBarrier
+\subsection*{Results}
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ccccccc}
+\toprule
+$c$ & order & Method 1 [mfp] & Method 2 [mfp] & gap & exact transport [mfp] & departure \\
+\midrule
+1.2 & $P_1$ & 1.412502 & 1.412499 & $2.5\cdot10^{-6}$ & 1.28981 & $+9.51\%$ \\
+1.2 & $P_3$ & 1.302001 & 1.301998 & $2.5\cdot10^{-6}$ & 1.28981 & $+0.94\%$ \\
+1.2 & $P_5$ & 1.292597 & 1.292594 & $2.4\cdot10^{-6}$ & 1.28981 & $+0.22\%$ \\
+1.2 & $P_9$ & 1.290382 & 1.290379 & $2.4\cdot10^{-6}$ & 1.28981 & $+0.04\%$ \\
+\midrule
+1.5 & $P_1$ & 0.723480 & 0.723479 & $1.6\cdot10^{-6}$ & 0.60762 & $+19.07\%$ \\
+1.5 & $P_3$ & 0.629149 & 0.629148 & $1.7\cdot10^{-6}$ & 0.60762 & $+3.54\%$ \\
+1.5 & $P_5$ & 0.612136 & 0.612135 & $1.7\cdot10^{-6}$ & 0.60762 & $+0.74\%$ \\
+1.5 & $P_9$ & 0.606467 & 0.606466 & $1.7\cdot10^{-6}$ & 0.60762 & $-0.19\%$ \\
+\midrule
+1.8 & $P_1$ & 0.496560 & 0.496559 & $1.2\cdot10^{-6}$ & 0.39314 & $+26.30\%$ \\
+1.8 & $P_3$ & 0.418210 & 0.418209 & $1.3\cdot10^{-6}$ & 0.39314 & $+6.38\%$ \\
+1.8 & $P_5$ & 0.399736 & 0.399735 & $1.4\cdot10^{-6}$ & 0.39314 & $+1.68\%$ \\
+1.8 & $P_9$ & 0.391130 & 0.391129 & $1.3\cdot10^{-6}$ & 0.39314 & $-0.51\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Critical half-thickness $a_{\text{crit}}$ in mean free paths. Method 1 is the box
+scheme on 200 cells; Method 2 is $\det\mathbf{H}(a)=0$. The gap between them is the relative
+difference, and the departure is Method 2's against the exact-transport reference
+$a = \tfrac{\pi}{2}\nu_0 - z_0$ of Assignment 1.}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figs/q2_pn_slab_orders.pdf}
+\caption{Left: convergence of $a_{\text{crit}}$ with $N$, dashed lines the exact-transport
+values. Centre: $k$ against half-thickness at $c=1.5$, circles the $k=1$ crossings, which for
+$P_3$, $P_5$ and $P_9$ are already almost on top of one another. Right: the normalised critical
+flux --- as in Question 3, the order changes the surface value and not the interior shape.}
+\end{figure}
+
+\paragraph{The two methods against each other.} The gap column is the only free check
+available, since the two share nothing but the matrices of \eqref{eq:pnmatrix} and
+\eqref{eq:marshak}: one iterates a discretised operator, the other never discretises space at
+all. They agree to between one and three parts in $10^{6}$, and that residue is Method 1's
+$\Delta x^2$ and nothing else. Refining the mesh at $c=1.5$, $N=5$ against Method 2's
+$0.612134509$:
+
+\begin{center}
+\begin{tabular}{cccccc}
+\toprule
+cells $J$ & 25 & 50 & 100 & 200 & 400 \\
+\midrule
+error [mfp] & $6.61\cdot10^{-5}$ & $1.65\cdot10^{-5}$ & $4.13\cdot10^{-6}$ & $1.03\cdot10^{-6}$ & $2.58\cdot10^{-7}$ \\
+ratio & --- & 4.00 & 4.00 & 4.00 & 4.00 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Each halving of $\Delta x$ divides the error by $4.00$ to three digits, which is the second
+order claimed above measured rather than asserted, and it confirms that the boundary rows are
+as accurate as the interior ones --- a first-order boundary closure would have shown up here as
+a ratio of $2$.
+
+\paragraph{Where the reference column is wrong.} The last two departures are negative, and a
+$P_N$ half-thickness below the true one would be a real defect. It is the reference that is at
+fault: $a = \tfrac{\pi}{2}\nu_0 - z_0$ is the asymptotic relation, accurate to about $1.5\%$ in
+$z_0$ as Question 4 measures. Against the exact one-speed value at $c=1.5$, the Sood
+\emph{et al.} $0.605055$ mfp used in Question 3, the $P_N$ sequence is monotone from
+\emph{above} and does not cross:
+\begin{equation*}
+    0.723479\;(P_1),\quad 0.629148\;(P_3),\quad 0.612135\;(P_5),\quad 0.606466\;(P_9),\quad
+    0.605952\;(P_{11}),\quad 0.605550\;(P_{15}),\quad 0.605181\;(P_{31})
+\end{equation*}
+$P_9$ is $+0.23\%$ above it and $P_{31}$ is $+0.02\%$. Every entry of the table is therefore
+converging correctly; the sign of the last column is an artefact of comparing against a
+reference that is itself $0.4\%$ too large at this $c$.
 }
 
 \FloatBarrier
@@ -615,6 +692,50 @@ In slab geometry the two are algebraically the same interior equations. Expandin
     \item $P_N$ needs conditions on moments instead. \emph{Marshak}'s, $\int_0^1 P_{2j+1}(\mu)\psi\,d\mu = 0$, weight the whole incoming half-range; Mark's pin the same isolated directions $S_{N+1}$ does.
 \end{itemize}
 With Mark conditions the two agree; with Marshak they do not. Concretely at $c=1.5$: $S_2$ above gives $a/2 = 0.78001$, and $P_1$ with the Mark extrapolation $l_0=1/\sqrt3$ gives $\arctan(1/Bl_0)/B = 0.78001$ --- the same five digits --- while $P_1$ with the Marshak $l_0 = 2/3$ gives $0.72348$, a 7\% spread between two methods that share every interior equation.
+
+{\color{green!55!black}
+Question 2 supplies the rest of that comparison, since it solves the same slab at
+$N = 1,3,5,9$ under Marshak conditions:
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{cccccc}
+\toprule
+$c$ & pair & $P_N$ (Marshak) & $S_{N+1}$ (Mark) & $S_{N+1}/P_N - 1$ & exact transport \\
+\midrule
+1.2 & $P_1$ / $S_2$    & 1.41250 & 1.48499 & $+5.13\%$ & 1.28981 \\
+1.2 & $P_3$ / $S_4$    & 1.30200 & 1.31855 & $+1.27\%$ & 1.28981 \\
+1.2 & $P_5$ / $S_6$    & 1.29259 & 1.29861 & $+0.47\%$ & 1.28981 \\
+1.2 & $P_9$ / $S_{10}$ & 1.29038 & 1.29218 & $+0.14\%$ & 1.28981 \\
+\midrule
+1.5 & $P_1$ / $S_2$    & 0.72348 & 0.78001 & $+7.81\%$ & 0.60762 \\
+1.5 & $P_3$ / $S_4$    & 0.62915 & 0.64949 & $+3.23\%$ & 0.60762 \\
+1.5 & $P_5$ / $S_6$    & 0.61213 & 0.62089 & $+1.43\%$ & 0.60762 \\
+1.5 & $P_9$ / $S_{10}$ & 0.60647 & 0.60904 & $+0.42\%$ & 0.60762 \\
+\midrule
+1.8 & $P_1$ / $S_2$    & 0.49656 & 0.54291 & $+9.33\%$ & 0.39314 \\
+1.8 & $P_3$ / $S_4$    & 0.41821 & 0.43875 & $+4.91\%$ & 0.39314 \\
+1.8 & $P_5$ / $S_6$    & 0.39974 & 0.41014 & $+2.60\%$ & 0.39314 \\
+1.8 & $P_9$ / $S_{10}$ & 0.39113 & 0.39459 & $+0.88\%$ & 0.39314 \\
+\bottomrule
+\end{tabular}
+\caption{The two methods at matched order, in mean free paths. Every $P_N$ entry is below its
+$S_{N+1}$ partner and closer to the exact value, and the gap closes as $N$ grows.}
+\end{table}
+
+Three things in that table follow from the argument above. \textbf{The sign of the gap is the
+sign of $l_0$}: Marshak's extrapolation $2/3$ is longer than Mark's $1/\sqrt3 = 0.577$, so the
+$P_N$ flux is driven to zero further outside the slab and less material is needed --- $P_N$ is
+below $S_{N+1}$ at every one of the twelve entries. \textbf{The gap is a boundary effect, so it
+shrinks with $N$}, from $5$--$9\%$ at $N=1$ to under $1\%$ at $N=9$; by then both boundary
+conditions are resolving the same half-range flux and the choice between them stops mattering.
+And \textbf{it grows with $c$} at fixed $N$ --- $5.13\%$, $7.81\%$, $9.33\%$ at $N=1$ ---
+because a larger $c$ means a thinner slab, a shorter relaxation length and a more forward-peaked
+surface flux, which is exactly the shape a half-range condition of low order cannot capture.
+The whole difference is worth at most a factor of two in either method's error: at $c=1.5$,
+$P_9$ is $+0.23\%$ from the true $0.605055$ mfp where $S_{10}$ is $+0.66\%$, so a $P_N$ solve
+buys roughly the accuracy of an $S_N$ solve of the next order up.
+}
 
 A second source of difference is that $S_N$ is a collocation method: it satisfies the equation exactly along $N$ directions and says nothing between them. At the vacuum face the leaked current $\sum_{\mu_m>0} w_m \mu_m \psi_m$ is that of a flux strongly peaked towards $\mu=1$, which a coarse quadrature underestimates --- so the slab has to be made \emph{thicker} than it should be to stay critical, and the table comes down from above.
 

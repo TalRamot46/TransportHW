@@ -27,6 +27,30 @@ at `c = 1.3` and `c = 1.5`.
 
 **`relaxation_rate`.** `k0(1.5) = 1.45110`, Case's Table 8 value to six digits.
 
+## Question 2 — the two P_N solvers
+
+**The analytic `P_1`.** The only check that goes around `pn.py` rather than through it:
+`a = arctan(3/(2B))/B` with `B = sqrt(3(c-1))`. Method 2 returns it to **eight digits** at all
+three `c` — `0.72347894` against `0.72347894` at `c = 1.5` — and Method 1 to `2.5e-6` relative,
+which is its `Δx²`. Any error in `marshak_matrix` or `parity_blocks` would show here, and would
+show in both methods at once everywhere else.
+
+**The spectrum of `A B`.** Its eigenvalues should be the squared positive roots of `P_{N+1}` —
+the same numbers `leggauss` returns for `S_{N+1}` — and they are, to **`1.2e-15`** at
+`N = 1, 3, 5, 9`. This is the parity split and the report's inertia argument checked in one
+line, and it is what licenses the claim that exactly one eigenvalue of `K²` is positive.
+
+**Method 1 against Method 2.** The two agree to **1–3 parts in `10^6`** over the whole (c, N)
+table, and the residue is spatial: refining `c = 1.5`, `N = 5` at 25, 50, 100, 200 and 400 cells
+gives errors `6.61e-5`, `1.65e-5`, `4.13e-6`, `1.03e-6`, `2.58e-7` — **a ratio of 4.00 at every
+step**, second order to three digits, boundary rows included. Evaluated at Method 2's critical
+half-thickness, Method 1 returns `k = 0.9999994` at all twelve entries.
+
+**The thick-slab limit.** As `c -> 1+` the half-thickness must approach `pi/(2B) - z0` with
+`z0 -> 0.710446`, the Milne extrapolation distance. At `c = 1.001`, `P_9` gives `27.9583` mfp
+against `pi/(2B) = 28.6787`, an implied `z0` of **`0.7204`** — 1.4% high, which is `P_9`'s own
+boundary error and shrinks with `N`. Nothing in the code is told about the Milne problem.
+
 ## Questions 3–5 — the S_N solver
 
 **The mesh is free.** Critical radius of the `c = 1.5` sphere at `S_10`:
