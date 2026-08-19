@@ -23,7 +23,7 @@ def _table(scan):
             rows.append([f'{c}', f'P{N}', f'{box:.6f}', f'{modal:.6f}',
                          f'{abs(box / modal - 1.0):.1e}', f'{reference:.5f}',
                          f'{modal / reference - 1.0:+.2%}'])
-    log_table(['c', 'order', 'method 1 [mfp]', 'method 2 [mfp]', 'gap',
+    log_table(['c', 'order', 'a/2 method 1 [mfp]', 'a/2 method 2 [mfp]', 'gap',
                'exact transport [mfp]', 'departure'], rows)
 
 def report(figs):
@@ -32,13 +32,13 @@ def report(figs):
                 'Critical slab half-thickness by P_N: Marshak conditions at the vacuum '
                 'face, two independent solutions.',
                 f'Method 1, box scheme on {pn_box.N_CELLS} cells with the k power '
-                'iteration; Method 2, modal elimination and det H(a) = 0.',
-                'Reflective at x = 0, vacuum at x = a.')
+                'iteration; Method 2, modal elimination and det H(a/2) = 0.',
+                'Reflective at x = 0, vacuum at x = a/2.')
 
     scan = plots.scan_orders(pn_box.critical_half_thickness, pn_box.pn_k_eigenvalue,
                              HALF_THICKNESS, orders=ORDERS, family='P')
     _table(scan)
 
-    plots.plot_orders(scan, '$a$',
+    plots.plot_orders(scan, '$a/2$',
                       'Question 2: critical slab half-thickness by $P_N$',
                       os.path.join(figs, 'q2_pn_slab_orders.pdf'))

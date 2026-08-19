@@ -11,7 +11,7 @@ nothing else — no discretisation, no iteration, no root search in `k`.
 
 **The sign of `K^2`.** The elimination produces `AB Phi'' = Sigma_0 Phi`, so the Helmholtz form
 carries a minus: `K^2 = -(AB)^-1 Sigma_0`, report eq. (23). Dropping it turns every `cos` into a
-`cosh`, and `det H(a)` then has no zero at all — the failure is loud, but only if you know the
+`cosh`, and `det H(a/2)` then has no zero at all — the failure is loud, but only if you know the
 sign was the suspect.
 
 **Complex round-off from `eig`.** `K^2` is not symmetric as stored, though it is similar to a
@@ -19,10 +19,10 @@ symmetric matrix, so `np.linalg.eig` can return eigenvalues with imaginary parts
 `1e-17`. Those are taken as round-off and discarded with `.real` before anything compares them
 to zero — including `values.max()`, which raises on a complex array.
 
-**Overflow in the boundary-layer columns.** `kappa_j a` reaches only about 6 for the cases in
+**Overflow in the boundary-layer columns.** `kappa_j a/2` reaches only about 6 for the cases in
 the report, but the same expression at large `c` or high `N` overflows `cosh`. Every hyperbolic
-column is divided by its own `cosh(kappa_j a)`, leaving `v_j - (B v_j) kappa_j tanh(kappa_j a)`,
-which is bounded for all `a`. Scaling a column multiplies the determinant by a non-zero factor
+column is divided by its own `cosh(kappa_j a/2)`, leaving `v_j - (B v_j) kappa_j tanh(kappa_j a/2)`,
+which is bounded for all `a/2`. Scaling a column multiplies the determinant by a non-zero factor
 and cannot move its zeros, so the root is untouched.
 
 ## Why the root is found by scanning first

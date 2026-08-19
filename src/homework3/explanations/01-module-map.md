@@ -13,7 +13,7 @@ closed form, `pn_box.py`/`pn_modal.py` answer Question 2 twice over, and `sn.py`
 | `reflected.py` | Question 1: `Region` parameters, the criticality residual, the flux profile. |
 | `pn.py` | The P_N algebra shared by Question 2's two methods: the streaming matrix, its parity blocks, the Marshak rows. |
 | `pn_box.py` | Question 2 Method 1: the banded box system and the `k` power iteration over it. |
-| `pn_modal.py` | Question 2 Method 2: the modal elimination and `det H(a) = 0`. |
+| `pn_modal.py` | Question 2 Method 2: the modal elimination and `det H(a/2) = 0`. |
 | `sn.py` | Geometry-independent S_N: quadrature, the diamond cell solve with its fixup, the two-level `k` iteration, the size root search. |
 | `slab.py` | The slab sweep and its mesh. |
 | `sphere.py` | The spherical sweep, which adds the angular redistribution term. |

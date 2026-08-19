@@ -210,13 +210,11 @@ The geometric term is the current driven by the $1/r$ spreading of $\phi = u/r$,
 \FloatBarrier
 \section*{Question 2: Critical slab half-thickness by $P_N$}
 
-A homogeneous slab of total thickness $2a$, reflective at the midplane $x=0$ and vacuum at
-$x=a$, in mean free paths ($\Sigma_t=1$), for $c\in\{1.2,1.5,1.8\}$ and $N\in\{1,3,5,9\}$.
-The unknown is the half-thickness $a_{\text{crit}}$ at which $k_{\text{eff}}=1$.
-
-\paragraph{A notational warning.} This section's $a$ is the \emph{half}-thickness, so it is
-what Question 3 calls $a/2$. The two tables are comparable entry by entry only after that
-identification.
+A homogeneous slab of total thickness $a$, reflective at the midplane $x=0$ and vacuum at
+$x=a/2$, in mean free paths ($\Sigma_t=1$), for $c\in\{1.2,1.5,1.8\}$ and $N\in\{1,3,5,9\}$.
+The unknown is the critical half-thickness $a/2$ at which $k_{\text{eff}}=1$ --- the same
+quantity Question 3 tabulates for $S_N$, written the same way, so the two tables compare entry
+by entry.
 
 \subsection*{The $P_N$ equations}
 
@@ -263,13 +261,13 @@ At the midplane the flux is even in $\mu$, so every odd moment vanishes:
 Equivalently $d\phi_{2m}/dx|_{0}=0$, which \eqref{eq:pnrec} then delivers for free; only one of
 the two families may be imposed or the problem is over-determined.
 
-At $x=a$ no neutron enters, $\psi(a,\mu)=0$ for $\mu<0$, which $N+1$ moments cannot satisfy
+At $x=a/2$ no neutron enters, $\psi(a/2,\mu)=0$ for $\mu<0$, which $N+1$ moments cannot satisfy
 pointwise. Marshak's choice is to annihilate the $\tfrac{N+1}{2}$ lowest odd moments of the
 incoming half-range,
 \begin{equation}
-    \int_{-1}^{0}\mu^{2m-1}\psi(a,\mu)\,d\mu = 0
+    \int_{-1}^{0}\mu^{2m-1}\psi(\tfrac{a}{2},\mu)\,d\mu = 0
     \;\Longrightarrow\;
-    \sum_{n=0}^{N} c_{mn}\,\phi_n(a) = 0,
+    \sum_{n=0}^{N} c_{mn}\,\phi_n(\tfrac{a}{2}) = 0,
     \qquad
     c_{mn} = \frac{2n+1}{2}\int_{-1}^{0}\mu^{2m-1}P_n(\mu)\,d\mu
     \label{eq:marshak}
@@ -287,13 +285,13 @@ rule mapped to $[0,1]$ evaluates it exactly rather than approximately.
 
 Counting: \eqref{eq:pnrec} is $N+1$ first-order equations and needs $N+1$ conditions;
 \eqref{eq:pnsym} supplies $\tfrac{N+1}{2}$ and \eqref{eq:marshak} the other $\tfrac{N+1}{2}$.
-For $N=1$, \eqref{eq:marshak} reads $-\tfrac14\phi_0(a)+\tfrac12\phi_1(a)=0$, i.e.\
-$\phi_0(a)=2\phi_1(a)$: the classical statement that the scalar flux at a vacuum surface is
+For $N=1$, \eqref{eq:marshak} reads $-\tfrac14\phi_0(a/2)+\tfrac12\phi_1(a/2)=0$, i.e.\
+$\phi_0(a/2)=2\phi_1(a/2)$: the classical statement that the scalar flux at a vacuum surface is
 twice the net current, and the origin of the extrapolation length $2/3$ quoted in Question 3.
 
 \subsection*{Method 1: box discretisation and the Bell \& Glasstone $k$ iteration}
 
-\paragraph{The scheme.} Divide $[0,a]$ into $J$ cells of width $\Delta x = a/J$ with nodes
+\paragraph{The scheme.} Divide $[0,a/2]$ into $J$ cells of width $\Delta x = a/(2J)$ with nodes
 $x_j=j\Delta x$. Integrating \eqref{eq:pnmatrix} over one cell and closing it with the
 midpoint rule --- derivative by the difference across the cell, value by the average of the
 two faces ---
@@ -342,8 +340,8 @@ back-substitution per outer step, against the ten sweeps per outer that Question
 \paragraph{The $k$ update.} Bell \& Glasstone update $k$ by the ratio of successive fission
 productions,
 \begin{equation}
-    k^{(\ell+1)} = k^{(\ell)}\,\frac{\displaystyle\int_0^a \phi_0^{(\ell+1)}\,dx}
-                                    {\displaystyle\int_0^a \phi_0^{(\ell)}\,dx}
+    k^{(\ell+1)} = k^{(\ell)}\,\frac{\displaystyle\int_0^{a/2} \phi_0^{(\ell+1)}\,dx}
+                                    {\displaystyle\int_0^{a/2} \phi_0^{(\ell)}\,dx}
     \label{eq:kupdate}
 \end{equation}
 the constant $c$ cancelling between numerator and denominator. The integral is taken as
@@ -356,7 +354,7 @@ $\infty$ as $k^{\ell}$ compounds --- and the loop stops on $|k^{(\ell+1)}-k^{(\e
 Convergence is linear at the dominance ratio of the two leading eigenvalues, which for a bare
 slab is well separated, and the starting guess
 \begin{equation}
-    \phi_0^{(0)}(x)=\cos\!\left(\frac{\pi x}{2\,(a+0.7104)}\right),\qquad k^{(0)}=1
+    \phi_0^{(0)}(x)=\cos\!\left(\frac{\pi x}{2\,(a/2+0.7104)}\right),\qquad k^{(0)}=1
 \end{equation}
 is the diffusion fundamental mode with the asymptotic extrapolation distance, already almost
 the answer.
@@ -364,17 +362,17 @@ the answer.
 \paragraph{The outer loop.} Dividing the fission source by $k$ makes a solution exist at every
 thickness, so criticality is a root search on
 \begin{equation}
-    f(a) = k(a) - 1
+    f(a/2) = k(a/2) - 1
 \end{equation}
-exactly as in Questions 3--5. $k(a)$ is monotone increasing --- a thicker slab leaks a smaller
-fraction --- and runs from $k\to0$ as $a\to0$ to the infinite-medium value $k\to c$ as
-$a\to\infty$. So for every $c>1$ a root exists and is unique, and any bracket
-$[a_{\text{lo}},a_{\text{hi}}]$ straddling the diffusion estimate below is admissible;
+exactly as in Questions 3--5. $k(a/2)$ is monotone increasing --- a thicker slab leaks a smaller
+fraction --- and runs from $k\to0$ as $a/2\to0$ to the infinite-medium value $k\to c$ as
+$a/2\to\infty$. So for every $c>1$ a root exists and is unique, and any bracket
+$[(a/2)_{\text{lo}},(a/2)_{\text{hi}}]$ straddling the diffusion estimate below is admissible;
 \texttt{brentq} closes it in a handful of evaluations, each of which is one full power
 iteration.
 
 \paragraph{Errors.} The box scheme is second order, so the discretisation error in
-$a_{\text{crit}}$ falls as $\Delta x^2$ and is separable from the truncation error in $N$ by
+$(a/2)_{\text{crit}}$ falls as $\Delta x^2$ and is separable from the truncation error in $N$ by
 running the same $N$ on a refined mesh --- the check reported in Question 3 for $S_N$, and the
 quantity that Method 2 removes altogether.
 
@@ -435,23 +433,23 @@ $\boldsymbol{\Phi}_{\text{e}}'$ does, is
 \end{align}
 $M$ free constants against the $M$ Marshak conditions \eqref{eq:marshak}. Splitting the
 coefficient matrix $c_{mn}$ into its even and odd columns
-$\mathbf{M}_{\text{e}},\mathbf{M}_{\text{o}}$ and evaluating at $x=a$ gives $M$ homogeneous
-equations $\mathbf{H}(a)\mathbf{C}=\mathbf{0}$ with
+$\mathbf{M}_{\text{e}},\mathbf{M}_{\text{o}}$ and evaluating at $x=a/2$ gives $M$ homogeneous
+equations $\mathbf{H}(a/2)\mathbf{C}=\mathbf{0}$ with
 \begin{equation}
-    \mathbf{H}_{\cdot1}=\mathbf{M}_{\text{e}}\mathbf{v}_1\cos(B_0a)
-        +\mathbf{M}_{\text{o}}(\mathbf{B}\mathbf{v}_1)B_0\sin(B_0a),
+    \mathbf{H}_{\cdot1}=\mathbf{M}_{\text{e}}\mathbf{v}_1\cos\!\left(\tfrac{B_0a}{2}\right)
+        +\mathbf{M}_{\text{o}}(\mathbf{B}\mathbf{v}_1)B_0\sin\!\left(\tfrac{B_0a}{2}\right),
     \quad
-    \mathbf{H}_{\cdot j}=\mathbf{M}_{\text{e}}\mathbf{v}_j\cosh(\kappa_ja)
-        -\mathbf{M}_{\text{o}}(\mathbf{B}\mathbf{v}_j)\kappa_j\sinh(\kappa_ja)
+    \mathbf{H}_{\cdot j}=\mathbf{M}_{\text{e}}\mathbf{v}_j\cosh\!\left(\tfrac{\kappa_ja}{2}\right)
+        -\mathbf{M}_{\text{o}}(\mathbf{B}\mathbf{v}_j)\kappa_j\sinh\!\left(\tfrac{\kappa_ja}{2}\right)
 \end{equation}
 and a non-trivial flux exists only where
 \begin{equation}
-    \boxed{\;\det\mathbf{H}(a)=0\;}
+    \boxed{\;\det\mathbf{H}(a/2)=0\;}
     \label{eq:hdet}
 \end{equation}
-$a_{\text{crit}}$ is its smallest positive root. Two numerical points: the $\cosh$ and $\sinh$
-columns overflow once $\kappa_ja\gtrsim700$, so each is divided by its own $\cosh(\kappa_ja)$,
-which leaves $\mathbf{v}_j$ and $-(\mathbf{B}\mathbf{v}_j)\kappa_j\tanh(\kappa_ja)$ and cannot
+$(a/2)_{\text{crit}}$ is its smallest positive root. Two numerical points: the $\cosh$ and $\sinh$
+columns overflow once $\tfrac12\kappa_ja\gtrsim700$, so each is divided by its own $\cosh(\tfrac12\kappa_ja)$,
+which leaves $\mathbf{v}_j$ and $-(\mathbf{B}\mathbf{v}_j)\kappa_j\tanh(\tfrac12\kappa_ja)$ and cannot
 move a zero of the determinant, a column scaling being a non-zero factor of it; and the
 determinant itself spans many orders of magnitude across the bracket, so it is the sign change
 that is tracked, not the value.
@@ -459,10 +457,10 @@ that is tracked, not the value.
 \subsection*{The two methods against $P_1$ in closed form}
 
 At $N=1$ everything above is elementary and both methods must reproduce it. With
-$B=\sqrt{3(c-1)}$ and $\phi_0=\cos(Bx)$, the Marshak condition $\phi_0(a)=2\phi_1(a)$ and
-$\phi_1=-\tfrac13\phi_0'$ give $\cot(Ba)=\tfrac23B$, that is
+$B=\sqrt{3(c-1)}$ and $\phi_0=\cos(Bx)$, the Marshak condition $\phi_0(a/2)=2\phi_1(a/2)$ and
+$\phi_1=-\tfrac13\phi_0'$ give $\cot(Ba/2)=\tfrac23B$, that is
 \begin{equation}
-    a_{\text{crit}}^{P_1} = \frac{1}{B}\arctan\!\left(\frac{3}{2B}\right)
+    \left(\frac{a}{2}\right)^{P_1}_{\text{crit}} = \frac{1}{B}\arctan\!\left(\frac{3}{2B}\right)
 \end{equation}
 
 \begin{table}[htbp]
@@ -476,8 +474,8 @@ $c$ & $B=\sqrt{3(c-1)}$ & $P_1$ Marshak & $P_1$ Mark & $S_2$ of Q3 & exact trans
 1.8 & 1.549193 & 0.496559 & 0.542907 & 0.54291 & 0.39314 \\
 \bottomrule
 \end{tabular}
-\caption{Analytic $P_1$ half-thickness in mean free paths, against Question 3's $S_2$ column (there
-tabulated as $a/2$). The Mark column, $\arctan(\sqrt3/B)/B$, is the same equation with the
+\caption{Analytic $P_1$ half-thickness in mean free paths, against Question 3's $S_2$
+column. The Mark column, $\arctan(\sqrt3/B)/B$, is the same equation with the
 extrapolation length $1/\sqrt3$ in place of $2/3$, and it reproduces the $S_2$ entry to five
 digits --- the demonstration promised in Question 3 that $P_N$ and $S_{N+1}$ differ in slab geometry
 by their boundary condition alone. Both are the $N=1$ target that Method 1 must approach as
@@ -509,16 +507,16 @@ $c$ & order & Method 1 [mfp] & Method 2 [mfp] & gap & exact transport [mfp] & de
 1.8 & $P_9$ & 0.391130 & 0.391129 & $1.3\cdot10^{-6}$ & 0.39314 & $-0.51\%$ \\
 \bottomrule
 \end{tabular}
-\caption{Critical half-thickness $a_{\text{crit}}$ in mean free paths. Method 1 is the box
-scheme on 200 cells; Method 2 is $\det\mathbf{H}(a)=0$. The gap between them is the relative
+\caption{Critical half-thickness $(a/2)_{\text{crit}}$ in mean free paths. Method 1 is the box
+scheme on 200 cells; Method 2 is $\det\mathbf{H}(a/2)=0$. The gap between them is the relative
 difference, and the departure is Method 2's against the exact-transport reference
-$a = \tfrac{\pi}{2}\nu_0 - z_0$ of Assignment 1.}
+$a/2 = \tfrac{\pi}{2}\nu_0 - z_0$ of Assignment 1.}
 \end{table}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figs/q2_pn_slab_orders.pdf}
-\caption{Left: convergence of $a_{\text{crit}}$ with $N$, dashed lines the exact-transport
+\caption{Left: convergence of $(a/2)_{\text{crit}}$ with $N$, dashed lines the exact-transport
 values. Centre: $k$ against half-thickness at $c=1.5$, circles the $k=1$ crossings, which for
 $P_3$, $P_5$ and $P_9$ are already almost on top of one another. Right: the normalised critical
 flux --- as in Question 3, the order changes the surface value and not the interior shape.}
@@ -549,7 +547,7 @@ a ratio of $2$.
 
 \paragraph{Where the reference column is wrong.} The last two departures are negative, and a
 $P_N$ half-thickness below the true one would be a real defect. It is the reference that is at
-fault: $a = \tfrac{\pi}{2}\nu_0 - z_0$ is the asymptotic relation, accurate to about $1.5\%$ in
+fault: $a/2 = \tfrac{\pi}{2}\nu_0 - z_0$ is the asymptotic relation, accurate to about $1.5\%$ in
 $z_0$ as Question 4 measures. Against the exact one-speed value at $c=1.5$, the Sood
 \emph{et al.} $0.605055$ mfp used in Question 3, the $P_N$ sequence is monotone from
 \emph{above} and does not cross:

@@ -16,7 +16,7 @@
       <- BoxSystem._matrix          one sparse L, report eq. (20)
       <- BoxSystem.solve            one back-substitution against a midpoint source
       <- pn_box.pn_k_eigenvalue     the power iteration; returns sn.KResult
-      <- pn_box.critical_half_thickness -> sn.critical_size   brentq on k(a) - 1
+      <- pn_box.critical_half_thickness -> sn.critical_size   brentq on k(a/2) - 1
       <- q2.report
 
 The last two lines are the reuse that matters: `sn.critical_size` and `sn.KResult` are taken
@@ -45,7 +45,7 @@ Two assembly details that look like tricks and are not:
   the stride would otherwise reach.
 
 `BoxSystem` factorises in its constructor, so one instance is one half-thickness. The outer
-`brentq` therefore builds a new system per trial `a` — about eight per (c, N) — and each one
+`brentq` therefore builds a new system per trial `a/2` — about eight per (c, N) — and each one
 amortises its factorisation over the ten to twenty power iterations that follow.
 
 ## What was tried and rejected
@@ -58,7 +58,7 @@ code looks like it is missing a term until you know.
 
 **A staggered mesh**, odd moments at cell centres and even moments at nodes, is the other
 standard P_N discretisation and is also second order. It was not used because the Marshak rows
-need every moment at the same point `x = a`, which a staggered mesh does not have and would
+need every moment at the same point `x = a/2`, which a staggered mesh does not have and would
 have to extrapolate — a first-order boundary closure bolted onto a second-order interior.
 
 **A negative-flux fixup** has no counterpart here. `phi_n` for `n >= 1` is a current-like

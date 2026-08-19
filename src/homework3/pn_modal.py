@@ -1,5 +1,5 @@
 """Question 2, Method 2: the same P_N system solved in closed form, criticality from
-det H(a) = 0. Carries no spatial error, so it is the benchmark for Method 1."""
+det H(a/2) = 0. Carries no spatial error, so it is the benchmark for Method 1."""
 
 import numpy as np
 from scipy.optimize import brentq
@@ -23,7 +23,7 @@ def modes(c, N):
     return values, vectors, B
 
 def _boundary_matrix(a, values, vectors, B, m_even, m_odd):
-    """H(a) of report eq. (26), one column per mode."""
+    """H(a/2) of report eq. (26), one column per mode."""
     columns = []
     for value, v in zip(values, vectors.T):
         flux, current = m_even @ v, m_odd @ (B @ v)
@@ -44,13 +44,13 @@ def _first_root(determinant, upper):
 
     crossings = np.flatnonzero(values[:-1] * values[1:] < 0.0)
     if len(crossings) == 0:
-        raise RuntimeError("det H(a) does not change sign below the fundamental cutoff.")
+        raise RuntimeError("det H(a/2) does not change sign below the fundamental cutoff.")
 
     first = crossings[0]
     return brentq(determinant, grid[first], grid[first + 1], xtol=1e-13)
 
 def critical_half_thickness(medium, N):
-    """Half-thickness at which det H(a) = 0, the smallest positive root."""
+    """Half-thickness at which det H(a/2) = 0, the smallest positive root."""
     values, vectors, B = modes(medium.c, N)
     marshak = pn.marshak_matrix(N)
     even, odd = pn.parity_indices(N)
