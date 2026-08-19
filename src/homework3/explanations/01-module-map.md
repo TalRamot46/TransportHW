@@ -56,7 +56,7 @@ seam to use for any further geometry.
 Shallower, because there is nothing to iterate:
 
     reflected.region              (material, theory) -> Region
-      <- reflected._residual      the interface balance, report eq. (11)
+      <- reflected._residual      the interface balance, report eq. (4)
       <- reflected.critical_radius  brentq on (0, pi/B)
       <- q1.report                tables + figures
 

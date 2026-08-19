@@ -35,7 +35,7 @@ class SphereSolver:
         sweep is the plain slab one; see explanations/02."""
         psi, psi_in = np.empty(self.n_cells), 0.0
         for i in range(self.n_cells - 1, -1, -1):
-            # One face, at |mu| = 1: the slab row of report eq. (8) with a_out = a_in = 1.
+            # One face, at |mu| = 1: the slab row of report eq. (32) with a_out = a_in = 1.
             psi[i], (psi_in,) = sn.cell_flux(self.medium.sigma_t * self.dr, source[i] * self.dr,
                                              [sn.Face(1.0, 1.0, psi_in)])
         return psi

@@ -34,7 +34,7 @@ class Face(NamedTuple):
     Its contribution is `a_out psi_out - a_in psi_in`. The two coefficients differ only
     where the face is weighted differently on the way in and on the way out -- the two
     areas of a spherical shell, the two alphas of an angular bin -- so in the slab they
-    are both |mu|. See report eq. (7).
+    are both |mu|. See report eq. (31).
     """
     a_out: float
     a_in: float
@@ -49,7 +49,7 @@ def cell_flux(removal, source, faces):
         sum_f (a_out psi_out - a_in psi_in) + removal psi = source
 
     by closing each face with the diamond relation psi_out = 2 psi - psi_in. Collecting
-    psi gives report eq. (8), which is what the loop below evaluates:
+    psi gives report eq. (32), which is what the loop below evaluates:
 
         psi = [ source + sum_f (a_out + a_in) psi_in ] / [ removal + 2 sum_f a_out ]
 

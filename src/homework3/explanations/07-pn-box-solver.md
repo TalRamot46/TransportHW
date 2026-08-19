@@ -13,7 +13,7 @@
 | `q2.py` | The table and the figure, nothing else. |
 
     pn.streaming_matrix / pn.marshak_matrix
-      <- BoxSystem._matrix          one sparse L, report eq. (20)
+      <- BoxSystem._matrix          one sparse L, report eq. (13)
       <- BoxSystem.solve            one back-substitution against a midpoint source
       <- pn_box.pn_k_eigenvalue     the power iteration; returns sn.KResult
       <- pn_box.critical_half_thickness -> sn.critical_size   brentq on k(a/2) - 1
@@ -53,7 +53,7 @@ amortises its factorisation over the ten to twenty power iterations that follow.
 **Absorbing `c/k` into the matrix.** The obvious simplification, and it destroys the method:
 with the fission term on the left the system is homogeneous, and a homogeneous banded system
 has only the zero solution except at the critical `k`, which is the unknown. The source has to
-stay on the right, lagged one iteration. Report §2 states this; it is repeated here because the
+stay on the right, lagged one iteration. Report Question 2 states this; it is repeated here because the
 code looks like it is missing a term until you know.
 
 **A staggered mesh**, odd moments at cell centres and even moments at nodes, is the other

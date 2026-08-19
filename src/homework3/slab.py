@@ -27,7 +27,7 @@ class SlabSolver:
         psi_in = 0.0 if inward else incoming[m]
         psi = np.empty(self.n_cells)
         for i in cells:
-            # One face, the spatial one, weighted by |mu| on both sides: report eq. (3).
+            # One face, the spatial one, weighted by |mu| on both sides: report eq. (27).
             psi[i], (psi_in,) = sn.cell_flux(self.medium.sigma_t * self.dx, source[i] * self.dx,
                                              [sn.Face(abs(mu), abs(mu), psi_in)])
         if inward:

@@ -10,7 +10,7 @@ nothing else — no discretisation, no iteration, no root search in `k`.
 ## Three places it goes wrong if written naively
 
 **The sign of `K^2`.** The elimination produces `AB Phi'' = Sigma_0 Phi`, so the Helmholtz form
-carries a minus: `K^2 = -(AB)^-1 Sigma_0`, report eq. (23). Dropping it turns every `cos` into a
+carries a minus: `K^2 = -(AB)^-1 Sigma_0`, report eq. (19). Dropping it turns every `cos` into a
 `cosh`, and `det H(a/2)` then has no zero at all — the failure is loud, but only if you know the
 sign was the suspect.
 
@@ -43,5 +43,5 @@ column survives through its `sin` term. Neither endpoint needs an epsilon.
 
 It is not an independent derivation — both methods take their matrices from the same three
 functions in `pn.py`, so an error in `marshak_matrix` would corrupt both identically and the
-agreement in report §2's gap column would say nothing. That is what the analytic `P_1` check in
+agreement in report Question 2's gap column would say nothing. That is what the analytic `P_1` check in
 [06](06-verification.md) is for: it goes around `pn.py` entirely.

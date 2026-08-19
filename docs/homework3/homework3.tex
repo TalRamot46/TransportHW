@@ -383,29 +383,29 @@ solving \eqref{eq:pnmatrix} in closed form at $k=1$ and imposing criticality dir
 boundary conditions.
 
 Split the $N+1$ moments into $M=\tfrac{N+1}{2}$ even and $M$ odd,
-$\boldsymbol{\Phi}_{\text{e}}=(\phi_0,\phi_2,\dots)$ and
-$\boldsymbol{\Phi}_{\text{o}}=(\phi_1,\phi_3,\dots)$. Every derivative in \eqref{eq:pnrec}
+$\boldsymbol{\Phi}_{\text{even}}=(\phi_0,\phi_2,\dots)$ and
+$\boldsymbol{\Phi}_{\text{odd}}=(\phi_1,\phi_3,\dots)$. Every derivative in \eqref{eq:pnrec}
 changes the parity of its index, so the even-$n$ and odd-$n$ equations separate:
 \begin{equation}
-    \mathbf{A}\frac{d\boldsymbol{\Phi}_{\text{o}}}{dx} + \mathbf{\Sigma}_0(k)\,\boldsymbol{\Phi}_{\text{e}} = 0,
+    \mathbf{A}\frac{d\boldsymbol{\Phi}_{\text{odd}}}{dx} + \mathbf{\Sigma}_0(k)\,\boldsymbol{\Phi}_{\text{even}} = 0,
     \qquad
-    \mathbf{B}\frac{d\boldsymbol{\Phi}_{\text{e}}}{dx} + \boldsymbol{\Phi}_{\text{o}} = 0,
+    \mathbf{B}\frac{d\boldsymbol{\Phi}_{\text{even}}}{dx} + \boldsymbol{\Phi}_{\text{odd}} = 0,
     \qquad
     \mathbf{\Sigma}_0(k)=\text{diag}\!\left(1-\tfrac{c}{k},1,\dots,1\right)
 \end{equation}
 $\mathbf{A}$ and $\mathbf{B}$ being the two off-diagonal blocks of $\mathbf{\tilde A}$ under
 that reordering, $\mathbf{\tilde A}=\left(\begin{smallmatrix}0&\mathbf{A}\\\mathbf{B}&0\end{smallmatrix}\right)$,
 with rows $A_{m,\cdot}$ from $n=2m$ and $B_{m,\cdot}$ from $n=2m+1$. Substituting
-$\boldsymbol{\Phi}_{\text{o}}=-\mathbf{B}\,\boldsymbol{\Phi}_{\text{e}}'$ into the first
+$\boldsymbol{\Phi}_{\text{odd}}=-\mathbf{B}\,\boldsymbol{\Phi}_{\text{even}}'$ into the first
 equation eliminates the odd moments and leaves a coupled Helmholtz system,
 \begin{equation}
-    \frac{d^2\boldsymbol{\Phi}_{\text{e}}}{dx^2} + \mathbf{K}^2(k)\,\boldsymbol{\Phi}_{\text{e}} = 0,
+    \frac{d^2\boldsymbol{\Phi}_{\text{even}}}{dx^2} + \mathbf{K}^2(k)\,\boldsymbol{\Phi}_{\text{even}} = 0,
     \qquad
     \mathbf{K}^2(k) = -\,(\mathbf{A}\mathbf{B})^{-1}\mathbf{\Sigma}_0(k)
     \label{eq:helm}
 \end{equation}
 The minus sign is not cosmetic and is the easiest thing to lose: the elimination produces
-$\mathbf{A}\mathbf{B}\,\boldsymbol{\Phi}_{\text{e}}''=\mathbf{\Sigma}_0\boldsymbol{\Phi}_{\text{e}}$,
+$\mathbf{A}\mathbf{B}\,\boldsymbol{\Phi}_{\text{even}}''=\mathbf{\Sigma}_0\boldsymbol{\Phi}_{\text{even}}$,
 and moving that to the form \eqref{eq:helm} flips it. At $N=1$ it reads $\phi_0''+3(c-1)\phi_0=0$,
 the classic diffusion buckling $B=\sqrt{3(c-1)}$ of the table in Question 1 --- with the sign dropped
 one gets $\cosh$ where $\cos$ belongs and no critical thickness at all.
@@ -423,25 +423,25 @@ boundary layers, and at $c=1$ the positive one collapses to $B_0=0$, an infinite
 \paragraph{Assembling the criticality condition.} Diagonalise
 $\mathbf{K}^2(1)=\mathbf{V}\mathbf{\Lambda}\mathbf{V}^{-1}$. The solution even about $x=0$,
 which satisfies \eqref{eq:pnsym} identically because
-$\boldsymbol{\Phi}_{\text{o}}=-\mathbf{B}\boldsymbol{\Phi}_{\text{e}}'$ vanishes wherever
-$\boldsymbol{\Phi}_{\text{e}}'$ does, is
+$\boldsymbol{\Phi}_{\text{odd}}=-\mathbf{B}\boldsymbol{\Phi}_{\text{even}}'$ vanishes wherever
+$\boldsymbol{\Phi}_{\text{even}}'$ does, is
 \begin{align}
-    \boldsymbol{\Phi}_{\text{e}}(x) &= C_1\mathbf{v}_1\cos(B_0x)
+    \boldsymbol{\Phi}_{\text{even}}(x) &= C_1\mathbf{v}_1\cos(B_0x)
         + \sum_{j=2}^{M} C_j\mathbf{v}_j\cosh(\kappa_jx) \\
-    \boldsymbol{\Phi}_{\text{o}}(x) &= C_1(\mathbf{B}\mathbf{v}_1)B_0\sin(B_0x)
+    \boldsymbol{\Phi}_{\text{odd}}(x) &= C_1(\mathbf{B}\mathbf{v}_1)B_0\sin(B_0x)
         - \sum_{j=2}^{M} C_j(\mathbf{B}\mathbf{v}_j)\kappa_j\sinh(\kappa_jx)
 \end{align}
 $M$ free constants against the $M$ Marshak conditions \eqref{eq:marshak}. Splitting the
 coefficient matrix $c_{mn}$ into its even and odd columns
-$\mathbf{M}_{\text{e}},\mathbf{M}_{\text{o}}$ and evaluating at $x=a/2$ gives $M$ homogeneous
+$\mathbf{M}_{\text{even}},\mathbf{M}_{\text{odd}}$ and evaluating at $x=a/2$ gives $M$ homogeneous
 equations $\mathbf{H}(a/2)\mathbf{C}=\mathbf{0}$ with
-\begin{equation}
-    \mathbf{H}_{\cdot1}=\mathbf{M}_{\text{e}}\mathbf{v}_1\cos\!\left(\tfrac{B_0a}{2}\right)
-        +\mathbf{M}_{\text{o}}(\mathbf{B}\mathbf{v}_1)B_0\sin\!\left(\tfrac{B_0a}{2}\right),
-    \quad
-    \mathbf{H}_{\cdot j}=\mathbf{M}_{\text{e}}\mathbf{v}_j\cosh\!\left(\tfrac{\kappa_ja}{2}\right)
-        -\mathbf{M}_{\text{o}}(\mathbf{B}\mathbf{v}_j)\kappa_j\sinh\!\left(\tfrac{\kappa_ja}{2}\right)
-\end{equation}
+\begin{align*}
+    \mathbf{H}_{\cdot1} &= \mathbf{M}_{\text{even}}\mathbf{v}_1\cos\!\left(\tfrac{B_0a}{2}\right)
+        +\mathbf{M}_{\text{odd}}(\mathbf{B}\mathbf{v}_1)\,B_0\sin\!\left(\tfrac{B_0a}{2}\right) \\
+    \mathbf{H}_{\cdot j} &= \mathbf{M}_{\text{even}}\mathbf{v}_j\cosh\!\left(\tfrac{\kappa_ja}{2}\right)
+        -\mathbf{M}_{\text{odd}}(\mathbf{B}\mathbf{v}_j)\,\kappa_j\sinh\!\left(\tfrac{\kappa_ja}{2}\right),
+        \qquad j\ge2
+\end{align*}
 and a non-trivial flux exists only where
 \begin{equation}
     \boxed{\;\det\mathbf{H}(a/2)=0\;}
@@ -552,8 +552,10 @@ $z_0$ as Question 4 measures. Against the exact one-speed value at $c=1.5$, the 
 \emph{et al.} $0.605055$ mfp used in Question 3, the $P_N$ sequence is monotone from
 \emph{above} and does not cross:
 \begin{equation*}
-    0.723479\;(P_1),\quad 0.629148\;(P_3),\quad 0.612135\;(P_5),\quad 0.606466\;(P_9),\quad
-    0.605952\;(P_{11}),\quad 0.605550\;(P_{15}),\quad 0.605181\;(P_{31})
+\begin{array}{ccccccc}
+    P_1 & P_3 & P_5 & P_9 & P_{11} & P_{15} & P_{31} \\
+    0.723479 & 0.629148 & 0.612135 & 0.606466 & 0.605952 & 0.605550 & 0.605181
+\end{array}
 \end{equation*}
 $P_9$ is $+0.23\%$ above it and $P_{31}$ is $+0.02\%$. Every entry of the table is therefore
 converging correctly; the sign of the last column is an artefact of comparing against a

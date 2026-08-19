@@ -5,7 +5,7 @@ correct; each is something that would have failed loudly if it were not.**
 
 ## Question 1 — the reflected sphere
 
-**Against an independent discretisation.** The closed-form root of report equation (13) was
+**Against an independent discretisation.** The closed-form root of report equation (4) was
 checked against a two-region spherical finite-volume `k`-eigenvalue solve — 3000 cells,
 harmonic-mean face diffusion coefficients across the material jump, the same extrapolated-zero
 outer condition — for Pu-239 behind all three reflectors at `d = 1, 3, 10` mfp in both
@@ -13,7 +13,7 @@ continuous theories. Agreement is better than **0.4%** everywhere, and better th
 except sodium at `d = 10`, whose 124 cm extrapolation layer is the least well resolved by a
 uniform mesh.
 
-That check is what makes the sodium anomaly of report §1 reportable: two independent
+That check is what makes the sodium anomaly of report Question 1 reportable: two independent
 discretisations of the same equation agree, so the anomaly is in the model and not in the
 solver. It also fixes the interface convention — a conservative finite-volume scheme conserves
 `J`, and it reproduces the current-continuous column of [04](04-reflected-solver.md), not the
@@ -30,7 +30,7 @@ at `c = 1.3` and `c = 1.5`.
 ## Question 2 — the two P_N solvers
 
 **The analytic `P_1`.** The only check that goes around `pn.py` rather than through it:
-`a = arctan(3/(2B))/B` with `B = sqrt(3(c-1))`. Method 2 returns it to **eight digits** at all
+`a/2 = arctan(3/(2B))/B` with `B = sqrt(3(c-1))`. Method 2 returns it to **eight digits** at all
 three `c` — `0.72347894` against `0.72347894` at `c = 1.5` — and Method 1 to `2.5e-6` relative,
 which is its `Δx²`. Any error in `marshak_matrix` or `parity_blocks` would show here, and would
 show in both methods at once everywhere else.

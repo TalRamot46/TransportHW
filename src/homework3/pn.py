@@ -4,7 +4,7 @@ recurrence and the Marshak conditions at the vacuum face."""
 import numpy as np
 
 def streaming_matrix(N):
-    """The matrix of report eq. (14): A[n, n+1] = (n+1)/(2n+1), A[n, n-1] = n/(2n+1)."""
+    """The matrix of report eq. (8): A[n, n+1] = (n+1)/(2n+1), A[n, n-1] = n/(2n+1)."""
     n = np.arange(N + 1)
     matrix = np.zeros((N + 1, N + 1))
     matrix[n[:-1], n[:-1] + 1] = (n[:-1] + 1) / (2 * n[:-1] + 1)
@@ -16,13 +16,13 @@ def parity_indices(N):
     return np.arange(0, N + 1, 2), np.arange(1, N + 1, 2)
 
 def parity_blocks(N):
-    """The even-to-odd and odd-to-even blocks A and B of report eq. (22)."""
+    """The even-to-odd and odd-to-even blocks A and B of report eq. (18)."""
     matrix = streaming_matrix(N)
     even, odd = parity_indices(N)
     return matrix[np.ix_(even, odd)], matrix[np.ix_(odd, even)]
 
 def marshak_matrix(N):
-    """The (N+1)/2 Marshak rows c[m, n] of report eq. (17), one row per condition."""
+    """The (N+1)/2 Marshak rows c[m, n] of report eq. (10), one row per condition."""
     nodes, weights = np.polynomial.legendre.leggauss(N + 1)
     mu, weights = 0.5 * (nodes + 1.0), 0.5 * weights        # the half range [0, 1]
     powers = np.array([mu ** (2 * m - 1) for m in range(1, (N + 3) // 2)])

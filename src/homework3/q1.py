@@ -135,7 +135,7 @@ def report(figs):
                 "That is diffusion theory failing, not the reflector: sodium's mean free "
                 "path is 11.58 cm and its D is 3.86 cm, against a core radius near 6 cm, "
                 "so the spherical term D_R/R alone leaks more than a vacuum. "
-                "See report §1.")
+                "See report Question 1.")
 
     plot_radii(tables, os.path.join(figs, 'q1_critical_radius.pdf'))
     plot_fluxes(os.path.join(figs, 'q1_flux_profiles.pdf'))

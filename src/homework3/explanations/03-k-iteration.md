@@ -15,7 +15,7 @@ Two of those are worth not removing:
 
 - **Dividing the fission source by `k`** (step 2) makes a solution exist at *every* system size.
   That is what turns criticality into a root search on the size — `sn.critical_size` — instead
-  of an eigensolve. Report §"Eigenvalue" makes the same point physically.
+  of an eigensolve. Report paragraph "Eigenvalue" makes the same point physically.
 - **The renormalisation** (step 5) is not tidiness. Without it the iterate's amplitude drifts by
   a factor `k` per outer, and `|k_new - k|` becomes a difference of numbers that have lost their
   significant digits long before the tolerance is met.

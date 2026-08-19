@@ -9,7 +9,7 @@ SCAN_POINTS = 200
 
 def modes(c, N):
     """Eigenpairs of K^2 = -(AB)^-1 Sigma_0 at k = 1, and the odd-to-even block B;
-    report eq. (23)."""
+    report eq. (19)."""
     A, B = pn.parity_blocks(N)
     sigma_0 = np.eye(len(A))
     sigma_0[0, 0] = 1.0 - c
@@ -23,7 +23,7 @@ def modes(c, N):
     return values, vectors, B
 
 def _boundary_matrix(a, values, vectors, B, m_even, m_odd):
-    """H(a/2) of report eq. (26), one column per mode."""
+    """H(a/2) of report eq. (22), one column per mode."""
     columns = []
     for value, v in zip(values, vectors.T):
         flux, current = m_even @ v, m_odd @ (B @ v)

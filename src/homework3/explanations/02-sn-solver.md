@@ -14,7 +14,7 @@ to the single expression the loop evaluates:
 
     psi = [ source + sum_f (a_out + a_in) psi_in ] / [ removal + 2 sum_f a_out ]
 
-Those two are report equations (7) and (8), derived there once for both geometries.
+Those two are report equations (31) and (32), derived there once for both geometries.
 
 An `sn.Face(a_out, a_in, psi_in)` is **one outgoing face** of the cell: its two balance
 coefficients, and the flux arriving through it. The coefficients differ only where the face is
@@ -27,7 +27,7 @@ of them:
 | `SphereSolver._starting_direction` | one — `Face(1, 1, psi_in)`, the `mu = -1` slab sweep | they don't; `|mu| = 1` and the areas cancel |
 | `SphereSolver._sweep` | two — spatial, then angular | the two areas of a shell; the two alphas of a bin |
 
-Substituting the slab's row into the collapsed form returns report eq. (3) verbatim, which is
+Substituting the slab's row into the collapsed form returns report eq. (27) verbatim, which is
 the quickest way to convince yourself the abstraction is not hiding anything.
 
 **Reading the two coefficients off a balance.** Given a discrete balance, `a_out` is whatever
@@ -69,7 +69,7 @@ implements this — it falls out of `a_in = areas[i] = 0` in `_sweep`.
 
 ## Why `multiplying_medium` sets `Sigma_s = 0`
 
-Report §"The meaning of `c`" establishes that the critical size depends on `c` alone, so
+Report paragraph "The meaning of `c`" establishes that the critical size depends on `c` alone, so
 `multiplying_medium(c)` may take the simplest split, `Sigma_t = 1, Sigma_s = 0, nu Sigma_f = c`.
 The consequence lives in `run_sn`, which returns after a single iteration when
 `sigma_s == 0`: with no scattering, one sweep inverts the transport operator exactly. Questions

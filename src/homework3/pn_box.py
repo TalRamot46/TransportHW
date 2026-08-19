@@ -10,7 +10,7 @@ N_CELLS = 200
 HOPF_CONSTANT = 0.7104        # extrapolation distance of the starting flux guess
 
 class BoxSystem:
-    """The k-independent box matrix of report eq. (20) on [0, a], factorised once."""
+    """The k-independent box matrix of report eq. (13) on [0, a/2], factorised once."""
 
     def __init__(self, half_thickness, medium, N, n_cells=N_CELLS):
         self.medium, self.width, self.n_cells = medium, N + 1, n_cells
@@ -38,7 +38,7 @@ class BoxSystem:
         return matrix
 
     def solve(self, source):
-        """Every moment at every node, given the cell-midpoint source of report eq. (21)."""
+        """Every moment at every node, given the cell-midpoint source of report eq. (13)."""
         rhs = np.zeros((self.n_cells + 1) * self.width)
         rhs[self.n_conditions::self.width][:self.n_cells] = source
         return self.lu.solve(rhs).reshape(self.n_cells + 1, self.width)
@@ -48,7 +48,7 @@ def _midpoints(phi):
     return 0.5 * (phi[1:] + phi[:-1])
 
 def pn_k_eigenvalue(half_thickness, medium, N, n_cells=N_CELLS, tol=1e-9, max_iter=2000):
-    """KResult of the slab by Method 1, the power iteration of report eq. (21)."""
+    """KResult of the slab by Method 1, the power iteration of report eqs. (14)-(15)."""
     system = BoxSystem(half_thickness, medium, N, n_cells)
     production = medium.sigma_t * medium.c
     phi = np.cos(0.5 * np.pi * system.nodes / (half_thickness + HOPF_CONSTANT))
