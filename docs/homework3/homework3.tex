@@ -11,6 +11,7 @@
 \usepackage{placeins}
 
 \DeclareTColorBox{notebox}{ O{Note} O{blue} }{
+  breakable,
   colback=#2!5!white,
   colframe=#2!75!black,
   fonttitle=\bfseries,
@@ -218,13 +219,31 @@ by entry.
 
 \subsection*{The $P_N$ equations}
 
-With isotropic scattering and fission lumped as in the paragraph ``The meaning of $c$'' before Question 3,
-and the fission source divided by $k$,
+\textcolor{blue}{Questions 2--5 all solve the same one-speed slab equation, written out as
+\eqref{eq:snbase} before Question 3: scattering and fission kept apart, and only the fission
+source divided by $k$,}
+\begin{equation*}
+    \mu\frac{\partial \psi}{\partial x} + \Sigma_t\,\psi(x,\mu)
+    = \frac{1}{2}\left[\Sigma_s\,\phi(x) + \frac{1}{k}\,\nu\Sigma_f\,\phi(x)\right]
+\end{equation*}
+\textcolor{blue}{This question fixes $\Sigma_t=1$ and $c=(\Sigma_s+\nu\Sigma_f)/\Sigma_t$ and
+nothing else, so $\Sigma_s$ is a free parameter: every split $\nu\Sigma_f = c-\Sigma_s$ with
+$0\le\Sigma_s\le c$ realises the stated $c$, and they are different media. The split cannot
+change the quantity asked for, because at $k=1$ the bracket collapses to $\tfrac{c}{2}\phi$
+whatever it is, so the critical half-thickness is a function of $c$ alone. It does change $k$
+at every other half-thickness --- $\Sigma_s$ is not divided by $k$ --- so $c$ alone fixes the
+root of $k(a/2)-1$ but not $k(a/2)$ itself. Taking the free parameter to be $\Sigma_s=0$,
+$\nu\Sigma_f=c$ puts the entire source under $k$ and leaves an equation in $c$ alone:}
 \begin{equation}
     \mu\frac{\partial \psi}{\partial x} + \psi(x,\mu) = \frac{c}{2k}\,\phi_0(x),
     \qquad \phi_n(x) = \int_{-1}^{1} P_n(\mu)\,\psi(x,\mu)\,d\mu
     \label{eq:pntransport}
 \end{equation}
+\textcolor{blue}{Questions 3 and 4 make the same choice for the same reason (``The meaning of
+$c$'' before Question 3), which is what lets their tables be compared with this one entry by
+entry. Question 5 is given tabulated cross sections and has no such freedom, which is why
+\eqref{eq:snbase} is written with the two terms apart.}
+
 Expanding $\psi(x,\mu)=\sum_{n\ge0}\frac{2n+1}{2}\phi_n(x)P_n(\mu)$, multiplying
 \eqref{eq:pntransport} by $P_n(\mu)$ and integrating over $\mu$ turns the streaming term into
 a three-term coupling through the Legendre recurrence
@@ -569,6 +588,7 @@ All three questions solve the same monoenergetic, steady-state problem,
 \begin{equation}
     \mu \frac{\partial \psi}{\partial x} + \Sigma_t \psi = \frac{1}{2}\left[\Sigma_s \phi + \frac{1}{k}\nu\Sigma_f \phi\right],
     \qquad \phi(x) = \int_{-1}^{1}\psi(x,\mu)\,d\mu
+    \label{eq:snbase}
 \end{equation}
 with the same three ingredients: a Gauss--Legendre quadrature in angle, diamond differencing in space with a negative-flux fixup, and the Bell \& Glasstone $k$ iteration. Lengths are mean free paths in Questions 3 and 4 and centimetres in Question 5.
 
@@ -633,7 +653,46 @@ sphere & space & $|\mu_m| A_{\text{out}}$ & $|\mu_m| A_{\text{in}}$ \\
 with $V = \Delta x$ in the slab. Substituting the slab row into \eqref{eq:cellflux} returns \eqref{eq:slabsweep} exactly, and the sphere's two rows return \eqref{eq:sphbalance}.
 \end{notebox}
 
-\paragraph{Fixup.} Whenever a diamond outgoing flux $2\psi_{i,m}-\psi_{\text{in},m}$ comes out negative it is set to zero and the cell balance is re-solved with it held there, in angle as well as in space. This never occurs in Questions 3--5: the fission source is proportional to the flux itself, so no cell is ever starved, and a critical system is thin enough that $\Sigma_t \Delta x / |\mu_m| < 2$ at every ordinate.
+\begin{notebox}[Three unknowns, three equations: how one balance gives \emph{both} outgoing fluxes.][blue]
+A slab cell $(i,m)$ carries two unknowns --- the cell centre $\psi_{i,m}$ and the one outgoing face flux --- and has two equations, the balance and the diamond closure. A spherical cell carries \emph{three}: the cell centre, the outgoing \emph{spatial} face flux, and the outgoing \emph{angular} half-angle flux $\psi_{i,m+1/2}$. It also has three, because the second face brings its own closure with it. Alongside the balance \eqref{eq:sphbalance},
+\begin{align}
+    \psi^{r}_{\text{out}} &= 2\psi_{i,m} - \psi^{r}_{\text{in}}, \label{eq:closr}\\
+    \psi_{i,m+\frac12} &= 2\psi_{i,m} - \psi_{i,m-\frac12} \label{eq:closmu}
+\end{align}
+This is the whole reason \eqref{eq:cellflux} can be written as a sum over faces: each face adds one unknown to the balance \emph{and} one closure that eliminates it again, so the count never changes and the cell solve stays a $1\times1$ problem in $\psi_{i,m}$ no matter how many faces there are. Substituting \eqref{eq:closr} and \eqref{eq:closmu} into \eqref{eq:sphbalance} and collecting $\psi_{i,m}$,
+\begin{equation}
+    \psi_{i,m} = \frac{\tfrac12 S_i V_i
+        + |\mu_m|\left(A_{\text{out}}+A_{\text{in}}\right)\psi^{r}_{\text{in}}
+        + \dfrac{\Delta A_i}{w_m}\left(\alpha_{m+\frac12}+\alpha_{m-\frac12}\right)\psi_{i,m-\frac12}}
+        {\Sigma_t V_i + 2|\mu_m| A_{\text{out}} + 2\dfrac{\Delta A_i}{w_m}\alpha_{m+\frac12}}
+    \label{eq:sphcellflux}
+\end{equation}
+with $\Delta A_i = A_{i+1/2}-A_{i-1/2}$, and $(A_{\text{out}},A_{\text{in}})$ the outer/inner pair of areas for $\mu_m>0$ and the inner/outer pair for $\mu_m<0$ --- the signed $\mu_m$ of \eqref{eq:sphbalance} means an inward ordinate \emph{leaves} through the inner face. This is \eqref{eq:cellflux} with the two sphere rows of the table substituted. The two outgoing fluxes then come straight out of \eqref{eq:closr} and \eqref{eq:closmu}: they share the same $\psi_{i,m}$, but they subtract \emph{different} inflows, so neither is a by-product of the other and the two can differ by any amount, in sign included.
+\end{notebox}
+
+\begin{notebox}[The double sweep: why both inflows are always already known.][blue]
+Equation \eqref{eq:sphcellflux} is only useful if $\psi^{r}_{\text{in}}$ and $\psi_{i,m-1/2}$ are known by the time cell $(i,m)$ is reached. In the slab that takes one march over $i$; in the sphere it takes a march over $m$ as well, and the reason that is possible at all is physical: along a straight-line trajectory in spherical geometry
+\begin{equation}
+    \frac{d\mu}{ds} = \frac{1-\mu^2}{r} \ \ge\ 0
+\end{equation}
+so a neutron's direction cosine relative to the local radius only ever \emph{increases}. Angle is a one-way coordinate in the sphere exactly as space is, which is why the $\partial\psi/\partial\mu$ term can be swept rather than iterated; correspondingly every $\alpha_{m\pm1/2}\ge 0$, and the discrete angular information travels from $\mu=-1$ towards $\mu=+1$ only. One $S_N$ iteration is therefore two nested sweeps:
+\begin{enumerate}
+    \item the starting-direction sweep at $\mu=-1$ described above, inwards from the vacuum face, producing the whole column $\psi_{i,1/2}$;
+    \item for $m=1,\dots,N$ in \emph{ascending} $\mu_m$: a spatial sweep of ordinate $m$ --- inwards from $r=R$ if $\mu_m<0$, outwards from $r=0$ if $\mu_m>0$ --- which consumes the column $\psi_{i,m-1/2}$ left by the previous ordinate and produces the column $\psi_{i,m+1/2}$ for the next one, while $\phi_i$ accumulates $w_m\psi_{i,m}$.
+\end{enumerate}
+The ordering is load-bearing in two independent ways: the angular recursion must run upwards from $\mu=-1$, and every inward ordinate must be swept before the outward ordinate $-\mu_m$ that the reflective condition at $r=0$ feeds from it. Ascending $\mu$ satisfies both at once.
+
+\medskip
+\textbf{The ends of the two meshes.} Both meshes close themselves, and neither needs a special case in the cell solve:
+\begin{itemize}
+    \item $\alpha_{1/2}=\alpha_{N+1/2}=0$: no angular current enters at $\mu=-1$ or leaves at $\mu=+1$, closing the angular mesh exactly as $A_{1/2}=0$ closes the spatial mesh at $r=0$.
+    \item Even so, $m=1$ is not self-starting. $\alpha_{1/2}=0$ removes $\psi_{i,1/2}$ from the balance, but the closure \eqref{eq:closmu} still needs it --- three equations, four unknowns. That missing column is precisely what the $\mu=-1$ sweep supplies, so an $S_N$ iteration in the sphere costs $N+1$ spatial sweeps rather than $N$.
+    \item The same pattern at $r=0$: $A_{1/2}=0$, so the innermost face carries no current and never enters the balance, yet \eqref{eq:closr} still defines a flux there. For an inward ordinate that value is what is handed to the reflective condition; for its outward mirror it is what the closure consumes.
+\end{itemize}
+Ordering the unknowns this way makes the discrete transport operator triangular, and the double sweep is nothing more than its forward substitution --- which is why each inner iteration is a direct solve, and only the scattering source has to be iterated at all.
+\end{notebox}
+
+\paragraph{Fixup.} Whenever a diamond outgoing flux $2\psi_{i,m}-\psi_{\text{in},m}$ comes out negative it is set to zero and the cell balance is re-solved with it held there, in angle as well as in space. \textcolor{blue}{With two closures there are two such constraints, and they have to be tested one face at a time. \eqref{eq:closr} and \eqref{eq:closmu} subtract different inflows, so either outgoing flux can turn negative while the other stays positive, and the two are consumed by different neighbours --- the next cell of the same ordinate, and the same cell of the next ordinate --- so no test on their sum would serve. Nor is the clamp a mere truncation of the answer: holding a face at zero deletes its $a_{\text{out}}$ from \eqref{eq:cellflux}, which \emph{lowers} $\psi_{i,m}$ --- the condition $2\psi_{i,m}<\psi^f_{\text{in}}$ that triggered the clamp is exactly the condition for the re-solve to come out smaller --- and can therefore drive the other face negative in its turn. The fixup is looped for that reason; it clamps at least one more face per pass, so it terminates in at most one pass per face.} This never occurs in Questions 3--5: the fission source is proportional to the flux itself, so no cell is ever starved, and a critical system is thin enough that $\Sigma_t \Delta x / |\mu_m| < 2$ at every ordinate.
 
 \paragraph{Boundary conditions.} Reflective at the symmetry point, $\psi_{1/2,m} = \psi_{1/2,m'}$ with $\mu_{m'}=-\mu_m$; vacuum at the outer face, $\psi_{I+1/2,m}=0$ for $\mu_m<0$.
 

@@ -34,7 +34,7 @@ class Face(NamedTuple):
     Its contribution is `a_out psi_out - a_in psi_in`. The two coefficients differ only
     where the face is weighted differently on the way in and on the way out -- the two
     areas of a spherical shell, the two alphas of an angular bin -- so in the slab they
-    are both |mu|. See report eq. (31).
+    are both |mu|. See report eq. (30).
     """
     a_out: float
     a_in: float
@@ -49,7 +49,7 @@ def cell_flux(removal, source, faces):
         sum_f (a_out psi_out - a_in psi_in) + removal psi = source
 
     by closing each face with the diamond relation psi_out = 2 psi - psi_in. Collecting
-    psi gives report eq. (32), which is what the loop below evaluates:
+    psi gives report eq. (31), which is what the loop below evaluates:
 
         psi = [ source + sum_f (a_out + a_in) psi_in ] / [ removal + 2 sum_f a_out ]
 
@@ -69,7 +69,7 @@ def cell_flux(removal, source, faces):
                 denominator += 2.0 * face.a_out
                 numerator += (face.a_out + face.a_in) * face.psi_in
 
-        psi = numerator / denominator
+            psi = numerator / denominator
         outgoing = [0.0 if off else 2.0 * psi - face.psi_in
                     for face, off in zip(faces, clamped)]
         if all(value >= 0.0 for value in outgoing):
@@ -78,11 +78,11 @@ def cell_flux(removal, source, faces):
 
     return psi, [max(value, 0.0) for value in outgoing]
 
-def run_sn(solver, medium, fission, phi, tol=1e-8, max_iter=2000):
+def run_sn_for_source(solver, medium, fission, phi, tol=1e-8, max_iter=2000):
     """The S_N solve itself: repeats the angular iteration at a fixed fission source
     until the scalar flux stops moving. `k_eigenvalue` only wraps this."""
     for _ in range(max_iter):
-        phi_new = solver.sn_iteration(medium.sigma_s * phi + fission)
+        phi_new = solver.sweep_all_angles(medium.sigma_s * phi + fission)
         settled = np.max(np.abs(phi_new - phi)) <= tol * np.max(phi_new)
         phi = phi_new
         # Without scattering one iteration already inverts the transport operator exactly.
@@ -107,7 +107,7 @@ def k_eigenvalue(solver, tol=1e-9, max_iter=2000):
 
     for outer in range(1, max_iter + 1):
         # The S_N solve takes a source density, the eigenvalue a source integral.
-        phi_new = run_sn(solver, medium, medium.nu_sigma_f * phi / k, phi)
+        phi_new = run_sn_for_source(solver, medium, medium.nu_sigma_f * phi / k, phi)
         production_new = (medium.nu_sigma_f * phi_new * solver.volumes).sum()
 
         k_new = k * production_new / production

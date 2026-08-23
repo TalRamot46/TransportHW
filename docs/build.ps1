@@ -61,9 +61,12 @@ try {
         # Delete the outputs first; overwriting them in place is what fails. The
         # log is as affected as the pdf -- pdflatex stops on "I can't write on
         # file `<name>.log'" before it ever reaches the pdf.
-        Remove-Item "$File.pdf", "$File.log" -Force -ErrorAction SilentlyContinue
+        Remove-Item "$File.pdf", "$File.log", "$File.synctex.gz" -Force -ErrorAction SilentlyContinue
 
-        $output = & pdflatex -interaction=nonstopmode "$File.tex" 2>&1
+        # -synctex=1 writes <name>.synctex.gz, which is what ctrl+click (forward and
+        # inverse search) in the pdf viewer reads. It is deleted above like the other
+        # outputs, for the same overwrite reason.
+        $output = & pdflatex -interaction=nonstopmode -synctex=1 "$File.tex" 2>&1
         $blocked = $output | Select-String -Pattern "can't write on file"
         if ($blocked) {
             $output | Select-String -Pattern '^!' | Select-Object -First 5

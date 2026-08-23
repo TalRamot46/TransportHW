@@ -38,7 +38,7 @@ class BoxSystem:
         return matrix
 
     def solve(self, source):
-        """Every moment at every node, given the cell-midpoint source of report eq. (13)."""
+        """Every moment at every node, given the cell-midpoint source of report eq. (14)."""
         rhs = np.zeros((self.n_cells + 1) * self.width)
         rhs[self.n_conditions::self.width][:self.n_cells] = source
         return self.lu.solve(rhs).reshape(self.n_cells + 1, self.width)

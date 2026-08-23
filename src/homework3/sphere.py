@@ -8,7 +8,7 @@ from homework3 import sn
 N_CELLS = 100
 
 def angular_coefficients(mu, weights):
-    """Carlson's alpha_{m+1/2} = alpha_{m-1/2} - w_m mu_m, zero at both ends; the
+    """Carlson's alpha_{m+1/2} = alpha_{m-1/2} - w_m mu_m, zero at both ends; the   
     recursion is what makes a flat flux an exact solution. See explanations/02."""
     alpha = np.concatenate(([0.0], -np.cumsum(weights * mu)))
     alpha[-1] = 0.0   # exactly zero by sum(w mu) = 0; set so no current leaks at mu = +1
@@ -35,12 +35,12 @@ class SphereSolver:
         sweep is the plain slab one; see explanations/02."""
         psi, psi_in = np.empty(self.n_cells), 0.0
         for i in range(self.n_cells - 1, -1, -1):
-            # One face, at |mu| = 1: the slab row of report eq. (32) with a_out = a_in = 1.
+            # One face, at |mu| = 1: the slab row of report eq. (31) with a_out = a_in = 1.
             psi[i], (psi_in,) = sn.cell_flux(self.medium.sigma_t * self.dr, source[i] * self.dr,
                                              [sn.Face(1.0, 1.0, psi_in)])
         return psi
 
-    def _sweep(self, m, source, psi_low, incoming):
+    def sweep_angle(self, m, source, psi_low, incoming):
         """One sweep: marches ordinate m across the mesh, returning its flux contribution
         and its upper half-angle flux."""
         mu, weight = self.mu[m], self.weights[m]
@@ -55,7 +55,8 @@ class SphereSolver:
             a_out, a_in = (inner, outer) if inward else (outer, inner)
             angular = (outer - inner) / weight
             # Two faces: the spatial one, weighted by the two shell areas, and the
-            # angular one, weighted by the two alphas of the bin. Report eq. (5).
+            # angular one, weighted by the two alphas of the bin: report eq. (28),
+            # solved as report eq. (34).
             psi[i], (psi_in, psi_high[i]) = sn.cell_flux(
                 self.medium.sigma_t * self.volumes[i], source[i] * self.volumes[i],
                 [sn.Face(abs(mu) * a_out, abs(mu) * a_in, psi_in),
@@ -65,7 +66,7 @@ class SphereSolver:
             incoming[len(self.mu) - 1 - m] = psi_in   # reflective boundary at r = 0
         return weight * psi, psi_high
 
-    def sn_iteration(self, source):
+    def sweep_all_angles(self, source):
         """One S_N iteration: one sweep per ordinate, summed into the scalar flux.
         The source S is isotropic, so each ordinate carries S/2."""
         q = 0.5 * source
@@ -76,7 +77,7 @@ class SphereSolver:
         # Ascending mu: the angular recursion runs from mu = -1 upwards, and every inward
         # ordinate is swept before the outward one it feeds through the r = 0 reflection.
         for m in range(len(self.mu)):
-            contribution, psi_low = self._sweep(m, q, psi_low, incoming)
+            contribution, psi_low = self.sweep_angle(m, q, psi_low, incoming)
             phi += contribution
         return phi
 

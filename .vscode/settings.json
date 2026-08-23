@@ -67,6 +67,7 @@
     "latex-workshop.latex.search.rootFiles.include": [
         "docs/homework1/homework1.tex",
         "docs/homework2/homework2.tex",
+        "docs/homework3/homework3.tex",
         "docs/homework4/homework4.tex"
     ]
 }

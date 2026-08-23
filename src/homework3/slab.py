@@ -16,7 +16,7 @@ class SlabSolver:
         self.centres = (np.arange(n_cells) + 0.5) * self.dx
         self.volumes = np.full(n_cells, self.dx)
 
-    def _sweep(self, m, source, incoming):
+    def sweep_angle(self, m, source, incoming):
         """One sweep: marches ordinate m across the mesh, returning its contribution
         to the scalar flux."""
         mu = self.mu[m]
@@ -27,20 +27,20 @@ class SlabSolver:
         psi_in = 0.0 if inward else incoming[m]
         psi = np.empty(self.n_cells)
         for i in cells:
-            # One face, the spatial one, weighted by |mu| on both sides: report eq. (27).
+            # One face, the spatial one, weighted by |mu| on both sides: report eq. (26).
             psi[i], (psi_in,) = sn.cell_flux(self.medium.sigma_t * self.dx, source[i] * self.dx,
                                              [sn.Face(abs(mu), abs(mu), psi_in)])
         if inward:
             incoming[len(self.mu) - 1 - m] = psi_in   # reflective boundary at x = 0
         return self.weights[m] * psi
 
-    def sn_iteration(self, source):
+    def sweep_all_angles(self, source):
         """One S_N iteration: one sweep per ordinate, summed into the scalar flux.
         The source S is isotropic, so each ordinate carries S/2."""
         q = 0.5 * source
         incoming = np.zeros(len(self.mu))
         # Ascending mu, so every inward ordinate is swept before the outward one it feeds.
-        return sum(self._sweep(m, q, incoming) for m in range(len(self.mu)))
+        return sum(self.sweep_angle(m, q, incoming) for m in range(len(self.mu)))
 
 def slab_k_eigenvalue(half_thickness, medium, n_ordinates, n_cells=N_CELLS):
     """KResult of a slab of the given half-thickness, in mean free paths."""
