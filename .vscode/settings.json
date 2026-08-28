@@ -3,12 +3,33 @@
         "*.tex": "latex"
     },
 
-    // latexmk cannot build in this repository: on this machine a just-written file
-    // cannot immediately be overwritten, and latexmk's second pass always collides
-    // with the output of its first -- it dies on the .log before it reaches the pdf.
-    // docs/build.ps1 deletes both outputs before every pass, which avoids it.
-    // See the header of docs/build.ps1 and docs/homework1/STATUS.md.
+    // latexmk is driven through Strawberry perl because MiKTeX ships latexmk only
+    // as a .pl script. -synctex=1 is what makes ctrl+click (inverse search) and
+    // ctrl+alt+J (forward search) work; without it no .synctex.gz is written.
+    //
+    // latexmk is unusable here: a just-written file cannot immediately be
+    // overwritten on this machine, so its second pass dies on the output its first
+    // pass just produced -- "! I can't write on file `<name>.pdf'", raised at the
+    // first shading in the preamble, with no pdf produced.
+    //
+    // It looked fixed on 2026-08-23 (cold build 2 passes 6.5 s, after an edit 3
+    // passes 14.7 s, no change 0.6 s) and came back on 2026-08-28, failing on every
+    // ctrl+S. It is intermittent, so a run that succeeds is not evidence it is gone.
+    // build.ps1 is therefore the default recipe: it deletes the outputs before every
+    // pass, which avoids the collision entirely. See the header of docs/build.ps1.
+    // latexmk is kept below only for timing comparisons.
     "latex-workshop.latex.tools": [
+        {
+            "name": "latexmk (perl)",
+            "command": "C:/Strawberry/perl/bin/perl.exe",
+            "args": [
+                "C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/scripts/latexmk/latexmk.pl",
+                "-pdf",
+                "-interaction=nonstopmode",
+                "-synctex=1",
+                "%DOC%"
+            ]
+        },
         {
             "name": "build.ps1",
             "command": "powershell.exe",
@@ -19,44 +40,28 @@
                 "-Command",
                 "& '%WORKSPACE_FOLDER%/docs/build.ps1' (Split-Path -Leaf '%DIR%') '%DOCFILE%'"
             ]
-        },
-        {
-            "name": "build.ps1 (single pass)",
-            "command": "powershell.exe",
-            "args": [
-                "-NoProfile",
-                "-ExecutionPolicy",
-                "Bypass",
-                "-Command",
-                "& '%WORKSPACE_FOLDER%/docs/build.ps1' (Split-Path -Leaf '%DIR%') '%DOCFILE%' 1"
-            ]
         }
     ],
     "latex-workshop.latex.recipes": [
         {
-            "name": "build.ps1 (3 passes, resolves references)",
+            "name": "build.ps1 (3 passes)",
             "tools": [
                 "build.ps1"
             ]
         },
         {
-            "name": "build.ps1 (1 pass, quick look)",
+            "name": "latexmk (perl, collides with its own output)",
             "tools": [
-                "build.ps1 (single pass)"
+                "latexmk (perl)"
             ]
         }
     ],
     "latex-workshop.latex.recipe.default": "first",
 
-    // Safe to build on save again: the collision that made this fail came from
-    // latexmk, and build.ps1 deletes both outputs before every pass. Measured at
-    // 8.2 s for the 3-pass recipe, 4.0 s for the single pass, on homework1.
-    // To make ctrl+s use the quick recipe instead, set recipe.default to
-    // "lastUsed" and pick it once from Build LaTeX project.
     "latex-workshop.latex.autoBuild.run": "onSave",
 
-    // build.ps1 already removes the outputs it needs to; leave the rest alone so an
-    // interrupted build does not lose the .aux that carries the cross-references.
+    // Leave the aux files alone: they carry the cross-references, and latexmk needs
+    // its .fdb_latexmk to know which passes it can skip.
     "latex-workshop.latex.autoClean.run": "never",
 
     "latex-workshop.latex.outDir": "%DIR%",

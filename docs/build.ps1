@@ -61,12 +61,23 @@ try {
         # Delete the outputs first; overwriting them in place is what fails. The
         # log is as affected as the pdf -- pdflatex stops on "I can't write on
         # file `<name>.log'" before it ever reaches the pdf.
-        Remove-Item "$File.pdf", "$File.log", "$File.synctex.gz" -Force -ErrorAction SilentlyContinue
+        # <name>.synctex is the uncompressed scratch file synctex renames into
+        # <name>.synctex.gz at the end of the pass; both have to go, or the rename
+        # finds its target still present and reports "Can't rename ... (busy)".
+        Remove-Item "$File.pdf", "$File.log", "$File.synctex", "$File.synctex.gz" -Force -ErrorAction SilentlyContinue
 
         # -synctex=1 writes <name>.synctex.gz, which is what ctrl+click (forward and
         # inverse search) in the pdf viewer reads. It is deleted above like the other
         # outputs, for the same overwrite reason.
+        #
+        # ErrorActionPreference is dropped for the call itself: 2>&1 on a native
+        # command wraps every stderr line in an ErrorRecord in Windows PowerShell,
+        # so under 'Stop' a mere synctex warning would abort the build. The pass is
+        # judged below on what pdflatex actually wrote, not on whether it used stderr.
+        $prevEap = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
         $output = & pdflatex -interaction=nonstopmode -synctex=1 "$File.tex" 2>&1
+        $ErrorActionPreference = $prevEap
         $blocked = $output | Select-String -Pattern "can't write on file"
         if ($blocked) {
             $output | Select-String -Pattern '^!' | Select-Object -First 5
@@ -77,6 +88,11 @@ try {
         if ($fatal -and -not (Test-Path "$File.pdf")) {
             $fatal | Select-Object -First 5
             throw "pass ${i}: pdflatex failed."
+        }
+
+        $synctexFailed = $output | Select-String -Pattern "SyncTeX: Can't rename"
+        if ($synctexFailed -and $i -eq $Passes) {
+            Write-Warning "pass ${i}: synctex file not written; ctrl+click will be stale."
         }
 
         Write-Host "pass ${i}: ok"
