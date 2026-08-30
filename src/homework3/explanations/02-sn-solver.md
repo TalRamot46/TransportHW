@@ -1,91 +1,83 @@
 # 02 — The S_N Solver
 
-**`cell_flux` is the entire spatial discretisation in one function; everything
-geometry-specific is pushed out into the list of faces its caller passes it.**
+**Each geometry owns its own `cell_flux` and its own pair of sweeps, so the direction of a march
+is visible in the function you are reading rather than in a flag it was passed.**
 
-## One cell solve for both geometries
+## Two cell solves, one per geometry
 
-`sn.cell_flux(removal, source, faces)` solves the cell balance
+`slab.cell_flux(removal, source, mu_abs, psi_in)` is report eq. (22) forward and (23) backward —
+the same expression, since the two differ only in which face is the inflow, and the caller has
+already decided that by choosing a sweep. It has one closure, so its fixup is a single `if`.
 
-    sum over faces of (a_out psi_out - a_in psi_in)  +  removal * psi  =  source
+`sphere.cell_flux(removal, source, radial_face, angular_face)` is report eq. (30), reached in the
+report by substituting the two closures (27) and (28) into the balance (25). Its two faces are
+not alike and are named for what they feed:
 
-closing every face with the same diamond relation `psi_out = 2 psi - psi_in`, which collapses
-to the single expression the loop evaluates:
-
-    psi = [ source + sum_f (a_out + a_in) psi_in ] / [ removal + 2 sum_f a_out ]
-
-Those two are report equations (30) and (31), derived there once for both geometries.
-
-An `sn.Face(a_out, a_in, psi_in)` is **one outgoing face** of the cell: its two balance
-coefficients, and the flux arriving through it. The coefficients differ only where the face is
-weighted differently on the way in and on the way out, which is the whole reason there are two
-of them:
-
-| caller | faces passed | why the two coefficients differ |
+| face | weighted by | its outflow feeds |
 |---|---|---|
-| `SlabSolver.sweep_angle` | one — `Face(abs(mu), abs(mu), psi_in)` | they don't; a slab face has no area factor |
-| `SphereSolver._starting_direction` | one — `Face(1, 1, psi_in)`, the `mu = -1` slab sweep | they don't; `|mu| = 1` and the areas cancel |
-| `SphereSolver.sweep_angle` | two — spatial, then angular | the two areas of a shell; the two alphas of a bin |
+| `radial_face` | the two shell areas `A_{i±1/2}` | the **next radial cell** of the same ordinate |
+| `angular_face` | the two coefficients `alpha_{m±1/2}` | the **next ordinate** in the same cell |
 
-Substituting the slab's row into the collapsed form returns report eq. (26) verbatim, which is
-the quickest way to convince yourself the abstraction is not hiding anything.
+A `Face(a_out, a_in, psi_in)` carries two weights because a shell has two areas and an angular
+bin two alphas. `a_out` multiplies the flux on the face the march is travelling *towards*,
+`a_in` the face it came *from*.
 
-**Reading the two coefficients off a balance.** Given a discrete balance, `a_out` is whatever
-multiplies the flux on the face the sweep is travelling *towards*, and `a_in` whatever
-multiplies the face it came *from*. In `sweep_angle` that is the line
+**Only the radial face swaps.** `sweep_forward` builds
+`Face(mu*areas[i+1], mu*areas[i], psi_in)` and `sweep_backward` builds
+`Face(mu*areas[i], mu*areas[i+1], psi_in)` — inner and outer exchanged. The angular face is
+built once, by `_angular_face`, and is identical in both: `d(mu)/ds >= 0` means angle is
+one-way, so its inflow is always at `m-1/2` and its outflow always at `m+1/2`.
 
-    a_out, a_in = (inner, outer) if inward else (outer, inner)
+`sphere._starting_direction` imports `slab.cell_flux` rather than reimplementing it. That is not
+code sharing for its own sake: at `mu = -1` the factor `1 - mu^2` vanishes, the angular term
+leaves the equation, and what remains *is* the plane balance at `|mu| = 1`.
 
-— an inward ordinate leaves through the inner face, so the two swap. Everything else about the
-sweep direction is already handled by the loop order.
+## Backward, then forward
 
-## The double sweep, in code
+`sweep_all_angles` runs every `mu_m < 0` ordinate and then every `mu_m > 0` one, each half in
+ascending `mu`. That ordering is load-bearing twice over and satisfying both at once is why it
+is written this way:
 
-Report eqs. (32)-(34) and the two blue boxes around them derive the spherical sweep: one balance
-plus two diamond closures per cell, and an ordering in which both inflows are already known.
-This is where each piece of that lives.
+- every backward ordinate must be swept before the forward ordinate `-mu_m` that the reflective
+  boundary feeds from it — `sweep_backward` returns that inflow as its last value, and
+  `sweep_all_angles` parks it in `reflected[mirror - m]`;
+- in the sphere the `alpha` recursion must run upward from `mu = -1`, so `psi_low` threads
+  through the backward loop and straight on into the forward one.
+
+Since `core.ordinates` returns ascending `mu`, splitting at the sign is a *reordering of
+nothing* — the negatives already come first. Reordering the ordinates produces a wrong answer,
+not an error.
 
 | report | code |
 |---|---|
 | the starting column `psi_{i,1/2}` at `mu = -1` | `SphereSolver._starting_direction` |
-| the ascending-`m` march | the `for m` loop of `SphereSolver.sweep_all_angles` |
-| the spatial march, direction from `sign(mu)` | `cells = range(...)` in `sweep_angle` |
-| eq. (34), one cell of it | `sn.cell_flux` with the two `Face`s |
-| the `r = 0` reflection | `incoming[N - 1 - m] = psi_in` at the end of `sweep_angle` |
+| eq. (23), the backward march | `sweep_backward` |
+| eq. (22), the forward march | `sweep_forward` |
+| eq. (30), one cell of it | `sphere.cell_flux` with its two faces |
+| the `r = 0` reflection | `reflected[mirror - m]` in `sweep_all_angles` |
 
 The one thing the code shows that the report does not is where the two outgoing fluxes *go*.
-`cell_flux` returns them as a tuple in face order,
+They come back positionally,
 
-    psi[i], (psi_in, psi_high[i]) = sn.cell_flux(...)
+    psi[i], psi_in, psi_high[i] = self._cell(...)
 
-and the two are consumed on different axes: `psi_in` is rebound in place and is the next cell's
-inflow on the *same* pass of the `for i` loop, while `psi_high[i]` is stored into a column that
-`sweep_all_angles` hands back as `psi_low` on the *next* pass of the `for m` loop. Nothing else
-in `sweep_angle` distinguishes space from angle — the two `Face`s are treated identically inside
-`cell_flux`; only the destination of the returned value differs.
+and are consumed on different axes: `psi_in` is rebound in place and is the next cell's inflow
+on the *same* pass of the `for i` loop, while `psi_high[i]` is stored into a column handed back
+as `psi_low` on the *next* ordinate.
 
-`_starting_direction` is the extra sweep the recursion needs, so the sphere costs `N + 1`
-spatial sweeps per S_N iteration where the slab costs `N`.
+`_starting_direction` is the extra march the recursion needs, so the sphere costs `N + 1`
+marches per S_N iteration where the slab costs `N`.
 
-## The fixup loop provably terminates
+## The fixup terminates
 
-The negative-flux fixup clamps an offending outgoing flux to zero and re-solves the balance
-with it held there. It has to be a loop, because clamping one face can drive another negative.
-The report's "Fixup" paragraph argues both halves of that: why the test is per face rather than
-on any total (the two outgoing fluxes subtract different inflows and are consumed by different
-neighbours, as above), and why clamping one lowers `psi` and can therefore flip the other.
-It is bounded by `len(faces) + 1` passes: each pass clamps at least one more face, and once
-every face is clamped there is no diamond closure left to produce a negative value, so the pass
-after that returns. **The trailing `max(value, 0.0)` after the loop is therefore unreachable**
-— it is there as a guard, not as a code path anything relies on.
+The slab's fixup is one branch: with a single closure there is nothing left to flip once the
+face is clamped. The sphere's is a loop, because clamping one face lowers `psi` and can drive
+the other negative — the report's "Fixup" paragraph argues both why the test must be per face
+and why clamping one lowers `psi`. It is bounded by two extra passes: each pass clamps at least
+one more of the two faces, and with both clamped there is no closure left to produce a negative
+value. **The trailing `max(value, 0.0)` is therefore unreachable** — a guard, not a code path.
 
-## Three traps in the sweep
-
-**Ordinate order is load-bearing.** `sn.ordinates` returns ascending `mu`, and both
-`sweep_all_angles` methods depend on it twice: every inward ordinate (`mu < 0`) must be swept
-before the outward ordinate it feeds through the reflective boundary, and in the sphere the
-`alpha` recursion must run upward from `mu = -1`. Reordering the ordinates produces a wrong
-answer, not an error.
+## Two traps in the sweep
 
 **The `alpha` factor of two.** `sphere.angular_coefficients` pairs the recursion
 `alpha_{m+1/2} = alpha_{m-1/2} - w_m mu_m` with the cell coefficient `(A_out - A_in)/w_m`. The
@@ -96,8 +88,8 @@ mesh convergence looks clean, look here first.
 
 **The centre of the sphere is not a special case.** `areas[0] = 0`, so the innermost face
 carries no current and the cell balance does not determine the flux there; the diamond closure
-does, and that value is what the `r = 0` reflection hands to the outward sweep. No branch
-implements this — it falls out of `a_in = areas[i] = 0` in `sweep_angle`.
+does, and that value is what the `r = 0` reflection hands to the forward sweep. No branch
+implements this — it falls out of `areas[0] = 0` in `sweep_backward`.
 
 ## Why `multiplying_medium` sets `Sigma_s = 0`
 
@@ -105,9 +97,9 @@ Report paragraph "The meaning of `c`" establishes that the critical size depends
 `multiplying_medium(c)` may take the simplest split, `Sigma_t = 1, Sigma_s = 0, nu Sigma_f = c`.
 [09](09-the-c-split.md) is the argument, and the measurement that the four splits agree.
 The consequence lives in `run_sn_for_source`, which returns after a single iteration when
-`sigma_s == 0`: with no scattering, one sweep inverts the transport operator exactly. Questions
-3 and 4 therefore cost one sweep per outer, while Question 5 — real cross sections,
-`Sigma_s/Sigma_t = 0.69` — costs about ten. See [03](03-k-iteration.md).
+`sigma_s == 0`: with no scattering, one sweep inverts the transport operator exactly. Measured,
+Questions 3 and 4 take **exactly one** sweep per inner, while Question 5 — real cross sections,
+`Sigma_s/Sigma_t = 0.69` — takes up to **21**. See [03](03-k-iteration.md).
 
 ## Mesh sizes
 

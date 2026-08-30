@@ -3,7 +3,7 @@
 **The outer loop rescales the fission source, the inner loop converges the scattering source at
 fixed `k`, and two lines that look cosmetic are not.**
 
-## The loop, in `sn.k_eigenvalue`
+## The loop, in `sn.core.k_eigenvalue`
 
 1. flat flux, `k = 1`;
 2. **outer** — form the fission source density `nu Sigma_f phi / k`;
@@ -15,7 +15,7 @@ fixed `k`, and two lines that look cosmetic are not.**
 Two of those are worth not removing:
 
 - **Dividing the fission source by `k`** (step 2) makes a solution exist at *every* system size.
-  That is what turns criticality into a root search on the size — `sn.critical_size` — instead
+  That is what turns criticality into a root search on the size — `sn.core.critical_size` — instead
   of an eigensolve. Report paragraph "Eigenvalue" makes the same point physically.
 - **The renormalisation** (step 5) is not tidiness. Without it the iterate's amplitude drifts by
   a factor `k` per outer, and `|k_new - k|` becomes a difference of numbers that have lost their
@@ -46,7 +46,7 @@ sphere runs a few long because `S_8` is not diffusion.
 
 ## The root search
 
-`sn.critical_size` costs 8 evaluations of `k`. `_bracket` widens by only 3% per step
+`sn.core.critical_size` costs 8 evaluations of `k`. `_bracket` widens by only 3% per step
 deliberately: an evaluation far from criticality is the expensive kind, since the dominance
 ratio is worse there. Its tolerance is *relative* because the sizes are mean free paths in
 Questions 3 and 4 and centimetres in Question 5, so no absolute `xtol` would suit both.

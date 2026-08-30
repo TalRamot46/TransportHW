@@ -59,20 +59,20 @@ def jump_ratio(core, reflector, theory):
     return core.mu0 / reflector.mu0 if theory == 'zimmerman' else 1.0
 
 def _coth_over_length(rate, thickness):
-    """kappa coth(kappa L) in reflector mfp, and its 1/L limit at c = 1 where kappa = 0."""
+    """coth(thickness/nu0)/nu0 in reflector mfp, and its 1/thickness limit at c = 1."""
     return rate / np.tanh(rate * thickness) if rate else 1.0 / thickness
 
 def _decay(rate, depth):
-    """sinh(kappa s)/kappa in reflector mfp, which is s itself at c = 1."""
+    """nu0 sinh(depth/nu0) in reflector mfp, which is depth itself at c = 1."""
     return np.sinh(rate * depth) / rate if rate else depth
 
-def _residual(R, core, reflector, thickness, g):
-    """Interface balance of the two regions; its zero in (0, pi/B) is the critical radius."""
-    D_C, D_R = core.D0 / core.sigma_t, reflector.D0 / reflector.sigma_t
-    B = core.rate * core.sigma_t
-    return (D_C * B / np.tan(B * R)
-            + g * D_R * reflector.sigma_t * _coth_over_length(reflector.rate, thickness)
-            - (D_C - g * D_R) / R)
+def _residual(a, core, reflector, thickness, g):
+    """Report eq. (4) at core radius a mfp; its zero in (0, pi/k0) is the critical radius."""
+    # b - d: the same interface, counted in reflector mean free paths instead of core ones.
+    b_minus_d = a * reflector.sigma_t / core.sigma_t
+    return (core.D0 * (core.rate / np.tan(core.rate * a) - 1.0 / a)
+            + g * reflector.D0 * (_coth_over_length(reflector.rate, thickness)
+                                  + 1.0 / b_minus_d))
 
 def _setup(core_material, reflector_material, theory):
     """(core, reflector, jump ratio) of one pair under one theory."""
@@ -84,11 +84,12 @@ def critical_radius(core_material, reflector_material, d, theory):
     """Critical core radius in cm behind d mean free paths of reflector."""
     core, reflector, g = _setup(core_material, reflector_material, theory)
 
-    # The residual runs from +infinity at R -> 0 to -infinity at R = pi/B, the bare
+    # The residual runs from +infinity at a -> 0 to -infinity at a = pi/k0, the bare
     # unreflected limit, so the fundamental mode is always bracketed by that interval.
-    span = np.pi / (core.rate * core.sigma_t)
-    return brentq(lambda R: _residual(R, core, reflector, d + reflector.z0, g),
-                  1e-6 * span, span * (1.0 - 1e-12), xtol=1e-13, rtol=8.9e-16)
+    span = np.pi / core.rate
+    a = brentq(lambda a: _residual(a, core, reflector, d + reflector.z0, g),
+               1e-6 * span, span * (1.0 - 1e-12), xtol=1e-13, rtol=8.9e-16)
+    return a / core.sigma_t
 
 def flux_profile(core_material, reflector_material, d, theory, n_points=400):
     """(r, phi) in cm across core and reflector at criticality, normalised to phi(0) = 1."""
@@ -97,7 +98,7 @@ def flux_profile(core_material, reflector_material, d, theory, n_points=400):
     thickness = d + reflector.z0
 
     r_core = np.linspace(0.0, R, n_points)
-    # sinc(x) = sin(pi x)/(pi x), which supplies the 1 at r = 0 that sin(Br)/(Br) cannot.
+    # sinc(x) = sin(pi x)/(pi x), which supplies the 1 at r = 0 that sin(k0 a)/(k0 a) cannot.
     phi_core = np.sinc(core.rate * core.sigma_t * r_core / np.pi)
 
     r_ref = np.linspace(R, R + d / reflector.sigma_t, n_points)

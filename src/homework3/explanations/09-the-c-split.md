@@ -2,17 +2,17 @@
 
 **`multiplying_medium` discards a free parameter — `Sigma_s` — and the critical size does not
 notice. The argument is one line of operator algebra, and it is what licenses both
-`Sigma_s = 0` in `sn.py` and the single `c/k` source in `pn_box.py`.**
+`Sigma_s = 0` in `sn/core.py` and the single `c/k` source in `pn/box.py`.**
 
 Questions 2–4 are given `c = (Sigma_s + nu Sigma_f) / Sigma_t` and nothing else. Every split
 `nu Sigma_f = c - Sigma_s` realises the stated `c`, and those are genuinely different media
-with genuinely different `k`. `sn.multiplying_medium` picks `Sigma_s = 0, nu Sigma_f = c`
+with genuinely different `k`. `sn.core.multiplying_medium` picks `Sigma_s = 0, nu Sigma_f = c`
 without comment. This file is why that is allowed.
 
 ## The half-thickness does not move while `k` converges
 
 The first thing to be clear about, because it is where the worry usually starts: the two loops
-are *nested, not interleaved*. `sn.k_eigenvalue` runs at a **fixed** half-thickness — it is
+are *nested, not interleaved*. `sn.core.k_eigenvalue` runs at a **fixed** half-thickness — it is
 baked into the solver at construction — and returns one converged number `k(l)`.
 `slab.critical_half_thickness` only then hands that scalar function to `brentq`. So the
 question is not about iteration paths at all. It is the static question: **is the zero set of
@@ -28,7 +28,7 @@ Fix a half-thickness `l` and let `K_l` be the map
 total collision under the reflective/vacuum conditions. In the code `K_l` **is**
 `solver.sweep_all_angles`: it takes a source density and returns a scalar flux, and it reads only
 `sigma_t` and the mesh. Same for `P_N`, where it is `BoxSystem.solve` behind a matrix built at
-`pn_box.py:30` from `sigma_t` and `dx` alone. Neither `Sigma_s` nor `nu Sigma_f` nor `k` reaches
+`pn/box.py:31` from `sigma_t` and `dx` alone. Neither `Sigma_s` nor `nu Sigma_f` nor `k` reaches
 it.
 
 The converged fixed point of the two loops, for any split, is
@@ -36,7 +36,7 @@ The converged fixed point of the two loops, for any split, is
     phi = Sigma_s K_l phi + (1/k) nu Sigma_f K_l phi = ( Sigma_s + nu Sigma_f / k ) K_l phi
 
 Both terms pass through the *same* `K_l`, which is exactly what `run_sn_for_source` does at
-`sn.py:85`. So the bracket is a scalar and must be the reciprocal of an eigenvalue of `K_l`;
+`sn/core.py:85`. So the bracket is a scalar and must be the reciprocal of an eigenvalue of `K_l`;
 power iteration converges to the dominant one, `lam0(l)`, which is simple with a positive
 eigenvector (Perron–Frobenius on the sweep matrix — nonnegative and irreducible, the fixup
 never firing in Questions 2–5, see [02](02-sn-solver.md)). Hence
@@ -79,7 +79,7 @@ through that scalar bracket.
   operator. Folding `Sigma_s` into the removal cross section instead of the source — a
   perfectly ordinary thing to do — would leave `K_l` split-dependent and the cancellation
   would not happen.
-- **A fixup that fires.** The clamp at `sn.py:77` is nonlinear. It never triggers in Questions
+- **A fixup that fires.** The clamp at `sn/core.py:77` is nonlinear. It never triggers in Questions
   2–5, but a problem where it did would not have a Perron eigenvalue to converge to.
 - **Anisotropic scattering.** `Sigma_s` would then enter through more than the `n = 0` moment
   and would no longer be summable into `c`.
@@ -88,5 +88,5 @@ through that scalar bracket.
 
 Only speed and one less symbol. `Sigma_s = 0` puts the whole source under `k`, which is what
 lets report eq. (6) be written in `c` alone, and it makes the inner iteration exact in a single
-sweep — `run_sn_for_source` returns immediately at `sn.py:89`. Questions 3–4 cost one sweep per
+sweep — `run_sn_for_source` returns immediately at `sn/core.py:89`. Questions 3–4 cost one sweep per
 outer; Question 5, with real cross sections, costs about ten. See [03](03-k-iteration.md).

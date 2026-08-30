@@ -1,27 +1,27 @@
 # 07 — The P_N Box Solver
 
-**Method 1 of Question 2, in three files: `pn.py` builds the two matrices the report derives,
-`pn_box.py` lays them out as one banded system and iterates `k` over it, `q2.py` tabulates.**
+**Method 1 of Question 2, in three files: `pn/algebra.py` builds the two matrices the report derives,
+`pn/box.py` lays them out as one banded system and iterates `k` over it, `q2.py` tabulates.**
 
 ## The files, and the call path
 
 | file | owns |
 |---|---|
-| `pn.py` | The algebra both methods share: `streaming_matrix`, `parity_blocks`, `marshak_matrix`. No solving. |
-| `pn_box.py` | `BoxSystem` (assembly + factorisation), the power iteration, the size root search. |
-| `pn_modal.py` | Method 2; see [08](08-modal-benchmark.md). |
+| `pn/algebra.py` | The algebra both methods share: `streaming_matrix`, `parity_blocks`, `marshak_matrix`. No solving. |
+| `pn/box.py` | `BoxSystem` (assembly + factorisation), the power iteration, the size root search. |
+| `pn/modal.py` | Method 2; see [08](08-modal-benchmark.md). |
 | `q2.py` | The table and the figure, nothing else. |
 
-    pn.streaming_matrix / pn.marshak_matrix
+    pn.algebra.streaming_matrix / pn.algebra.marshak_matrix
       <- BoxSystem._matrix          one sparse L, report eq. (13)
       <- BoxSystem.solve            one back-substitution against a midpoint source
-      <- pn_box.pn_k_eigenvalue     the power iteration; returns sn.KResult
-      <- pn_box.critical_half_thickness -> sn.critical_size   brentq on k(a/2) - 1
+      <- pn.box.k_eigenvalue     the power iteration; returns sn.core.KResult
+      <- pn.box.critical_half_thickness -> sn.core.critical_size   brentq on k(a/2) - 1
       <- q2.report
 
-The last two lines are the reuse that matters: `sn.critical_size` and `sn.KResult` are taken
+The last two lines are the reuse that matters: `sn.core.critical_size` and `sn.core.KResult` are taken
 unchanged from the S_N side, so Questions 2 and 3 share one root finder, one bracket-widening
-policy and one result type. Nothing in `sn.py` had to change to admit a method that has no
+policy and one result type. Nothing in `sn/core.py` had to change to admit a method that has no
 sweep and no ordinates.
 
 ## Why the matrix is laid out the way it is

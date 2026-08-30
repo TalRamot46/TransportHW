@@ -3,14 +3,14 @@ det H(a/2) = 0. Carries no spatial error, so it is the benchmark for Method 1.""
 
 import numpy as np
 from scipy.optimize import brentq
-from homework3 import pn
+from homework3.pn import algebra
 
 SCAN_POINTS = 200
 
 def modes(c, N):
     """Eigenpairs of K^2 = -(AB)^-1 Sigma_0 at k = 1, and the odd-to-even block B;
     report eq. (19)."""
-    A, B = pn.parity_blocks(N)
+    A, B = algebra.parity_blocks(N)
     sigma_0 = np.eye(len(A))
     sigma_0[0, 0] = 1.0 - c
 
@@ -52,8 +52,8 @@ def _first_root(determinant, upper):
 def critical_half_thickness(medium, N):
     """Half-thickness at which det H(a/2) = 0, the smallest positive root."""
     values, vectors, B = modes(medium.c, N)
-    marshak = pn.marshak_matrix(N)
-    even, odd = pn.parity_indices(N)
+    marshak = algebra.marshak_matrix(N)
+    even, odd = algebra.parity_indices(N)
     m_even, m_odd = marshak[:, even], marshak[:, odd]
 
     def determinant(a):

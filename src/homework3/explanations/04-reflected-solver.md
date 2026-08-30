@@ -14,7 +14,12 @@ approximation it is running:
 - `'asymptotic'` and `'zimmerman'` build **identical** `Region`s. They differ only in that
   `jump_ratio` returns `mu0_C/mu0_R` for the second.
 
-`_residual` is report equation (4) transcribed literally. `_setup` exists so that
+`_residual` is report equation (4) transcribed literally, so it works in the optical radius
+`a = Sigma_t,C R_C` of report equation (1) and every term in it is dimensionless;
+`critical_radius` divides the root by `sigma_t` once, at the end, to hand back cm. The
+reflector's share of the interface is counted in *reflector* mean free paths — `b - d`, which
+is `a * sigma_t_R / sigma_t_C`, not `a` — because the two media do not share a mean free path
+in any of these pairs. `_setup` exists so that
 `critical_radius` and `flux_profile` cannot disagree about the pair they are solving — the
 flux profile must be evaluated with exactly the `g` that produced the radius, or the interface
 value is inconsistent.
@@ -27,8 +32,8 @@ explicitly:
 
 | function | `rate != 0` | `rate == 0` |
 |---|---|---|
-| `_coth_over_length` | `kappa coth(kappa L)` | `1/L` |
-| `_decay` | `sinh(kappa s)/kappa` | `s` |
+| `_coth_over_length` | `coth(L/nu0)/nu0` | `1/L` |
+| `_decay` | `nu0 sinh(s/nu0)` | `s` |
 | `partial_current_factor` | the two log forms | `1/2` |
 | `region` → `D0` | `abs(c-1)/rate^2` | `1/3` |
 
@@ -39,17 +44,19 @@ and it dispatches to Assignment 1's two validated solvers — see
 
 ## Two small things worth not rediscovering
 
-**`np.sinc`.** `flux_profile` writes the core shape as `np.sinc(B r / pi)`, because
-`np.sinc(x) = sin(pi x)/(pi x)` supplies the value `1` at `r = 0` that `sin(Br)/(Br)` cannot.
+**`np.sinc`.** `flux_profile` writes the core shape as `np.sinc(k0 sigma_t r / pi)`, because
+`np.sinc(x) = sin(pi x)/(pi x)` supplies the value `1` at `r = 0` that `sin(k0 a)/(k0 a)`
+cannot.
 
-**The bracket is exact, not a guess.** `_residual` runs from `+inf` at `R -> 0` to `-inf` at
-`R = pi/B`, and `pi/B` is precisely the unreflected limit, so `(0, pi/B)` is guaranteed to
-bracket the fundamental mode. `critical_radius` hands that interval straight to `brentq` with
-no widening search — unlike `sn._bracket`, which has no such analytic endpoint available.
+**The bracket is exact, not a guess.** `_residual` runs from `+inf` at `a -> 0` to `-inf` at
+`a = pi/k0`, and `pi/k0` is precisely the unreflected limit in mean free paths, so `(0, pi/k0)`
+is guaranteed to bracket the fundamental mode. `critical_radius` hands that interval straight to `brentq` with
+no widening search — unlike `sn.core._bracket`, which has no such analytic endpoint available.
 
 ## The alternative that was rejected
 
-`_residual` keeps the curvature term `(D_C - g D_R)/R`. The tempting alternative is to match
+`_residual` keeps the two curvature terms, `-D0_C/a` and `+g D0_R/(b - d)`. The tempting
+alternative is to match
 `-D du/dr` instead of the true current `-D dphi/dr`: `u = r phi` obeys a planar equation, and
 Zimmerman's derivation is planar, so the substitution looks natural and cancels the term
 outright.

@@ -3,7 +3,8 @@
 import os
 import logging
 from homework1.tables import log_section, log_table
-from homework3 import plots, sphere
+from homework3 import plots
+from homework3.sn import sphere
 
 logger = logging.getLogger(__name__)
 
@@ -27,11 +28,10 @@ def report(figs):
                 'differenced by the alpha recursion and a mu = -1 starting direction.',
                 f'Reflective at r = 0, vacuum at r = R, {sphere.N_CELLS} cells.')
 
-    scan = plots.scan_orders(sphere.critical_radius, sphere.sphere_k_eigenvalue, RADIUS)
+    scan = plots.scan_orders(sphere.critical_radius, sphere.k_eigenvalue, RADIUS)
     _table(scan)
     logger.info("The slab and the sphere share an extrapolation distance, so R_c and a/2 "
                 "should satisfy R_c + z0 = 2 (a/2 + z0); see report Question 4.")
 
     plots.plot_orders(scan, '$R_c$',
-                      'Question 4: critical sphere radius by $S_N$',
                       os.path.join(figs, 'q4_sphere_orders.pdf'))

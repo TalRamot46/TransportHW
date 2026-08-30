@@ -1,5 +1,5 @@
-"""Geometry-independent S_N machinery: the quadrature, the diamond-difference cell
-solve with its negative-flux fixup, and the Bell & Glasstone k iteration."""
+"""Geometry-independent S_N machinery: the quadrature and the two iterations. The cell
+solve and the sweeps live with their geometry, in slab.py and sphere.py."""
 
 import numpy as np
 from dataclasses import dataclass
@@ -26,57 +26,6 @@ def multiplying_medium(c, sigma_t=1.0):
 def ordinates(n):
     """Gauss-Legendre ordinates and weights on [-1, 1], ascending, summing to 2."""
     return np.polynomial.legendre.leggauss(n)
-
-class Face(NamedTuple):
-    """
-    One outgoing face of a cell, as it appears in the cell balance.
-
-    Its contribution is `a_out psi_out - a_in psi_in`. The two coefficients differ only
-    where the face is weighted differently on the way in and on the way out -- the two
-    areas of a spherical shell, the two alphas of an angular bin -- so in the slab they
-    are both |mu|. See report eq. (30).
-    """
-    a_out: float
-    a_in: float
-    psi_in: float
-
-def cell_flux(removal, source, faces):
-    """
-    Diamond-difference cell-centre flux, with the set-to-zero negative-flux fixup.
-
-    Solves the cell balance over any number of outgoing faces,
-
-        sum_f (a_out psi_out - a_in psi_in) + removal psi = source
-
-    by closing each face with the diamond relation psi_out = 2 psi - psi_in. Collecting
-    psi gives report eq. (31), which is what the loop below evaluates:
-
-        psi = [ source + sum_f (a_out + a_in) psi_in ] / [ removal + 2 sum_f a_out ]
-
-    A face whose outgoing flux has been clamped to zero contributes no a_out to either
-    sum, leaving only its -a_in psi_in inflow. Returns the cell-centre flux and the
-    outgoing fluxes, in the order of `faces`.
-    """
-    clamped = [False] * len(faces)
-
-    # One pass per face at most: clamping every outgoing flux to zero terminates it.
-    for _ in range(len(faces) + 1):
-        denominator, numerator = removal, source
-        for face, off in zip(faces, clamped):
-            if off:
-                numerator += face.a_in * face.psi_in
-            else:
-                denominator += 2.0 * face.a_out
-                numerator += (face.a_out + face.a_in) * face.psi_in
-
-            psi = numerator / denominator
-        outgoing = [0.0 if off else 2.0 * psi - face.psi_in
-                    for face, off in zip(faces, clamped)]
-        if all(value >= 0.0 for value in outgoing):
-            return psi, outgoing
-        clamped = [off or value < 0.0 for off, value in zip(clamped, outgoing)]
-
-    return psi, [max(value, 0.0) for value in outgoing]
 
 def run_sn_for_source(solver, medium, fission, phi, tol=1e-8, max_iter=2000):
     """The S_N solve itself: repeats the angular iteration at a fixed fission source

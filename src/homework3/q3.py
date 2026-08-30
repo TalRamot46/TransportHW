@@ -3,7 +3,8 @@
 import os
 import logging
 from homework1.tables import log_section, log_table
-from homework3 import plots, slab
+from homework3 import plots
+from homework3.sn import slab
 
 logger = logging.getLogger(__name__)
 
@@ -31,12 +32,11 @@ def report(figs):
                 'difference, negative-flux fixup.',
                 f'Reflective at x = 0, vacuum at x = a/2, {slab.N_CELLS} cells.')
 
-    scan = plots.scan_orders(slab.critical_half_thickness, slab.slab_k_eigenvalue, HALF_THICKNESS)
+    scan = plots.scan_orders(slab.critical_half_thickness, slab.k_eigenvalue, HALF_THICKNESS)
     _table(scan)
     logger.info(f"At c = 1.5 the S_N sequence runs down towards the exact one-speed value "
                 f"{BENCHMARK_C15:.6f} mfp; S10 is off by "
                 f"{scan.sizes[1.5][10] / BENCHMARK_C15 - 1.0:+.2%}.")
 
     plots.plot_orders(scan, '$a/2$',
-                      'Question 3: critical slab half-thickness by $S_N$',
                       os.path.join(figs, 'q3_slab_orders.pdf'))

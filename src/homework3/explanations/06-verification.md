@@ -29,7 +29,7 @@ at `c = 1.3` and `c = 1.5`.
 
 ## Question 2 — the two P_N solvers
 
-**The analytic `P_1`.** The only check that goes around `pn.py` rather than through it:
+**The analytic `P_1`.** The only check that goes around `pn/algebra.py` rather than through it:
 `a/2 = arctan(3/(2B))/B` with `B = sqrt(3(c-1))`. Method 2 returns it to **eight digits** at all
 three `c` — `0.72347894` against `0.72347894` at `c = 1.5` — and Method 1 to `2.5e-6` relative,
 which is its `Δx²`. Any error in `marshak_matrix` or `parity_blocks` would show here, and would
@@ -67,7 +67,7 @@ claim those tables are built to make, so it is the load-bearing check of the thr
 `phi(0) = (1 - e^{-Sigma R})/Sigma`. At `Sigma = 1, R = 2` the exact value is `0.864665`; the
 code gives `0.864733` (`S_2`), `0.864645` (`S_4`), `0.864602` (`S_32`) at 800 cells. This
 exercises the areas, the volumes, the `mu = -1` starting direction and the `r = 0` reflection
-with no scattering to hide behind — the parts of `sphere.py` the critical-size results would
+with no scattering to hide behind — the parts of `sn/sphere.py` the critical-size results would
 not isolate.
 
 **The exact slab benchmark.** At `c = 1.5` the one-speed critical half-thickness is `0.605055`

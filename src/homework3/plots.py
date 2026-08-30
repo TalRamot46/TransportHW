@@ -3,8 +3,8 @@
 import numpy as np
 from typing import NamedTuple
 from homework1.criticality import critical_dimensions
-from homework3.figures import subplots, panel, finish, savefig
-from homework3.sn import multiplying_medium
+from homework3.figures import two_over_one, panel, finish, savefig
+from homework3.sn.core import multiplying_medium
 
 C_VALUES = (1.2, 1.5, 1.8)
 ORDERS = (2, 4, 6, 10)
@@ -54,8 +54,7 @@ def _panel_orders(ax, scan, symbol):
                 linewidth=2.0, label=f'$c = {c}$')
         ax.axhline(reference_size(c, scan.index), color=color, linestyle='--',
                    linewidth=1.2, alpha=0.7)
-    panel(ax, f'Convergence of {symbol} with $N$', 'Order $N$',
-          f'{symbol} [mean free paths]', legend='upper right', fontsize=9)
+    panel(ax, 'Order $N$', f'{symbol} [mean free paths]', legend='upper right')
 
 def _panel_curves(ax, scan, symbol):
     """k against system size at REFERENCE_C, one curve per order, with the k = 1 crossings."""
@@ -65,22 +64,21 @@ def _panel_curves(ax, scan, symbol):
         ax.plot([scan.sizes[REFERENCE_C][N]], [1.0], color=color, marker='o',
                 markersize=7, markerfacecolor='none', markeredgewidth=1.8)
     ax.axhline(1.0, color='grey', linestyle=':', linewidth=1.4)
-    panel(ax, f'$k$ against size, $c = {REFERENCE_C}$', f'{symbol} [mean free paths]',
-          'Multiplication factor $k$', legend='lower right', fontsize=9)
+    panel(ax, f'{symbol} [mean free paths]', 'Multiplication factor $k$',
+          legend='lower right')
 
 def _panel_fluxes(ax, scan):
     """Scalar flux of the critical system, normalised, one curve per order."""
     for color, N in zip(COLORS, scan.orders):
         x, phi = scan.fluxes[N]
         ax.plot(x, phi, color=color, linewidth=2.0, label=f'${scan.family}_{{{N}}}$')
-    panel(ax, f'Critical flux shape, $c = {REFERENCE_C}$', 'Position / critical size',
-          r'$\phi / \phi(0)$', legend='lower left', fontsize=9)
+    panel(ax, 'Position / critical size', r'$\phi / \phi(0)$', legend='lower left')
 
-def plot_orders(scan, symbol, suptitle, save_path):
+def plot_orders(scan, symbol, save_path):
     """Writes the three-panel order-scan figure of one geometry."""
-    fig, axes = subplots(1, 3, width=5.2, height=4.2)
-    _panel_orders(axes[0][0], scan, symbol)
-    _panel_curves(axes[0][1], scan, symbol)
-    _panel_fluxes(axes[0][2], scan)
-    finish(fig, suptitle)
+    fig, (ax_orders, ax_curves, ax_fluxes) = two_over_one()
+    _panel_orders(ax_orders, scan, symbol)
+    _panel_curves(ax_curves, scan, symbol)
+    _panel_fluxes(ax_fluxes, scan)
+    finish(fig)
     savefig(fig, save_path)

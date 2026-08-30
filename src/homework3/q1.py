@@ -6,7 +6,7 @@ import logging
 from homework1.materials import BENCHMARK, FISSILE, critical_mass
 from homework1.spherical import build_medium, analytic_critical_radius
 from homework1.tables import log_section, log_table
-from homework3.figures import subplots, panel, finish, savefig
+from homework3.figures import subplots, two_over_one, panel, finish, savefig
 from homework3 import reflected
 
 logger = logging.getLogger(__name__)
@@ -71,12 +71,12 @@ def _core_table(core_name, table):
 
 def plot_radii(tables, save_path):
     """Critical radius against reflector thickness, one panel per core and reflector."""
-    fig, axes = subplots(len(FISSILE), len(REFLECTORS), width=5.0, height=4.0)
+    fig, axes = subplots(len(REFLECTORS), len(FISSILE), height=2.9)
 
     for i, core_name in enumerate(FISSILE):
         core = BENCHMARK[core_name]
         for j, name in enumerate(REFLECTORS):
-            ax = axes[i][j]
+            ax = axes[j][i]
             for theory in reflected.THEORIES:
                 ax.plot(DEPTHS, [tables[core_name][(name, d, theory)] for d in DEPTHS],
                         'o-', color=COLORS[theory], linewidth=2.0,
@@ -85,32 +85,33 @@ def plot_radii(tables, save_path):
                 ax.axhline(bare_radius(core, theory), color=COLORS[theory], linestyle=style,
                            linewidth=1.4, alpha=0.8,
                            label=f'bare, {reflected.THEORY_LABELS[theory].lower()}')
-            panel(ax, f'{core_name} + {REFLECTOR_LABELS[name]}',
-                  'Reflector thickness $d$ [mfp]', 'Critical core radius $R_c$ [cm]')
+            panel(ax, 'Reflector thickness $d$ [mfp]',
+                  f'{core_name} + {REFLECTOR_LABELS[name]}:  $R_c$ [cm]')
 
-    finish(fig, 'Question 1: critical core radius of the reflected spheres')
-    # One legend for all six panels: the curves leave no free corner inside them.
+    finish(fig)
+    # One legend for all six panels: the curves leave no free corner inside them. Three
+    # columns, not five -- a legend wider than the plot expands the tight bounding box,
+    # and scaling that to \textwidth shrinks every panel to fit the legend.
     fig.legend(*axes[0][0].get_legend_handles_labels(), loc='lower center',
-               ncol=5, fontsize=9, frameon=True, bbox_to_anchor=(0.5, -0.03))
+               ncol=3, frameon=True, bbox_to_anchor=(0.5, -0.05))
     savefig(fig, save_path)
 
 def plot_fluxes(save_path):
     """Critical flux across core and reflector; the Zimmerman curve jumps at the interface."""
-    fig, axes = subplots(1, len(REFLECTORS), width=5.0, height=4.2)
+    fig, axes = two_over_one()
     core = BENCHMARK[FISSILE[0]]
 
-    for j, name in enumerate(REFLECTORS):
-        ax = axes[0][j]
+    for ax, name in zip(axes, REFLECTORS):
         for theory in reflected.THEORIES:
             r, phi = reflected.flux_profile(core, BENCHMARK[name], FLUX_DEPTH, theory)
             R = reflected.critical_radius(core, BENCHMARK[name], FLUX_DEPTH, theory)
             ax.plot(r, phi, color=COLORS[theory], linewidth=2.0,
                     label=reflected.THEORY_LABELS[theory])
             ax.axvline(R, color=COLORS[theory], linestyle=':', linewidth=1.0, alpha=0.6)
-        panel(ax, f'{FISSILE[0]} + {REFLECTOR_LABELS[name]},  $d = {FLUX_DEPTH}$ mfp',
-              'Radius $r$ [cm]', r'$\phi(r) / \phi(0)$', legend='upper right', fontsize=8)
+        panel(ax, f'Radius $r$ [cm]  ({REFLECTOR_LABELS[name]})',
+              r'$\phi(r) / \phi(0)$', legend='upper right')
 
-    finish(fig, f'Question 1: critical flux profiles behind {FLUX_DEPTH} mfp of reflector')
+    finish(fig)
     savefig(fig, save_path)
 
 def report(figs):

@@ -1,10 +1,10 @@
 # 08 — The Modal Benchmark
 
-**`pn_modal.py` solves the same P_N system with no mesh at all, which is the only reason the
+**`pn/modal.py` solves the same P_N system with no mesh at all, which is the only reason the
 Δx² error of [07](07-pn-box-solver.md) can be quoted as a number rather than estimated.**
 
 Method 2 is 60 lines and runs in microseconds, so `q2.py` calls it inside the table loop with
-nothing cached. Its value is entirely as a second opinion: it shares `pn.py` with Method 1 and
+nothing cached. Its value is entirely as a second opinion: it shares `pn/algebra.py` with Method 1 and
 nothing else — no discretisation, no iteration, no root search in `k`.
 
 ## Three places it goes wrong if written naively
@@ -42,6 +42,6 @@ column survives through its `sin` term. Neither endpoint needs an epsilon.
 ## What it is not
 
 It is not an independent derivation — both methods take their matrices from the same three
-functions in `pn.py`, so an error in `marshak_matrix` would corrupt both identically and the
+functions in `pn/algebra.py`, so an error in `marshak_matrix` would corrupt both identically and the
 agreement in report Question 2's gap column would say nothing. That is what the analytic `P_1` check in
-[06](06-verification.md) is for: it goes around `pn.py` entirely.
+[06](06-verification.md) is for: it goes around `pn/algebra.py` entirely.

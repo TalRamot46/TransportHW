@@ -12,7 +12,7 @@ results.
 | # | Title | What it settles |
 |---|---|---|
 | [01](01-module-map.md) | The Module Map | Which file owns what, and the call path from `main.py` down to one table. |
-| [02](02-sn-solver.md) | The S_N Solver | How one `cell_flux` serves both geometries, how the sphere's double sweep is wired, and the three traps in it. |
+| [02](02-sn-solver.md) | The S_N Solver | What each geometry's `cell_flux` and sweeps own, why backward runs before forward, and the two traps in it. |
 | [03](03-k-iteration.md) | The Two-Level `k` Iteration | What each loop costs, and which tolerance is the cheap one. |
 | [04](04-reflected-solver.md) | The Reflected-Sphere Solver | How three approximations collapse to one `Region` and one residual. |
 | [05](05-assignment-1-reuse.md) | What Comes From Assignment 1 | Which imports carry physics and which are plumbing. |

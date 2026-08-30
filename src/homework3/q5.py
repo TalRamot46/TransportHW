@@ -7,8 +7,8 @@ from homework1.criticality import critical_dimensions
 from homework1.materials import BENCHMARK, FISSILE, critical_mass, solve_material
 from homework1.tables import log_section, log_table
 from homework3.figures import subplots, panel, finish, savefig
-from homework3.sn import Medium
-from homework3 import sphere
+from homework3.sn.core import Medium
+from homework3.sn import sphere
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ def _table(radii):
 
 def plot_criticality(radii, save_path):
     """k against sphere radius at the highest order, with the k = 1 crossing."""
-    fig, axes = subplots(1, len(FISSILE), height=5.0)
+    fig, axes = subplots(1, len(FISSILE), width=3.4, height=4.0)
     order = ORDERS[-1]
 
     for j, name in enumerate(FISSILE):
@@ -54,21 +54,22 @@ def plot_criticality(radii, save_path):
         R_c = radii[name][order]
         grid = np.linspace(0.6 * R_c, 1.5 * R_c, CURVE_POINTS)
 
-        ax.plot(grid, [sphere.sphere_k_eigenvalue(R, sn_medium(material), order).k for R in grid],
+        ax.plot(grid, [sphere.k_eigenvalue(R, sn_medium(material), order).k for R in grid],
                 color=COLORS[name], linewidth=2.2, label=f'$S_{{{order}}}$')
         ax.plot([R_c], [1.0], color=COLORS[name], marker='o', markersize=7,
                 markerfacecolor='none', markeredgewidth=1.8)
         ax.axhline(1.0, color='grey', linestyle=':', linewidth=1.4)
-        ax.annotate(f'$R_c = {R_c:.3f}$ cm,  '
-                    f'$M_c = {critical_mass(R_c, material.density):.2f}$ kg',
-                    xy=(0.03, 0.90), xycoords='axes fraction', fontsize=9,
-                    color=COLORS[name])
-        panel(ax, f'{name}   ($c = {material.c:.2f}$, '
-                  rf'$\rho = {material.density}$ g/cm$^3$)',
-              'Sphere radius $R$ [cm]', 'Multiplication factor $k$',
-              legend='lower right', fontsize=9)
+        # The material and its parameters ride in the annotation, not the axis label:
+        # at half the text width a label carrying them overruns the panel.
+        ax.annotate(rf'{name},  $c = {material.c:.2f}$' '\n'
+                    rf'$R_c = {R_c:.3f}$ cm' '\n'
+                    rf'$M_c = {critical_mass(R_c, material.density):.2f}$ kg',
+                    xy=(0.04, 0.96), xycoords='axes fraction', fontsize=11,
+                    va='top', color=COLORS[name])
+        panel(ax, 'Sphere radius $R$ [cm]', 'Multiplication factor $k$',
+              legend='lower right')
 
-    finish(fig, 'Question 5: criticality of the bare benchmark spheres by $S_N$')
+    finish(fig)
     savefig(fig, save_path)
 
 def report(figs):
