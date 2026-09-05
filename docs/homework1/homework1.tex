@@ -8,6 +8,19 @@
 \usepackage{microtype}
 \usepackage{xcolor}
 \usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\usepackage{placeins}
+
+% Same notebox as homework3: third argument passes extra keys, which is how a breakable
+% box sets coltext -- a plain \color inside one is lost at the page break.
+\DeclareTColorBox{notebox}{ O{Note} O{blue} O{} }{
+  breakable,
+  colback=#2!5!white,
+  colframe=#2!75!black,
+  fonttitle=\bfseries,
+  title={#1},
+  #3
+}
 
 \geometry{margin=1in}
 
@@ -19,7 +32,7 @@
 
 \maketitle
 
-\section{Introduction \& Case's Method}
+\section*{Introduction \& Case's Method}
 
 The problem is the monoenergetic, steady-state Boltzmann equation in slab geometry, for an infinite homogeneous isotropic medium with an isotropic plane source at $x = 0$:
 \begin{equation}
@@ -55,7 +68,7 @@ The singular objects live in angle only. The scalar flux $\phi(x) = 2\pi\int_{-1
 \end{equation}
 whose integrand is smooth on $(0,1)$: it vanishes at $\nu \to 0$ through $e^{-|x|/\nu}$ and at $\nu \to 1$ through $\lambda \to -\infty$, so the quadrature is well behaved.
 
-\section{Question 1: Exact Scalar Flux Analysis}
+\section*{Question 1: Exact Scalar Flux Analysis}
 
 The exact flux is the sum of the two contributions,
 \begin{equation}
@@ -73,11 +86,11 @@ $\nu_0$ is computed two ways: by bisection on $\operatorname{arctanh}(y)/y = 1/c
 \end{equation}
 which agree to better than $5 \times 10^{-3}\,\%$ over $c = 0.5 \ldots 0.95$. All figures are produced with both.
 
-\subsection{Question 1a: Asymptotic and Transient Components}
+\subsection*{Question 1a: Asymptotic and Transient Components}
 
 [Insert plots of asymptotic and transient components for each $c$, and the relative contributions $\phi_{\text{tr}}(x)/\phi(x)$ and $\phi_{\text{as}}(x)/\phi(x)$ as a function of $x$. Add physical discussion here.]
 
-\subsection{Question 1b: Classical Diffusion Solution}
+\subsection*{Question 1b: Classical Diffusion Solution}
 
 In mean free paths ($\Sigma_t = 1$) the diffusion equation for the same source is
 \begin{equation}
@@ -90,7 +103,7 @@ and with the $P_1$ value $D = 1/3$ its Green's function is
 
 [Insert comparison plots with the classical diffusion solution. Discuss the differences, including the behavior near the source ($x \to 0$) and the asymptotic behavior ($x \to \infty$).]
 
-\subsection{Question 1c: Asymptotic Diffusion Solution}
+\subsection*{Question 1c: Asymptotic Diffusion Solution}
 
 Matching the diffusion length to the exact eigenvalue, $L = \nu_0$, fixes $D_{\text{as}} = (1-c)\nu_0^2$ and gives
 \begin{equation}
@@ -100,7 +113,7 @@ which is exactly Case's asymptotic mode: this approximation reproduces $\phi_{\t
 
 [Insert comparison plots with the asymptotic diffusion solution. Discuss how the asymptotic diffusion solution compares to both the classical diffusion solution and the exact transport asymptotic component $\phi_{\text{as}}(x)$.]
 
-\subsection{Question 1d: Relative Error of Diffusion Approximations}
+\subsection*{Question 1d: Relative Error of Diffusion Approximations}
 
 \begin{equation}
     \text{Relative Error (\%)} = \frac{|\phi_{\text{approx}}(x) - \phi_{\text{exact}}(x)|}{\phi_{\text{exact}}(x)} \times 100\%
@@ -122,7 +135,7 @@ which is exactly Case's asymptotic mode: this approximation reproduces $\phi_{\t
 
 [Insert relative error plots as a function of $x$. Add physical discussion comparing the accuracy of the classical and asymptotic diffusion approximations across the different values of $c$. Analyze why the error behaves as it does near the source and far from it.]
 
-\section{Question 2: Numerical Code for the Diffusion Equation}
+\section*{Question 2: Numerical Code for the Diffusion Equation}
 
 The medium is symmetric, so the problem is solved on the half-domain $x \in [0,a]$, where it is source-free:
 \begin{equation}
@@ -174,11 +187,11 @@ is used instead: $e^{-\kappa x}$ satisfies it identically, the growing mode is a
     \label{fig:q2_convergence}
 \end{figure}
 
-\section{Question 3: Critical Half-Thickness and Critical Radius}
+\section*{Question 3: Critical Half-Thickness and Critical Radius}
 
-Parts 3(a)--3(c) are covered: the exact-transport relations, and classical diffusion with the Marshak and Mark conditions. Parts 3(d)--3(e) are not.
+Parts 3(a)--3(c) are covered: the exact-transport relations, and classical diffusion with the Marshak and Mark conditions. \textcolor{blue}{Parts 3(d)--3(e) follow at the end of the section.}
 
-\subsection{The Eigenvalue for $c > 1$}
+\subsection*{The Eigenvalue for $c > 1$}
 The discrete eigenvalue leaves the real axis. With $\nu_0 = i|\nu_0|$, $k_0 = 1/|\nu_0|$ and $\operatorname{arctanh}(ik) = i\arctan(k)$, the characteristic equation becomes real again,
 \begin{equation}
     c \arctan(k_0) = k_0
@@ -194,7 +207,7 @@ accurate to $10^{-4}\,\%$ at $c = 1.02$ and $0.10\,\%$ at $c = 2$. An imaginary 
 \end{equation}
 the sine being excluded in the slab by symmetry, the cosine in the sphere by regularity.
 
-\subsection{The Criticality Relations}
+\subsection*{The Criticality Relations}
 The asymptotic flux extrapolates to zero a distance $z_0(c)$ outside the surface. Placing the quarter-wave zero of the cosine and the first zero of the sine there gives, in mean free paths,
 \begin{equation}
     \frac{a}{2} = \frac{\pi}{2}\,|\nu_0(c)| - z_0(c), \qquad
@@ -208,10 +221,16 @@ No diffusion coefficient enters, so these are exact transport in that sense; the
 \end{equation}
 whose leading term is exact in the sense that $0.710446/c = 0.710446\,\nu_0\operatorname{arctanh}(1/\nu_0)$, with $0.710446$ Hopf's constant.
 
-\subsection{The Sign of the Quadratic Correction}
-The notes print $q = -0.0199$, but Case's Table 23 shows $c\,z_0(c)$ rising away from $0.710446$ on \emph{both} sides of $c = 1$ (Figure~\ref{fig:q3_z0}), which a negative $q$ cannot reproduce; with $q = +0.0199$ the fit matches the table to its four printed digits at $c = 0.9$ and $c = 1.1$. The printed minus sign therefore looks like a transcription error. Over $1.02 < c < 2$ the two signs differ by at most $2.6\,\%$ in $z_0$ and $3.2\,\%$ in $a/2$, and by less than $0.07\,\%$ in $a/2$ below $c = 1.2$. Results are quoted with the printed sign; both are plotted.
+\begin{notebox}[The sign of the quadratic correction in \eqref{eq:z0fit}][blue]
+The notes print $q = -0.0199$. Case's Table 23 has $c\,z_0(c)$ rising away from $0.710446$ on
+\emph{both} sides of $c = 1$, which a negative $q$ cannot reproduce, while $q = +0.0199$ matches
+the table to its four printed digits at $c = 0.9$ and $c = 1.1$ --- so the minus sign looks like
+a transcription error. It matters little here: over $1.02 < c < 2$ the two signs differ by at
+most $3.2\,\%$ in $a/2$, and by under $0.07\,\%$ below $c = 1.2$. Results are quoted with the
+printed sign.
+\end{notebox}
 
-\subsection{Results}
+\subsection*{Results}
 \begin{table}[hbt!]
     \centering
     \begin{tabular}{lrrrrr}
@@ -236,9 +255,19 @@ The notes print $q = -0.0199$, but Case's Table 23 shows $c\,z_0(c)$ rising away
     \label{tab:q3}
 \end{table}
 
-Both dimensions fall steeply with $c$, from $a/2 = 5.67$, $\Sigma_t R_c = 12.03$ at $c = 1.02$ to $0.33$ and $1.00$ at $c = 2$: a barely multiplying system must be many mean free paths across, because $|\nu_0| \to \infty$ as $c \to 1^+$.
+Both dimensions fall steeply with $c$ --- a barely multiplying system must be many mean free
+paths across, because $|\nu_0| \to \infty$ as $c \to 1^+$.
 
-The error of the approximate route is dominated by $z_0$, not by $|\nu_0|$ --- the eigenvalue fit stays under $0.11\,\%$, while the two-term $z_0$ expansion reaches $2.6\,\%$ by $c = 2$, where $(1-c)^3$ is no smaller than $(1-c)^2$. Since $z_0$ is subtracted while $|\nu_0|$ is multiplied by $\pi$ or $\pi/2$, the same absolute $z_0$ error hurts $a/2$ about twice as much as $R_c$, and hurts both more as the system shrinks: under $0.1\,\%$ up to $c \approx 1.25$, a few percent by $c = 2$ (Figure~\ref{fig:q3_critical}).
+\begin{notebox}[How good is the two-term fit for $z_0$?][blue]
+Table~\ref{tab:q3} uses the fitted $|\nu_0|$ and $z_0$ of \eqref{eq:z0fit} rather than the
+transcendental root and Case's table, and the error that costs is almost all $z_0$: the
+eigenvalue fit stays under $0.11\,\%$, while the two-term $z_0$ expansion reaches $2.6\,\%$ by
+$c = 2$, where $(1-c)^3$ is no smaller than $(1-c)^2$. Because $z_0$ is subtracted while
+$|\nu_0|$ is multiplied by $\pi$ or $\pi/2$, the same absolute error in $z_0$ hurts $a/2$ about
+twice as much as $R_c$. The total stays under $0.1\,\%$ to $c \approx 1.25$ and reaches a few
+per cent by $c = 2$ (Figure~\ref{fig:q3_critical}). Everything after this table uses the exact
+inputs instead.
+\end{notebox}
 
 \begin{figure}[hbt!]
     \centering
@@ -247,14 +276,8 @@ The error of the approximate route is dominated by $z_0$, not by $|\nu_0|$ --- t
     \label{fig:q3_critical}
 \end{figure}
 
-\begin{figure}[hbt!]
-    \centering
-    \includegraphics[width=0.75\textwidth]{figs/q3_extrapolation_distance.pdf}
-    \caption{The tabulated product $c\,z_0(c)$ against the fit with either sign of $q$. The tabulated values rise on both sides of $c = 1$, which fixes the sign as positive.}
-    \label{fig:q3_z0}
-\end{figure}
 
-\subsection{Parts 3(b) and 3(c): Marshak and Mark Conditions}
+\subsection*{Parts 3(b) and 3(c): Marshak and Mark Conditions}
 A multiplying medium has $\Sigma_a = 1 - c < 0$, so classical diffusion gives a Helmholtz equation
 \begin{equation}
     -D \nabla^2 \phi + (1-c)\phi = 0
@@ -279,7 +302,7 @@ Marshak sets the incoming partial current to zero, $\phi/4 + D\phi'/2 = 0$, so $
         \toprule
         & \multicolumn{3}{c}{$a/2$} & \multicolumn{3}{c}{$\Sigma_t R_c$} \\
         \cmidrule(lr){2-4}\cmidrule(lr){5-7}
-        $c$ & transport & Marshak & Mark & transport & Marshak & Mark \\
+        $c$ & transport (a) & Marshak (b) & Mark (c) & transport (a) & Marshak (b) & Mark (c) \\
         \midrule
         1.02 & 5.665513 & 5.746082 & 5.835399 & 12.027537 & 12.158832 & 12.248148 \\
         1.05 & 3.300331 & 3.389112 & 3.478428 & 7.277244 & 7.444891 & 7.534207 \\
@@ -299,20 +322,149 @@ Marshak sets the incoming partial current to zero, $\phi/4 + D\phi'/2 = 0$, so $
     \label{tab:q3bc}
 \end{table}
 
-\subsection{Comparison}
-All three agree as $c \to 1^+$, where the system is many mean free paths across and the boundary layer is a small correction, and separate as it shrinks (Figure~\ref{fig:q3_methods}). The two diffusion errors act in opposite directions:
-\begin{itemize}
-    \item $1/B$ \emph{over}-estimates the relaxation length --- by $0.8\,\%$ at $c = 1.02$ and $34\,\%$ at $c = 2$ --- inflating both dimensions;
-    \item the constant $z_0$ over-estimates the extrapolation distance as $c$ grows and, being subtracted, deflates both.
-\end{itemize}
-The relaxation length is weighted by $\pi$ in the sphere but only $\pi/2$ in the slab, while $z_0$ enters both identically. So the spherical radius is over-estimated throughout, by $+15\,\%$ (Marshak) and $+24\,\%$ (Mark) at $c = 2$, whereas Marshak's $a/2$ is non-monotonic: $+5.5\,\%$ at $c \approx 1.23$, zero near $c = 1.52$, $-26\,\%$ at $c = 2$. Mark's slab result ends at only $+1\,\%$ at $c = 2$, which is cancellation rather than accuracy.
+\subsection*{\textcolor{blue}{Parts 3(d) and 3(e): Asymptotic Diffusion}}
+{\color{blue}
+Every part of this question uses the same relations \eqref{eq:q3relations}, so a part is fixed
+by naming \emph{two} inputs, not one: the relaxation length $\ell$ inside $\cos(x/\ell)$, and
+the boundary closure. Parts (b) and (c) take $\ell = 1/\sqrt{3(c-1)}$; parts (a), (d) and (e)
+take $\ell = |\nu_0|$. Once the theory fixes $\ell$, the closure is the only freedom left.
 
-That reading is confirmed by dropping the shortcut $z_0 = \ell_0$ and imposing $\phi + \ell_0 \phi' = 0$ on the flux shape itself,
+\paragraph{The closure has two encodings.} A boundary condition delivers the ratio
+$\ell_0 = \phi/|\phi'|$ at the surface, but \eqref{eq:q3relations} wants $z_0$, the point where
+the cosine itself vanishes. For $\phi = \cos(x/\ell)$ those are not the same number:
 \begin{equation}
-    B\,\frac{a}{2} = \arctan\!\left(\frac{1}{B \ell_0}\right), \qquad
-    u \cot u = 1 - \frac{u}{B\ell_0}, \quad u = BR \in (0, \pi)
+    \ell_0 = \nu_0 \tan\!\left(\frac{z_0}{\nu_0}\right),
+    \qquad\qquad
+    z_0 = \nu_0 \arctan\!\left(\frac{\ell_0}{\nu_0}\right)
+    \label{eq:l0z0}
 \end{equation}
-against $B a/2 = \pi/2 - B\ell_0$ and $u = \pi - B\ell_0$ for the extrapolated form. Since $\arctan(1/y) = \pi/2 - y + \mathcal{O}(y^3)$ the two agree to first order and coincide as $c \to 1$ ($0.1\,\%$ in the slab at $c = 1.02$), but part company as the system shrinks: at $c = 2$ the Marshak slab gives $a/2 = 0.412$ applied against $0.240$ extrapolated. The applied-condition results lie \emph{above} the transport answer in every case.
+They agree only when $\ell_0 \ll \nu_0$, which is the $c \to 1^+$ limit where $\nu_0$ diverges.
+Writing $z_0 = \ell_0 = 2D$, as parts (b) and (c) do above, is therefore that limit taken
+silently. At $c = 2$ it is worth $72\,\%$ in $a/2$.
+
+\paragraph{Part 3(d).} The asymptotic diffusion coefficient is $D = |1-c|\,\nu_0^2$, so
+\begin{equation}
+    B^2 = \frac{c-1}{D} = \frac{c-1}{(c-1)\nu_0^2} = \frac{1}{\nu_0^2}
+    \qquad\Longrightarrow\qquad
+    \ell = \frac{1}{B} = |\nu_0(c)|
+\end{equation}
+\emph{exactly} --- the coefficient is built so that its buckling is Case's discrete eigenvalue.
+With the exact $z_0$ on top of that, part (d) is part (a) rewritten: same $\ell$, same $z_0$,
+same numbers. It has no independent content.
+
+\paragraph{Part 3(e).} Here the closure is manufactured instead of imported. Ask for the
+$\mu_0(c)$ that makes the half-range first moment of the asymptotic angular flux come out as
+$\int_{-1}^{0}\mu\,\psi_{\text{as}}\,d\mu = \tfrac12\left(\mu_0\phi - J\right)$; setting that
+incoming current to zero gives $\mu_0 \phi = J = D|\phi'|$, so
+\begin{equation}
+    \ell_0 = \frac{D}{\mu_0(c)}
+\end{equation}
+which is Marshak's $2D$ when $\mu_0 = \tfrac12$ and Mark's $\sqrt3 D$ when $\mu_0 = 1/\sqrt3$.
+Using Zimmerman's $\mu_0(c)$ and converting through \eqref{eq:l0z0} gives part (e).
+
+\begin{table}[hbt!]
+    \centering
+    \begin{tabular}{lrrrrrrr}
+        \toprule
+        & & & & \multicolumn{2}{c}{$a/2$} & \multicolumn{2}{c}{$\Sigma_t R_c$} \\
+        \cmidrule(lr){5-6}\cmidrule(lr){7-8}
+        $c$ & $\mu_0$ & $\ell_0$ & $z_0$ & (a) = (d) & (e) & (a) = (d) & (e) \\
+        \midrule
+        1.02 & 0.4951 & 0.6627 & 0.6569 & 5.665517 & 5.705137 & 12.027543 & 12.067164 \\
+        1.05 & 0.4879 & 0.6569 & 0.6428 & 3.300247 & 3.334152 & 7.277162 & 7.311066 \\
+        1.10 & 0.4764 & 0.6477 & 0.6206 & 2.113342 & 2.138792 & 4.872685 & 4.898134 \\
+        1.20 & 0.4553 & 0.6307 & 0.5805 & 1.289814 & 1.301697 & 3.172044 & 3.183928 \\
+        1.30 & 0.4364 & 0.6152 & 0.5455 & 0.938820 & 0.940497 & 2.424794 & 2.426471 \\
+        1.40 & 0.4192 & 0.6012 & 0.5145 & 0.738420 & 0.732339 & 1.985268 & 1.979188 \\
+        1.50 & 0.4036 & 0.5883 & 0.4870 & 0.607617 & 0.595533 & 1.690101 & 1.678017 \\
+        1.60 & 0.3894 & 0.5764 & 0.4623 & 0.515168 & 0.498467 & 1.475898 & 1.459197 \\
+        1.70 & 0.3763 & 0.5655 & 0.4400 & 0.446388 & 0.426017 & 1.312424 & 1.292052 \\
+        1.80 & 0.3642 & 0.5554 & 0.4199 & 0.393144 & 0.369943 & 1.182954 & 1.159753 \\
+        1.90 & 0.3530 & 0.5460 & 0.4015 & 0.350809 & 0.325337 & 1.077671 & 1.052199 \\
+        2.00 & 0.3426 & 0.5372 & 0.3848 & 0.316287 & 0.289081 & 0.990124 & 0.962917 \\
+        \bottomrule
+    \end{tabular}
+    \caption{\textcolor{blue}{Parts 3(d) and 3(e), in mean free paths. $\ell_0$ and $z_0$ are
+    part (e)'s; part (d) uses Case's $z_0$ and is identical to part (a). The manufactured
+    closure tracks the imported one to better than $1\,\%$ up to $c = 1.4$ and drifts to
+    $-8\,\%$ at $c = 2$.}}
+    \label{tab:q3de}
+\end{table}
+
+\begin{notebox}[Why there are so many candidates for $z_0$][blue][coltext=blue]
+$z_0$ is not hard to define --- it is the Milne problem. The trouble is that it is a property of
+the \emph{boundary layer}, which is exactly what an asymptotic or diffusion description throws
+away, so it cannot be derived from inside such a theory. It has to be imported, as in (a) and
+(d), or manufactured from a half-range closure, as in (b), (c) and (e). The four values in play
+are four guesses at what the discarded transients were doing.
+\end{notebox}
+}
+
+\subsection*{Comparison}
+{\color{blue}
+All five parts collected, in mean free paths. Parts (a) and (d) are one column because they are
+the same calculation. Everything here uses the exact $|\nu_0|$ and $z_0$ rather than the fits.
+
+\begin{table}[hbt!]
+    \centering
+    \begin{tabular}{lrrrr}
+        \toprule
+        $c$ & (a) = (d) & (b) Marshak & (c) Mark & (e) $\mu_0$ closure \\
+        \midrule
+        1.02 & 5.6655 & 5.7461 & 5.8354 & 5.7051 \\
+        1.05 & 3.3002 & 3.3891 & 3.4784 & 3.3342 \\
+        1.10 & 2.1133 & 2.2012 & 2.2905 & 2.1388 \\
+        1.20 & 1.2898 & 1.3612 & 1.4505 & 1.3017 \\
+        1.30 & 0.9388 & 0.9891 & 1.0784 & 0.9405 \\
+        1.40 & 0.7384 & 0.7673 & 0.8566 & 0.7323 \\
+        1.50 & 0.6076 & 0.6159 & 0.7052 & 0.5955 \\
+        1.60 & 0.5152 & 0.5041 & 0.5935 & 0.4985 \\
+        1.70 & 0.4464 & 0.4173 & 0.5066 & 0.4260 \\
+        1.80 & 0.3931 & 0.3473 & 0.4366 & 0.3699 \\
+        1.90 & 0.3508 & 0.2893 & 0.3786 & 0.3253 \\
+        2.00 & 0.3163 & 0.2402 & 0.3295 & 0.2891 \\
+        \bottomrule
+    \end{tabular}
+    \caption{\textcolor{blue}{Critical half-thickness $a/2$, parts 3(a)--3(e).}}
+    \label{tab:q3all_slab}
+\end{table}
+
+\begin{table}[hbt!]
+    \centering
+    \begin{tabular}{lrrrr}
+        \toprule
+        $c$ & (a) = (d) & (b) Marshak & (c) Mark & (e) $\mu_0$ closure \\
+        \midrule
+        1.02 & 12.0275 & 12.1588 & 12.2481 & 12.0672 \\
+        1.05 & 7.2772 & 7.4449 & 7.5342 & 7.3111 \\
+        1.10 & 4.8727 & 5.0691 & 5.1584 & 4.8981 \\
+        1.20 & 3.1720 & 3.3891 & 3.4784 & 3.1839 \\
+        1.30 & 2.4248 & 2.6449 & 2.7342 & 2.4265 \\
+        1.40 & 1.9853 & 2.2012 & 2.2905 & 1.9792 \\
+        1.50 & 1.6901 & 1.8984 & 1.9877 & 1.6780 \\
+        1.60 & 1.4759 & 1.6749 & 1.7643 & 1.4592 \\
+        1.70 & 1.3124 & 1.5012 & 1.5906 & 1.2921 \\
+        1.80 & 1.1830 & 1.3612 & 1.4505 & 1.1598 \\
+        1.90 & 1.0777 & 1.2452 & 1.3346 & 1.0522 \\
+        2.00 & 0.9901 & 1.1471 & 1.2364 & 0.9629 \\
+        \bottomrule
+    \end{tabular}
+    \caption{\textcolor{blue}{Critical radius $\Sigma_t R_c$, parts 3(a)--3(e).}}
+    \label{tab:q3all_sphere}
+\end{table}
+
+The two classical errors act in opposite directions and are visible in both tables: $1/B$
+over-estimates the relaxation length, inflating both dimensions, while the constant $z_0$
+over-estimates the extrapolation distance and, being subtracted, deflates them. Since $\ell$ is
+weighted by $\pi$ in the sphere but only $\pi/2$ in the slab, the radius is over-estimated
+throughout, whereas Marshak's $a/2$ crosses the transport value near $c = 1.52$ --- cancellation
+rather than accuracy (Figure~\ref{fig:q3_methods}). The $\mu_0$ closure of part (e) tracks (a)
+to better than $1\,\%$ up to $c = 1.4$ and falls $8\,\%$ short by $c = 2$.
+
+None of these is a transport calculation, (a) included: all five are the extrapolated-endpoint
+relation on an assumed asymptotic flux. \textbf{Assignment 3 Question 5 puts them against a
+converged $S_N$ solve}, which is what settles how good they actually are.
+}
 
 \begin{figure}[hbt!]
     \centering
@@ -321,7 +473,8 @@ against $B a/2 = \pi/2 - B\ell_0$ and $u = \pi - B\ell_0$ for the extrapolated f
     \label{fig:q3_methods}
 \end{figure}
 
-\section{Question 4: Numerical Diffusion Code in Spherical Coordinates}
+\FloatBarrier
+\section*{Question 4: Numerical Diffusion Code in Spherical Coordinates}
 
 {\color{blue}
 
@@ -338,8 +491,7 @@ and finds the radius at which $k = 1$. Dividing the fission source by $k$ makes 
 \end{equation}
 The asymptotic $D$ is the continuation of Question 2's $(1-c)\nu_0^2$ above $c = 1$: both $\nu_0^2$ and $1-c$ change sign, so $D$ stays positive. Its purpose is to give the diffusion equation the true transport relaxation length $|\nu_0|/\Sigma_t$ instead of $1/\sqrt{3(c-1)}$.
 
-\subsection{Discretisation}
-\label{sec:q4_discretisation}
+\subsection*{Discretisation}
 
 Finite volume on $N$ uniform cell-centred shells. Integrating \eqref{eq:q4_sphere} over cell $j$ turns the divergence into a difference of surface currents,
 \begin{equation}
@@ -354,7 +506,7 @@ The outer boundary is the extrapolated zero: the mesh is run out to $R + z_0$ an
     J_s = \frac{D\,\phi_{N-1}}{h/2}
 \end{equation}
 
-\subsection{The Iterative Algorithm}
+\subsection*{The Iterative Algorithm}
 
 $k$ comes from the source iteration of Bell \& Glasstone, pp.~189--192: start from a flat flux and $k = 1$; form $S = \frac{1}{k}\nu\Sigma_f\phi$; solve the removal problem $(-D\nabla^2 + \Sigma_a)\phi^{(n+1)} = S$; update
 \begin{equation}
@@ -362,9 +514,9 @@ $k$ comes from the source iteration of Bell \& Glasstone, pp.~189--192: start fr
 \end{equation}
 and repeat until $|k^{(n+1)} - k^{(n)}| < 10^{-10} k^{(n+1)}$. The flux is renormalised each sweep: its amplitude grows by roughly $k$ per sweep, and over several hundred sweeps the convergence test would otherwise lose its significant digits. This is physically irrelevant, since the ratio is homogeneous in $\phi$.
 
-Convergence is at the dominance ratio $k_1/k_0$, which tends to unity for a large weakly multiplying sphere ($\approx 0.94$ at $c = 1.02$) and is derived in \S\ref{sec:q4_verification}. The critical radius then follows from Brent bisection on $k(R) - 1$, bracketed within $\pm 5\%$ of the analytic radius so that $k$ is never evaluated far from criticality.
+Convergence is at the dominance ratio $k_1/k_0$, which tends to unity for a large weakly multiplying sphere ($\approx 0.94$ at $c = 1.02$) and is derived under \emph{Verification} below. The critical radius then follows from Brent bisection on $k(R) - 1$, bracketed within $\pm 5\%$ of the analytic radius so that $k$ is never evaluated far from criticality.
 
-\subsection{Comparison with the Analytical Result}
+\subsection*{Comparison with the Analytical Result}
 
 At $k = 1$ equation \eqref{eq:q4_sphere} is Helmholtz with $B^2 = (\nu\Sigma_f - \Sigma_a)/D = \Sigma_t(c-1)/D$, and its regular solution $\sin(Br)/r$ vanishes at the extrapolated radius when
 \begin{equation}
@@ -397,8 +549,7 @@ The residual is discretisation error alone, and the scheme is second order: at $
 
 The two approximations differ from each other far more than either differs from its own analytic solution, and the gap is entirely in the relaxation length: classical diffusion gives the larger radius throughout, by $1.1\,\%$ at $c = 1.02$ rising to $14.8\,\%$ at $c = 2$.
 
-\subsection{Verification}
-\label{sec:q4_verification}
+\subsection*{Verification}
 
 Two further checks, independent of the comparison in Table~\ref{tab:q4}.
 
@@ -478,7 +629,7 @@ and the measured fractions reproduce it to every digit shown, identically for bo
 
 }
 
-\section{Question 5: Bare Critical Mass of U-235 and Pu-239}
+\section*{Question 5: Bare Critical Mass of U-235 and Pu-239}
 
 {\color{blue}
 
@@ -520,12 +671,12 @@ These are one-group, isotropic-scattering results, not predictions of real criti
 
 {\color{red}
 
-\section{The Spherical Finite-Volume Scheme in Detail}
+\section*{The Spherical Finite-Volume Scheme in Detail}
 \label{app:fv}
 
-An expansion of \S\ref{sec:q4_discretisation}, following \texttt{src/homework1/spherical.py} line by line: what the mesh looks like, how \texttt{\_banded\_operator} turns it into a matrix, which index means what, and where the boundary conditions and the starting iterate enter.
+An expansion of Question 4's \emph{Discretisation}, following \texttt{src/homework1/spherical.py} line by line: what the mesh looks like, how \texttt{\_banded\_operator} turns it into a matrix, which index means what, and where the boundary conditions and the starting iterate enter.
 
-\subsection{The mesh and its indices}
+\subsection*{The mesh and its indices}
 
 \texttt{\_mesh} builds $N$ uniform cells on $[0, R_{\text{out}}]$ with $h = R_{\text{out}}/N$. Two families of index run over it and they must not be confused:
 
@@ -534,7 +685,7 @@ An expansion of \S\ref{sec:q4_discretisation}, following \texttt{src/homework1/s
     \item \textbf{Cells}, indexed $j = 0,\dots,N-1$ --- there are $N$ of them, cell $j$ spanning $[r_j, r_{j+1}]$, with centre $\bar r_j = (j + \tfrac12)h$ (\texttt{centres}) and volume $V_j = \tfrac{4\pi}{3}(r_{j+1}^3 - r_j^3)$ (\texttt{volumes}), both of length $N$.
 \end{itemize}
 
-Cell $j$ is bounded by face $i = j$ on the inside and face $i = j+1$ on the outside, so the two numberings share their integers. The rule that removes every ambiguity below is: \textbf{a subscript on $A$, $J$ or $C$ is a face; a subscript on $\phi$, $V$ or $S$ is a cell.} Where a relation ties a face to the two cells it separates, the same integer does double duty by construction --- face $i$ has cell $i-1$ immediately inside it and cell $i$ immediately outside. The unknown $\phi_j$ is the average flux over cell $j$; it lives at the centre, not at a face. In the half-index notation of \S\ref{sec:q4_discretisation}, faces $i = j$ and $i = j+1$ are what were written $j - \tfrac12$ and $j + \tfrac12$; the integer form is used here because it is what the code indexes.
+Cell $j$ is bounded by face $i = j$ on the inside and face $i = j+1$ on the outside, so the two numberings share their integers. The rule that removes every ambiguity below is: \textbf{a subscript on $A$, $J$ or $C$ is a face; a subscript on $\phi$, $V$ or $S$ is a cell.} Where a relation ties a face to the two cells it separates, the same integer does double duty by construction --- face $i$ has cell $i-1$ immediately inside it and cell $i$ immediately outside. The unknown $\phi_j$ is the average flux over cell $j$; it lives at the centre, not at a face. In the half-index notation of Question 4's \emph{Discretisation}, faces $i = j$ and $i = j+1$ are what were written $j - \tfrac12$ and $j + \tfrac12$; the integer form is used here because it is what the code indexes.
 
 \begin{figure}[htbp]
 \centering
@@ -555,7 +706,7 @@ Cell $j$ is bounded by face $i = j$ on the inside and face $i = j+1$ on the outs
 \label{fig:mesh}
 \end{figure}
 
-\subsection{From the cell balance to a matrix row}
+\subsection*{From the cell balance to a matrix row}
 
 Rather than assume the balance \eqref{eq:q4_fv}, derive it from \eqref{eq:q4_sphere}: multiply by the volume element $4\pi r^2\,dr$ and integrate across cell $j$, from face $r_j$ to face $r_{j+1}$. The leading term is the one that matters, and the $r^2$ of the volume element is exactly what cancels the $1/r^2$ of the operator:
 \begin{equation}
@@ -581,7 +732,7 @@ Collecting the three gives \eqref{eq:q4_fv}, with the half-indices written as th
     A_{j+1} J_{j+1} - A_j J_j + \Sigma_a V_j \phi_j = S_j V_j
     \label{eq:fv_balance}
 \end{equation}
-Nothing has been approximated yet: this is an exact statement about cell averages and true face currents, for any $N$. \textbf{The discretisation enters only in the next step}, where the face current is replaced by a difference between neighbouring cell centres --- which is also where the second-order accuracy of \S\ref{sec:q4_verification} comes from. With Fick's law between adjacent centres, the current through face $i$ --- which separates cells $i-1$ and $i$, a distance $h$ apart --- is
+Nothing has been approximated yet: this is an exact statement about cell averages and true face currents, for any $N$. \textbf{The discretisation enters only in the next step}, where the face current is replaced by a difference between neighbouring cell centres --- which is also where the second-order accuracy under \emph{Verification} comes from. With Fick's law between adjacent centres, the current through face $i$ --- which separates cells $i-1$ and $i$, a distance $h$ apart --- is
 \begin{equation}
     J_i = -D\,\frac{\phi_i - \phi_{i-1}}{h}
     \qquad\Longrightarrow\qquad
@@ -613,7 +764,7 @@ Expanding the brackets and collecting the three unknowns $\phi_{j-1}$, $\phi_j$,
 So cell $j$ couples to each neighbour through the conductance of the face it \emph{shares} with that neighbour --- $C_j$ to the left, $C_{j+1}$ to the right --- and both of those same two conductances reappear on the diagonal, because every neutron leaving through a face also leaves the cell it came from.
 Each face appears in exactly the two rows it separates, with the same magnitude and opposite sign. That single fact gives the matrix all three of its useful properties: it is tridiagonal, it is symmetric, and it conserves neutrons exactly (\S\ref{app:properties}).
 
-\subsection{The two ends, and why neither needs a branch}
+\subsection*{The two ends, and why neither needs a branch}
 
 \paragraph{The origin.} Face $0$ sits at $r = 0$, so $A_0 = 0$ and therefore $C_0 = 0$. The $\phi_{-1}$ term in \eqref{eq:fv_row} vanishes on its own for cell $j = 0$, and no current crosses the centre. The symmetry condition $\phi'(0) = 0$ is thus imposed \emph{exactly}, by geometry, with no code path of its own --- the reason \texttt{\_banded\_operator} can index a plain array at $j = 0$.
 
@@ -636,7 +787,7 @@ Because $\ell_0$ appears only in the denominator, $\ell_0 = 0$ is not a special 
 
 Note where $C_N$ ends up: on the \emph{diagonal} of the last row only. It removes neutrons from cell $N-1$ without coupling it to anything, which is exactly what leakage out of the system is.
 
-\subsection{The banded storage, index by index}
+\subsection*{The banded storage, index by index}
 
 Both indices of the matrix are cells: $M_{mn}$ couples cell $m$ to cell $n$. \texttt{scipy.linalg.solve\_banded((1, 1), ab, b)} expects it in diagonal-ordered form, meaning
 \begin{equation}
@@ -683,7 +834,7 @@ is stored as
 \end{equation}
 the two $\ast$ entries being the unused corners, left as the zeros \texttt{np.zeros} put there.
 
-\subsection{Two properties to check the assembly against}
+\subsection*{Two properties to check the assembly against}
 \label{app:properties}
 
 \paragraph{Symmetry and definiteness.} $M = M^{\!\top}$ because both off-diagonals are the same array, and the diagonal dominates strictly once $\Sigma_a > 0$ or $C_N > 0$. So $M$ is positive definite, the LU factorisation inside \texttt{solve\_banded} needs no pivoting, and the solve is $O(N)$.
@@ -692,9 +843,9 @@ the two $\ast$ entries being the unused corners, left as the zeros \texttt{np.ze
 \begin{equation}
     M \mathbf{1} = \Sigma_a \mathbf{V} + C_N \mathbf{e}_{N-1}
 \end{equation}
-that is: applied to a flat flux, the operator returns absorption plus surface leakage and nothing else. This is the discrete identity behind the balance check of \S\ref{sec:q4_verification}; it holds by construction rather than by luck, which is why that check probes the boundary coefficient \eqref{eq:CN} and little else.
+that is: applied to a flat flux, the operator returns absorption plus surface leakage and nothing else. This is the discrete identity behind the balance check under \emph{Verification}; it holds by construction rather than by luck, which is why that check probes the boundary coefficient \eqref{eq:CN} and little else.
 
-\subsection{The source, $k$, and what plays the role of an initial condition}
+\subsection*{The source, $k$, and what plays the role of an initial condition}
 
 Being a steady eigenvalue problem, this has no initial condition in the time-dependent sense. What it has instead is a \emph{starting iterate} for the power iteration, and it is worth being clear about which parts of the setup are physics and which are merely a starting guess:
 
