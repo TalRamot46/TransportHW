@@ -5,19 +5,20 @@ import logging
 import numpy as np
 from homework1.materials import BENCHMARK, FISSILE, PROMPT_U235, critical_mass, solve_material
 from homework1.spherical import build_medium, critical_radius, k_eigenvalue
-from homework1.figures import subplots, panel, finish, savefig
+from homework1.figures import (subplots, panel, finish, savefig,
+                               NAVY, RED)
 from homework1.tables import log_section, log_table
 
 logger = logging.getLogger(__name__)
 
 APPROXIMATIONS = ('classical', 'asymptotic')
 LABELS = {'classical': 'Classical', 'asymptotic': 'Asymptotic'}
-COLORS = {'classical': '#2c3e50', 'asymptotic': '#e74c3c'}
+COLORS = {'classical': NAVY, 'asymptotic': RED}
 N_CELLS = 400
 
 def plot_criticality(save_path):
     """k against sphere radius, with the k = 1 crossing that fixes the critical mass."""
-    fig, axes = subplots(1, len(FISSILE), height=5.0)
+    fig, axes = subplots(1, len(FISSILE), height=3.5)
 
     for j, name in enumerate(FISSILE):
         material = BENCHMARK[name]
@@ -34,18 +35,19 @@ def plot_criticality(save_path):
                     label=LABELS[approximation])
             ax.plot([R_c], [1.0], color=COLORS[approximation], marker='o', markersize=7,
                     markerfacecolor='none', markeredgewidth=1.8)
-            ax.annotate(f'$R_c = {R_c:.3f}$ cm,  '
+            ax.annotate(f'{LABELS[approximation]}:  $R_c = {R_c:.3f}$ cm,  '
                         f'$M_c = {critical_mass(R_c, material.density):.2f}$ kg',
-                        xy=(0.03, 0.90 - 0.08 * i), xycoords='axes fraction',
-                        fontsize=9, color=COLORS[approximation])
+                        xy=(0.03, 0.82 - 0.08 * i), xycoords='axes fraction',
+                        fontsize=10, color=COLORS[approximation])
 
         ax.axhline(1.0, color='grey', linestyle=':', linewidth=1.4)
-        panel(ax, f'{name}   ($c = {material.c:.2f}$, '
-                  rf'$\rho = {material.density}$ g/cm$^3$)',
-              'Sphere radius $R$ [cm]', 'Multiplication factor $k$',
-              legend='lower right', fontsize=9)
+        ax.annotate(f'{name}   ($c = {material.c:.2f}$, '
+                    rf'$\rho = {material.density}$ g/cm$^3$)',
+                    xy=(0.03, 0.92), xycoords='axes fraction', fontsize=11)
+        panel(ax, 'Sphere radius $R$ [cm]',
+              'Multiplication factor $k$', legend='lower right')
 
-    finish(fig, 'Question 5: criticality of the bare benchmark spheres')
+    finish(fig)
     savefig(fig, save_path)
 
 def _mass_table():

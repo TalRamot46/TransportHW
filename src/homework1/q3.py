@@ -8,7 +8,8 @@ from homework1.criticality import (critical_dimensions, critical_dimensions_appl
                                    MARSHAK_EXTRAPOLATION, MARK_EXTRAPOLATION,
                                    CASE_TABLE_8_C, CASE_TABLE_8_K0,
                                    CASE_TABLE_23_C, CASE_TABLE_23_CZ0)
-from homework1.figures import subplots, panel, finish, savefig
+from homework1.figures import (subplots, panel, finish, savefig,
+                               NAVY, ORANGE, GREEN, RED, BLUE, PURPLE)
 from homework1.tables import log_section, log_table
 
 logger = logging.getLogger(__name__)
@@ -17,14 +18,16 @@ C_VALUES = (1.02, 1.05, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0)
 C_GRID = np.linspace(1.02, 2.0, 400)
 
 HALF, RADIUS = 2, 3      # indices of a/2 and Sigma_t R_c in the critical_dimensions tuple
-# Index, symbol, panel title, and where the departure panel's legend clears its curves.
-DIMENSIONS = ((HALF, r'$a/2$', 'Critical half-thickness (planar)', 'lower left'),
-              (RADIUS, r'$\Sigma_t R_c$', 'Critical radius (spherical)', 'upper left'))
+# Index, y-label of the dimension, y-label of its departure panel, and where that
+# panel's legend clears its curves.
+DIMENSIONS = ((HALF, r'$a/2$ [mfp]', r'Departure of $a/2$ (%)', 'lower left'),
+              (RADIUS, r'$\Sigma_t R_c$ [mfp]',
+               r'Departure of $\Sigma_t R_c$ (%)', 'upper left'))
 
-METHOD_STYLES = {'transport': ('#2c3e50', '-'),
-                 'marshak': ('#e67e22', '-'),
-                 'mark': ('#27ae60', '-')}
-APPLIED_STYLES = {'marshak': ('#e67e22', ':'), 'mark': ('#27ae60', ':')}
+METHOD_STYLES = {'transport': (NAVY, '-'),
+                 'marshak': (ORANGE, '-'),
+                 'mark': (GREEN, '-')}
+APPLIED_STYLES = {'marshak': (ORANGE, ':'), 'mark': (GREEN, ':')}
 
 def _draw(ax, c, curves):
     """Plots a list of (values, label, color, linestyle) on one axis."""
@@ -43,31 +46,28 @@ def plot_critical_dimensions(save_path):
 
     fig, axes = subplots(2, 2)
 
-    for column, (index, symbol, title, _) in enumerate(DIMENSIONS):
+    for column, (index, ylabel, _, _legend) in enumerate(DIMENSIONS):
         _draw(axes[0][column], C_GRID, [
-            (ref[index], r'exact $|\nu_0|$, tabulated $z_0$', '#2c3e50', '-'),
-            (fit[index], r'fit, $q = -0.0199$', '#e74c3c', '--'),
-            (alt[index], r'fit, $q = +0.0199$', '#3498db', ':')])
-        panel(axes[0][column], title, '$c$', f'{symbol} [mean free paths]',
-              log=True, legend='upper right')
+            (ref[index], r'exact $|\nu_0|$, tabulated $z_0$', NAVY, '-'),
+            (fit[index], r'fit, $q = -0.0199$', RED, '--'),
+            (alt[index], r'fit, $q = +0.0199$', BLUE, ':')])
+        panel(axes[0][column], '$c$', ylabel, log=True, legend='upper right')
 
     _draw(axes[1][0], C_GRID, [
-        (_error(fit[0], ref[0]), r'$|\nu_0|$: fit vs. root', '#8e44ad', '-'),
-        (_error(fit[1], ref[1]), r'$z_0$: $q = -0.0199$ vs. Table 23', '#e74c3c', '--'),
+        (_error(fit[0], ref[0]), r'$|\nu_0|$: fit vs. root', PURPLE, '-'),
+        (_error(fit[1], ref[1]), r'$z_0$: $q = -0.0199$ vs. Table 23', RED, '--'),
         (_error(extrapolation_distance(C_GRID, 0.0199), ref[1]),
-         r'$z_0$: $q = +0.0199$ vs. Table 23', '#3498db', ':')])
-    panel(axes[1][0], 'Error of the approximate inputs', '$c$', 'Relative error (%)',
-          log=True, legend='upper left')
+         r'$z_0$: $q = +0.0199$ vs. Table 23', BLUE, ':')])
+    panel(axes[1][0], '$c$', 'Relative error (%)', log=True, legend='lower right')
 
     _draw(axes[1][1], C_GRID, [
-        (_error(fit[HALF], ref[HALF]), r'$a/2$, $q = -0.0199$', '#e74c3c', '--'),
-        (_error(fit[RADIUS], ref[RADIUS]), r'$\Sigma_t R_c$, $q = -0.0199$', '#c0392b', '-'),
-        (_error(alt[HALF], ref[HALF]), r'$a/2$, $q = +0.0199$', '#3498db', ':'),
-        (_error(alt[RADIUS], ref[RADIUS]), r'$\Sigma_t R_c$, $q = +0.0199$', '#2980b9', '-.')])
-    panel(axes[1][1], 'Error induced in the critical dimensions', '$c$',
-          'Relative error (%)', log=True, legend='upper left')
+        (_error(fit[HALF], ref[HALF]), r'$a/2$, $q = -0.0199$', RED, '--'),
+        (_error(fit[RADIUS], ref[RADIUS]), r'$\Sigma_t R_c$, $q = -0.0199$', ORANGE, '-'),
+        (_error(alt[HALF], ref[HALF]), r'$a/2$, $q = +0.0199$', BLUE, ':'),
+        (_error(alt[RADIUS], ref[RADIUS]), r'$\Sigma_t R_c$, $q = +0.0199$', GREEN, '-.')])
+    panel(axes[1][1], '$c$', 'Relative error (%)', log=True, legend='upper left')
 
-    finish(fig, 'Question 3: critical dimensions from the transport relations')
+    finish(fig)
     savefig(fig, save_path)
 
 def plot_method_comparison(save_path):
@@ -78,14 +78,13 @@ def plot_method_comparison(save_path):
 
     fig, axes = subplots(2, 2)
 
-    for column, (index, symbol, title, legend) in enumerate(DIMENSIONS):
+    for column, (index, ylabel, departure, legend) in enumerate(DIMENSIONS):
         _draw(axes[0][column], C_GRID,
               [(dimensions[m][index], METHOD_LABELS[m], *METHOD_STYLES[m])
                for m in METHOD_STYLES]
               + [(applied[m][column], f'{METHOD_LABELS[m]}, BC applied', *APPLIED_STYLES[m])
                  for m in APPLIED_STYLES])
-        panel(axes[0][column], title, '$c$', f'{symbol} [mean free paths]',
-              log=True, legend='upper right')
+        panel(axes[0][column], '$c$', ylabel, log=True, legend='upper right')
 
         # Signed departure from transport, so over- and under-estimation are distinct.
         reference = dimensions['transport'][index]
@@ -95,11 +94,10 @@ def plot_method_comparison(save_path):
               + [((applied[m][column] - reference) / reference * 100.0,
                   f'{METHOD_LABELS[m]}, BC applied', *APPLIED_STYLES[m])
                  for m in APPLIED_STYLES])
-        axes[1][column].axhline(0.0, color='#2c3e50', linewidth=1.2)
-        panel(axes[1][column], f'Departure from exact transport, {symbol}', '$c$',
-              'Relative difference (\\%)', legend=legend)
+        axes[1][column].axhline(0.0, color=NAVY, linewidth=1.2)
+        panel(axes[1][column], '$c$', departure, legend=legend)
 
-    finish(fig, 'Question 3: exact transport vs. Marshak and Mark diffusion')
+    finish(fig)
     savefig(fig, save_path)
 
 def plot_extrapolation_distance(save_path):
@@ -108,17 +106,16 @@ def plot_extrapolation_distance(save_path):
     # tabulated product climbs to 1; this window keeps the near-critical structure legible.
     c = np.linspace(0.5, CASE_TABLE_23_C[-1], 600)
 
-    fig, axes = subplots(1, 1, width=7.5, height=5.0)
+    fig, axes = subplots(1, 1, width=5.3, height=3.5)
     ax = axes[0][0]
-    ax.plot(CASE_TABLE_23_C, CASE_TABLE_23_CZ0, 'o', color='#2c3e50',
+    ax.plot(CASE_TABLE_23_C, CASE_TABLE_23_CZ0, 'o', color=NAVY,
             markersize=5, label='Case et al., Table 23')
-    _draw(ax, c, [(c * extrapolation_distance(c, -0.0199), 'fit, $q = -0.0199$', '#e74c3c', '--'),
-                  (c * extrapolation_distance(c, +0.0199), 'fit, $q = +0.0199$', '#3498db', ':')])
+    _draw(ax, c, [(c * extrapolation_distance(c, -0.0199), 'fit, $q = -0.0199$', RED, '--'),
+                  (c * extrapolation_distance(c, +0.0199), 'fit, $q = +0.0199$', BLUE, ':')])
     ax.axhline(0.710446, color='#7f8c8d', linewidth=1.0, alpha=0.8)
     ax.set_xlim(0.5, 3.0)
     ax.set_ylim(0.700, 0.726)
-    panel(ax, 'Extrapolation distance: fit vs. tabulated values', '$c$', '$c\\,z_0(c)$',
-          legend='upper right', fontsize=9)
+    panel(ax, '$c$', r'$c\,z_0(c)$', legend='upper right')
 
     finish(fig)
     savefig(fig, save_path)

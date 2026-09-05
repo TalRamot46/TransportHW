@@ -10,6 +10,16 @@ The reports are the user's own write-ups. Additions to them go in
 `homework2.tex`, so they can be reviewed before being accepted. Do not restructure or
 reword the surrounding text.
 
+**Blue is unreviewed, green is accepted.** When the user says an addition has been read,
+recolour it to `green!55!black`; blue is then free to mean "new since last time".
+
+**One colour span per paragraph, wrapping the whole block.** Write
+`{\color{blue} ... entire paragraph ... }`, not a `\textcolor{blue}{...}` around each
+altered phrase. The user deletes these markers by hand after reviewing, and a paragraph
+sprinkled with half a dozen of them is painful to clean up. The same goes for a notebox:
+colour it with the `[green!55!black][coltext=green!55!black]` arguments rather than
+wrapping fragments inside it, which also survives the page break a breakable box may take.
+
 ## Code style
 
 These are the user's standing preferences. They apply to every file written here.

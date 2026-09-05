@@ -19,6 +19,7 @@ was removed and why, and what was verified.
 | [06](06-materials-and-data.md) | The Benchmark Data | The two U-235 rows, and the self-check that guards the table. |
 | [07](07-removed-code.md) | Removed Code and False Trails | Three solvers and one boundary option that no longer exist, and two dead ends not worth re-running. |
 | [08](08-verification.md) | Verification | Every check, in one place, with the number it produced. |
+| [09](09-figure-style.md) | The Figure Style | Why the panel sizes read backwards, and where a title's text went. |
 
 Nothing here re-derives the report. Where a physical result is needed it is cited by its
 section or equation number in `homework1.tex`.

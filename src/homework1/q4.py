@@ -3,10 +3,12 @@
 import os
 import logging
 import numpy as np
+from matplotlib.ticker import NullFormatter, ScalarFormatter
 from homework1.spherical import (build_medium, buckling, k_eigenvalue, critical_radius,
                                  analytic_critical_radius, mesh_convergence,
                                  dominance_ratio, neutron_balance)
-from homework1.figures import subplots, panel, finish, savefig
+from homework1.figures import (subplots, panel, case_label, finish, savefig,
+                               NAVY, RED, BLUE, PURPLE)
 from homework1.tables import log_section, log_table
 
 logger = logging.getLogger(__name__)
@@ -15,7 +17,7 @@ C_VALUES = (1.02, 1.05, 1.1, 1.2, 1.4, 1.5, 1.6, 1.8, 2.0)
 PROFILE_C = (1.05, 1.5, 2.0)
 APPROXIMATIONS = ('classical', 'asymptotic')
 LABELS = {'classical': 'Classical', 'asymptotic': 'Asymptotic'}
-COLORS = ('#2c3e50', '#e74c3c', '#3498db')
+COLORS = (NAVY, RED, BLUE)
 N_CELLS = 400
 
 def _radii(c_values, approximation, n_cells=N_CELLS):
@@ -33,23 +35,23 @@ def plot_critical_radius(save_path):
         numerical, analytic = _radii(c, approximation)
 
         axes[0][j].plot(c, analytic, label=r'analytic, $\pi / B - z_0$',
-                        color='#2c3e50', linewidth=2.6)
+                        color=NAVY, linewidth=2.6)
         axes[0][j].plot(c, numerical, label=f'numerical, $k = 1$ ({N_CELLS} cells)',
-                        color='#e74c3c', linestyle='none', marker='o', markersize=5,
+                        color=RED, linestyle='none', marker='o', markersize=5,
                         markerfacecolor='none', markeredgewidth=1.4)
-        panel(axes[0][j], f'{LABELS[approximation]} diffusion', '$c$',
-              r'$\Sigma_t R_c$ [mean free paths]', log=True, legend='upper right')
+        case_label(axes[0][j], f'{LABELS[approximation]} diffusion', xy=(0.35, 0.45))
+        panel(axes[0][j], '$c$', r'$\Sigma_t R_c$ [mfp]', log=True, legend='upper right')
 
         axes[1][j].plot(c, np.abs(numerical - analytic) / analytic * 100.0,
-                        color='#8e44ad', linewidth=2.0, marker='o', markersize=4)
-        panel(axes[1][j], None, '$c$', 'Relative difference (%)', log=True)
+                        color=PURPLE, linewidth=2.0, marker='o', markersize=4)
+        panel(axes[1][j], '$c$', 'Numerical vs. analytic (%)', log=True)
 
-    finish(fig, 'Question 4: critical radius from the $k = 1$ search vs. analytic')
+    finish(fig)
     savefig(fig, save_path)
 
 def plot_mesh_convergence(save_path):
     """Relative error of the critical radius against mesh refinement, expected 1/N^2."""
-    fig, axes = subplots(1, 2, height=5.0)
+    fig, axes = subplots(1, 2, height=3.5)
 
     for j, approximation in enumerate(APPROXIMATIONS):
         for c, color in zip(PROFILE_C, COLORS):
@@ -57,15 +59,21 @@ def plot_mesh_convergence(save_path):
             axes[0][j].loglog(cells, errors, marker='o', color=color, label=f'$c = {c}$')
         axes[0][j].loglog(cells, errors[0] * (cells[0] / cells)**2, 'k--',
                           alpha=0.6, label=r'$\propto N^{-2}$')
-        panel(axes[0][j], f'{LABELS[approximation]} diffusion', 'Number of cells $N$',
-              'Relative error of $R_c$', legend='lower left')
+        # Under two decades matplotlib labels the minor ticks too, which collide; the
+        # cell counts themselves are the informative ticks here.
+        axes[0][j].set_xticks(cells)
+        axes[0][j].xaxis.set_major_formatter(ScalarFormatter())
+        axes[0][j].xaxis.set_minor_formatter(NullFormatter())
+        case_label(axes[0][j], f'{LABELS[approximation]} diffusion', xy=(0.35, 0.97))
+        panel(axes[0][j], 'Number of cells $N$', 'Error of $R_c$',
+              legend='lower left')
 
-    finish(fig, 'Question 4: mesh convergence of the critical radius')
+    finish(fig)
     savefig(fig, save_path)
 
 def plot_flux_profiles(save_path):
     """Converged critical flux against the fundamental mode sin(Br)/Br, normalised at r = 0."""
-    fig, axes = subplots(1, 2, height=5.0)
+    fig, axes = subplots(1, 2, height=3.5)
 
     for j, approximation in enumerate(APPROXIMATIONS):
         for c, color in zip(PROFILE_C, COLORS):
@@ -82,11 +90,11 @@ def plot_flux_profiles(save_path):
                             linewidth=1.4, alpha=0.8, label=f'$c = {c}$, $\\sin(Br)/Br$')
 
         axes[0][j].axvline(1.0, color='grey', linestyle=':', linewidth=1.2)
-        panel(axes[0][j], f'{LABELS[approximation]} diffusion',
-              '$r / R_c$   (the mesh runs out to $R_c + z_0$)',
-              r'$\phi(r) / \phi(0)$', legend='lower left', fontsize=7)
+        case_label(axes[0][j], f'{LABELS[approximation]} diffusion')
+        panel(axes[0][j], '$r / R_c$   (the mesh runs out to $R_c + z_0$)',
+              r'$\phi(r) / \phi(0)$', legend='lower left', fontsize=9)
 
-    finish(fig, 'Question 4: critical flux shape vs. the fundamental mode')
+    finish(fig)
     savefig(fig, save_path)
 
 def _radius_table():

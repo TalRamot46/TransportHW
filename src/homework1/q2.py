@@ -4,60 +4,66 @@ import os
 import numpy as np
 from homework1.diffusion import (phi_diffusion_analytic, solve_diffusion_shooting,
                                  absorption_balance, convergence_study)
-from homework1.figures import subplots, panel, finish, savefig
+from homework1.figures import (subplots, panel, case_label, finish, savefig,
+                               NAVY, RED, BLUE)
 from homework1.tables import log_section, log_table
 
 C_VALUES = (0.5, 0.7, 0.9)
 APPROXIMATIONS = ('classical', 'asymptotic')
 LABELS = {'classical': 'Classical', 'asymptotic': 'Asymptotic'}
 XLABEL = '$x$ [mean free paths]'
-NUMERICAL = dict(color='#e74c3c', linestyle='--', linewidth=1.8)
+# Which of the six panels this is: the approximation of its column, the c of its row.
+CASE = {(a, c): f'{LABELS[a]} diffusion,  $c = {c}$'
+        for a in APPROXIMATIONS for c in C_VALUES}
+NUMERICAL = dict(color=RED, linestyle='--', linewidth=1.8)
 
 def plot_solution_comparison(save_path):
     """Numerical solution against the analytic Green's function, one panel per case."""
-    fig, axes = subplots(len(C_VALUES), len(APPROXIMATIONS), height=3.5)
+    fig, axes = subplots(len(C_VALUES), len(APPROXIMATIONS), height=2.5)
 
     for i, c in enumerate(C_VALUES):
         for j, approximation in enumerate(APPROXIMATIONS):
             x, phi = solve_diffusion_shooting(c, approximation)
             axes[i][j].plot(x, phi_diffusion_analytic(x, c, approximation),
-                            label='Analytic', color='#2c3e50', linewidth=2.5)
+                            label='Analytic', color=NAVY, linewidth=2.5)
             axes[i][j].plot(x, phi, label='Shooting solver', **NUMERICAL)
-            panel(axes[i][j], f'{LABELS[approximation]} diffusion, $c = {c}$',
-                  XLABEL, 'Scalar flux', log=True, legend='upper right')
+            case_label(axes[i][j], CASE[approximation, c], xy=(0.03, 0.20))
+            panel(axes[i][j], XLABEL, r'Scalar flux $\phi$', log=True,
+                  legend='upper right')
 
-    finish(fig, "Question 2: numerical solver vs. analytic Green's function")
+    finish(fig)
     savefig(fig, save_path)
 
 def plot_error_profiles(save_path):
     """Relative error across the domain; the radiation condition keeps it flat."""
-    fig, axes = subplots(len(C_VALUES), len(APPROXIMATIONS), height=3.5)
+    fig, axes = subplots(len(C_VALUES), len(APPROXIMATIONS), height=2.5)
 
     for i, c in enumerate(C_VALUES):
         for j, approximation in enumerate(APPROXIMATIONS):
             x, phi = solve_diffusion_shooting(c, approximation)
             analytic = phi_diffusion_analytic(x, c, approximation)
             axes[i][j].plot(x, np.abs(phi - analytic) / analytic * 100.0, **NUMERICAL)
-            panel(axes[i][j], f'{LABELS[approximation]} diffusion, $c = {c}$',
-                  XLABEL, 'Relative error (%)', log=True)
+            case_label(axes[i][j], CASE[approximation, c], xy=(0.03, 0.35))
+            panel(axes[i][j], XLABEL, 'Relative error (%)', log=True)
 
-    finish(fig, 'Question 2: relative error of the numerical solver')
+    finish(fig)
     savefig(fig, save_path)
 
 def plot_convergence(save_path):
     """Error against integrator tolerance: a shooting method has no mesh to refine."""
-    fig, axes = subplots(1, len(APPROXIMATIONS), height=5.0)
-    colors = ['#2c3e50', '#e74c3c', '#3498db']
+    fig, axes = subplots(1, len(APPROXIMATIONS), height=3.5)
+    colors = (NAVY, RED, BLUE)
 
     for j, approximation in enumerate(APPROXIMATIONS):
         for c, color in zip(C_VALUES, colors):
             rtols, errors = convergence_study(c, approximation)
             axes[0][j].loglog(rtols, errors, marker='o', color=color, label=f'$c = {c}$')
         axes[0][j].loglog(rtols, rtols, 'k--', alpha=0.6, label='error = rtol')
-        panel(axes[0][j], f'{LABELS[approximation]} diffusion',
-              'Integrator relative tolerance', 'Relative $L_2$ error', legend='upper left')
+        case_label(axes[0][j], f'{LABELS[approximation]} diffusion', xy=(0.45, 0.30))
+        panel(axes[0][j], 'Integrator relative tolerance', '$L_2$ error',
+              legend='upper left')
 
-    finish(fig, 'Question 2: tolerance convergence of the shooting solver')
+    finish(fig)
     savefig(fig, save_path)
 
 def report(figs):

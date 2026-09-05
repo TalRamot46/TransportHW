@@ -5,15 +5,16 @@ import numpy as np
 from homework1.exact_solution import (compute_nu0_numerical, compute_nu0_approx,
                                       phi_asymptotic, phi_transient)
 from homework1.diffusion import phi_diffusion_analytic, solve_diffusion_shooting
-from homework1.figures import make_grid, panel, finish, savefig
+from homework1.figures import (make_grid, panel, case_label, finish, savefig,
+                               NAVY, ORANGE, GREEN, RED, BLUE)
 from homework1.tables import log_section, log_table
 
 C_VALUES = (0.0, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95)
 X = np.linspace(1e-3, 5.0, 500)
 XLABEL = '$x$ [mean free paths]'
 
-DIFFUSION_COLORS = {'classical': '#e67e22', 'asymptotic': '#2ecc71'}
-DIFFUSION_LABELS = {'classical': 'Classical diff.', 'asymptotic': 'Asymptotic diff.'}
+DIFFUSION_COLORS = {'classical': ORANGE, 'asymptotic': GREEN}
+DIFFUSION_LABELS = {'classical': 'Classical', 'asymptotic': 'Asymptotic'}
 
 def _components(c, method):
     """(asymptotic, transient, exact) scalar flux on the X grid."""
@@ -38,15 +39,16 @@ def plot_flux_components(method, save_path):
 
     for ax, c in zip(axes, C_VALUES):
         phi_as, phi_tr, phi = _components(c, method)
-        ax.plot(X, phi, label=r'$\phi$ (exact)', color='#2c3e50', linewidth=2.0)
+        ax.plot(X, phi, label=r'$\phi$ (exact)', color=NAVY, linewidth=2.0)
         if c > 0.0:
-            ax.plot(X, phi_as, label=r'$\phi_{as}$', color='#e74c3c',
+            ax.plot(X, phi_as, label=r'$\phi_{as}$', color=RED,
                     linestyle='--', linewidth=1.8)
-        ax.plot(X, phi_tr, label=r'$\phi_{tr}$', color='#3498db',
+        ax.plot(X, phi_tr, label=r'$\phi_{tr}$', color=BLUE,
                 linestyle=':', linewidth=1.8)
-        panel(ax, f'$c = {c}$', XLABEL, 'Scalar flux', log=True, legend='upper right')
+        case_label(ax, f'$c = {c}$')
+        panel(ax, XLABEL, r'Scalar flux $\phi$', log=True, legend='upper right')
 
-    finish(fig, f'Scalar flux components ({method})')
+    finish(fig)
     savefig(fig, save_path)
 
 def plot_relative_contributions(method, save_path):
@@ -55,12 +57,13 @@ def plot_relative_contributions(method, save_path):
 
     for ax, c in zip(axes, C_VALUES):
         phi_as, phi_tr, phi = _components(c, method)
-        ax.plot(X, phi_as / phi, label=r'$\phi_{as} / \phi$', color='#e74c3c', linewidth=2.0)
-        ax.plot(X, phi_tr / phi, label=r'$\phi_{tr} / \phi$', color='#3498db', linewidth=2.0)
+        ax.plot(X, phi_as / phi, label=r'$\phi_{as} / \phi$', color=RED, linewidth=2.0)
+        ax.plot(X, phi_tr / phi, label=r'$\phi_{tr} / \phi$', color=BLUE, linewidth=2.0)
         ax.set_ylim(-0.05, 1.05)
-        panel(ax, f'$c = {c}$', XLABEL, 'Relative contribution', legend='center right')
+        case_label(ax, f'$c = {c}$', xy=(0.35, 0.62))
+        panel(ax, XLABEL, r'Fraction of $\phi$', legend='center right')
 
-    finish(fig, f'Relative contributions of the components ({method})')
+    finish(fig)
     savefig(fig, save_path)
 
 def plot_diffusion_comparison(method, save_path):
@@ -68,36 +71,35 @@ def plot_diffusion_comparison(method, save_path):
     fig, axes = make_grid(len(C_VALUES))
 
     for ax, c in zip(axes, C_VALUES):
-        ax.plot(X, _components(c, method)[2], label=r'$\phi$ (exact transport)',
-                color='#2c3e50', linewidth=2.4)
+        ax.plot(X, _components(c, method)[2], label='Exact transport',
+                color=NAVY, linewidth=2.4)
         for approximation, (analytic, numerical) in _diffusion_solutions(c, method).items():
             color, label = DIFFUSION_COLORS[approximation], DIFFUSION_LABELS[approximation]
-            ax.plot(X, analytic, label=f'{label} (analytic)', color=color, linewidth=1.6)
-            ax.plot(X, numerical, label=f'{label} (numerical)', color=color,
+            ax.plot(X, analytic, label=f'{label}, analytic', color=color, linewidth=1.6)
+            ax.plot(X, numerical, label=f'{label}, numerical', color=color,
                     linestyle='--', linewidth=2.4, alpha=0.6)
-        panel(ax, f'$c = {c}$', XLABEL, 'Scalar flux', log=True, legend='upper right')
+        case_label(ax, f'$c = {c}$', xy=(0.03, 0.20))
+        panel(ax, XLABEL, r'Scalar flux $\phi$', log=True, legend='upper right',
+              fontsize=9)
 
-    finish(fig, f'Exact transport vs. diffusion ({method})')
+    finish(fig)
     savefig(fig, save_path)
 
 def plot_diffusion_errors(method, save_path):
-    """Error of each approximation against exact transport (1d) and against its own
-    closed form (the solver check of Question 2). The two differ by orders of magnitude."""
+    """Error of each diffusion approximation, in its closed form, against exact transport:
+    the modelling error asked for in 1d. The solver's own error is Figure q2_error_profiles."""
     fig, axes = make_grid(len(C_VALUES))
 
     for ax, c in zip(axes, C_VALUES):
         exact = _components(c, method)[2]
-        for approximation, (analytic, numerical) in _diffusion_solutions(c, method).items():
-            color, label = DIFFUSION_COLORS[approximation], DIFFUSION_LABELS[approximation]
-            ax.plot(X, np.abs(numerical - exact) / exact * 100.0,
-                    label=f'{label}: vs. exact', color=color, linewidth=2.0)
-            ax.plot(X, np.abs(numerical - analytic) / analytic * 100.0,
-                    label=f'{label}: vs. analytic', color=color,
-                    linestyle=':', linewidth=1.8)
-        panel(ax, f'$c = {c}$', XLABEL, 'Relative error (%)', log=True,
-              legend='center right', fontsize=7.5)
+        for approximation, (analytic, _) in _diffusion_solutions(c, method).items():
+            ax.plot(X, np.abs(analytic - exact) / exact * 100.0,
+                    label=f'{DIFFUSION_LABELS[approximation]} diffusion',
+                    color=DIFFUSION_COLORS[approximation], linewidth=2.0)
+        case_label(ax, f'$c = {c}$')
+        panel(ax, XLABEL, 'Relative error (%)', log=True, legend='lower right')
 
-    finish(fig, f'Relative error of the diffusion approximations ({method})')
+    finish(fig)
     savefig(fig, save_path)
 
 def report(figs):
