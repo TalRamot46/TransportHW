@@ -15,6 +15,8 @@ def compute_nu0_numerical(c):
     if c >= 1.0:
         raise ValueError("nu0 is real only for c < 1.")
 
+    # The root is sought in k0 = 1/nu0, which lives in [0, 1); nu0 itself is unbounded and
+    # has no finite bracket. The k0 = 0 value is the removable limit arctanh(k0)/k0 -> 1.
     def f(k0):
         return 1.0 - 1.0 / c if k0 == 0.0 else np.arctanh(k0) / k0 - 1.0 / c
 
@@ -32,7 +34,7 @@ def compute_nu0(c, method='numerical'):
     """nu0 by the requested route, 'numerical' or 'approx'."""
     return compute_nu0_numerical(c) if method == 'numerical' else compute_nu0_approx(c)
 
-def compute_nu0_magnitude_numerical(c):
+def compute_k0_numerical(c):
     """|nu0| for c > 1 from the root of c arctan(k0) = k0; see report §3."""
     if c <= 1.0:
         raise ValueError("The imaginary eigenvalue branch requires c > 1.")
@@ -44,17 +46,17 @@ def compute_nu0_magnitude_numerical(c):
 
     return 1.0 / brentq(f, 1e-12, c * np.pi / 2.0, xtol=1e-15, rtol=8.9e-16)
 
-def compute_nu0_magnitude_approx(c):
+def compute_k0_approx(c):
     """|nu0| for c > 1 from the same fit, whose radicand turns negative there."""
     if c <= 1.0:
         raise ValueError("The imaginary eigenvalue branch requires c > 1.")
     return 1.0 / np.sqrt(c**_fit_exponent(c) - 1.0)
 
-def compute_nu0_magnitude(c, method='approx'):
+def compute_k0(c, method='approx'):
     """|nu0| for c > 1 by the requested route, 'numerical' or 'approx'."""
     if method == 'numerical':
-        return compute_nu0_magnitude_numerical(c)
-    return compute_nu0_magnitude_approx(c)
+        return compute_k0_numerical(c)
+    return compute_k0_approx(c)
 
 def compute_N0_plus(c, nu0):
     """Normalisation of the discrete mode, N0+."""

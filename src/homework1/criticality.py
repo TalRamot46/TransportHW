@@ -2,7 +2,7 @@
 
 import numpy as np
 from scipy.optimize import brentq
-from homework1.exact_solution import compute_nu0_magnitude
+from homework1.exact_solution import compute_k0
 
 HOPF_CONSTANT = 0.710446           # extrapolation distance of the c = 1 Milne problem
 Z0_FIT_CORRECTION = -0.0199        # quadratic coefficient q as printed; report §3
@@ -48,7 +48,7 @@ def _relaxation_length(c, source):
     if source == 'diffusion':
         return diffusion_relaxation_length(c)
     method = {'fit': 'approx', 'exact': 'numerical'}[source]
-    return np.array([compute_nu0_magnitude(float(ci), method=method)
+    return np.array([compute_k0(float(ci), method=method)
                      for ci in np.atleast_1d(c)])
 
 def _z0(c, source):

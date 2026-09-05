@@ -1,8 +1,8 @@
 """Figure helpers for this report: Assignment 4's plot styling.
 
-Assignment 4's look, adopted here: serif text, no titles anywhere (the caption carries
-them), ticks turned inwards on all four sides, a light solid grid behind the data, and a
-transparent save. Mathtext stays on the sans set, so symbols read a little lighter than
+Assignment 4's look, adopted here: serif text, no panel titles (the caption carries them,
+and `column_title` is the one exception, for grid headers), ticks turned inwards on all
+four sides, a light solid grid behind the data, and a transparent save. Mathtext stays on the sans set, so symbols read a little lighter than
 the words around them; switch mathtext.fontset to 'cm' to match Assignment 4 exactly.
 """
 
@@ -58,6 +58,14 @@ def two_over_one(width=PANEL_WIDTH, height=PANEL_HEIGHT):
     grid = fig.add_gridspec(2, 2)
     return fig, (fig.add_subplot(grid[0, 0]), fig.add_subplot(grid[0, 1]),
                  fig.add_subplot(grid[1, :]))
+
+def column_title(ax, text):
+    """A column header on the top panel of a grid: the one title the style allows.
+
+    A grid whose columns differ by one variable would otherwise have to repeat that
+    variable in every y-label, which is what it is here to avoid.
+    """
+    ax.set_title(text, fontsize=LABEL_SIZE, pad=8)
 
 def panel(ax, xlabel=None, ylabel=None, log=False, legend=None, fontsize=LEGEND_SIZE):
     """Applies the shared panel styling. No title: the report caption carries it."""

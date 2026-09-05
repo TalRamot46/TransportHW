@@ -12,7 +12,7 @@ See report §3.1 and §3.2.1; the code side is explanations/03.
 """
 
 import numpy as np
-from homework1.exact_solution import compute_nu0_numerical, compute_nu0_magnitude_numerical
+from homework1.exact_solution import compute_nu0_numerical, compute_k0_numerical
 
 # Slab-geometry classical value, D = 1/(3 Sigma_t).
 D_CLASSICAL = 1.0 / 3.0
@@ -27,7 +27,7 @@ def nu0_squared(c):
     if c < 1.0:
         return compute_nu0_numerical(c) ** 2
     if c > 1.0:
-        return -compute_nu0_magnitude_numerical(c) ** 2
+        return -compute_k0_numerical(c) ** 2
     return np.inf
 
 def diffusion_coefficient(c, approximation="classical"):

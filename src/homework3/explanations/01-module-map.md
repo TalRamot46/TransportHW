@@ -69,7 +69,8 @@ all to `sn/core.py`, and it is the seam to use for any further geometry.
 Shallower, because there is nothing to iterate:
 
     reflected.region              (material, theory) -> Region
-      <- reflected._residual      the interface balance, report eq. (4)
+      <- reflected._continuous    report eq. (8), theories (a) and (b)
+      <- reflected._fixed         report eq. (13), theory (c)
       <- reflected.critical_radius  brentq on (0, pi/k0)
       <- q1.report                tables + figures
 

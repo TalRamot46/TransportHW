@@ -7,7 +7,7 @@ from scipy.linalg import solve_banded
 from scipy.optimize import brentq
 
 from homework1.criticality import extrapolation_distance
-from homework1.exact_solution import compute_nu0_magnitude
+from homework1.exact_solution import compute_k0
 
 @dataclass(frozen=True)
 class SphericalMedium:
@@ -39,7 +39,7 @@ def build_medium(sigma_t, sigma_a, nu_sigma_f, approximation='classical'):
             raise ValueError("The asymptotic approximation needs c > 1 here.")
         # D = (c-1)|nu0|^2 is the continuation above c = 1 of Question 2's
         # D = (1-c) nu0^2; both factors flip sign. See report §1.
-        D = (c - 1.0) * compute_nu0_magnitude(c, method='numerical')**2 / sigma_t
+        D = (c - 1.0) * compute_k0(c, method='numerical')**2 / sigma_t
         z0 = float(extrapolation_distance(c)) / sigma_t
         return SphericalMedium(D, sigma_a, nu_sigma_f, z0=z0, c=c)
     raise ValueError("approximation must be 'classical' or 'asymptotic'")

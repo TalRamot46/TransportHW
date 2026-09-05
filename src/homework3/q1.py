@@ -6,7 +6,8 @@ import logging
 from homework1.materials import BENCHMARK, FISSILE, critical_mass
 from homework1.spherical import build_medium, analytic_critical_radius
 from homework1.tables import log_section, log_table
-from homework3.figures import subplots, two_over_one, panel, finish, savefig
+from homework3.figures import (subplots, two_over_one, panel, column_title,
+                               finish, savefig)
 from homework3 import reflected
 
 logger = logging.getLogger(__name__)
@@ -85,8 +86,11 @@ def plot_radii(tables, save_path):
                 ax.axhline(bare_radius(core, theory), color=COLORS[theory], linestyle=style,
                            linewidth=1.4, alpha=0.8,
                            label=f'bare, {reflected.THEORY_LABELS[theory].lower()}')
+            # The core is named once per column instead of in all three y-labels.
             panel(ax, 'Reflector thickness $d$ [mfp]',
-                  f'{core_name} + {REFLECTOR_LABELS[name]}:  $R_c$ [cm]')
+                  f'{REFLECTOR_LABELS[name]}:  $R_c$ [cm]')
+            if j == 0:
+                column_title(ax, core_name)
 
     finish(fig)
     # One legend for all six panels: the curves leave no free corner inside them. Three
@@ -120,8 +124,9 @@ def report(figs):
                 'Critical radius of a reflected sphere, from the two-region diffusion '
                 'criticality condition in (a) classic, (b) asymptotic and (c) discontinuous '
                 'asymptotic (Zimmerman) form.',
-                'Flux continuity at the interface in (a) and (b); mu0 phi continuous in (c). '
-                'The net current -D dphi/dr is continuous in all three.')
+                'Flux and current continuity at the interface in (a) and (b), report eq. (8). '
+                '(c) matches mu0 phi and its current on r phi instead, the Koponen-Doyas '
+                'curvature fixup, report eq. (13).')
 
     _parameter_table()
     _bare_table()
@@ -131,12 +136,12 @@ def report(figs):
         logger.info(f'\n{name} core:')
         _core_table(name, tables[name])
 
-    logger.info("\nWater and iron behave: every radius falls below the bare one and keeps "
-                "falling with d. Sodium does not -- its radii sit ABOVE the bare sphere. "
-                "That is diffusion theory failing, not the reflector: sodium's mean free "
-                "path is 11.58 cm and its D is 3.86 cm, against a core radius near 6 cm, "
-                "so the spherical term D_R/R alone leaks more than a vacuum. "
-                "See report Question 1.")
+    logger.info("\nEvery (c) radius falls below the bare one and keeps falling with d. The "
+                "(a) and (b) sodium columns do not -- they sit ABOVE the bare sphere, which "
+                "no reflector can do. That is the curvature term of eq. (8): sodium's mean "
+                "free path is 11.58 cm and its D is 3.86 cm against a core radius near 6 cm, "
+                "so the geometric leakage D_R/R alone exceeds a vacuum surface. Eq. (13) "
+                "drops that term and the anomaly with it. See report Question 1.")
 
     plot_radii(tables, os.path.join(figs, 'q1_critical_radius.pdf'))
     plot_fluxes(os.path.join(figs, 'q1_flux_profiles.pdf'))

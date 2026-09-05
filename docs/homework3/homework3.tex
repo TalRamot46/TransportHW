@@ -59,11 +59,11 @@
 
 \maketitle
 
-{\color{blue}
 \FloatBarrier
 \section*{Question 1: Critical radius of a reflected sphere}
+\subsection*{The diffusion equation}
 
-Question 1 is the one \emph{diffusion} question of this assignment --- the $S_N$ machinery set out before Question 3 belongs to Questions 3--5 --- and the only one with two materials. A multiplying core of radius $R_C$ is wrapped in $d \in \{1,2,3,10\}$ mean free paths of reflector, and the cross sections are again the Question 5 table of Assignment 1.
+
 
 \subsection*{The two regions}
 
@@ -78,25 +78,62 @@ In both regions the substitution $u(r) = r\phi(r)$, which uses $\frac{1}{r^2}\fr
 \begin{equation}
     \frac{d^2 u}{dr^2} - \frac{(1-c)\Sigma_t^2}{D_0}\,u = 0
 \end{equation}
-The core has $c_C > 1$, so the coefficient is negative and the solution oscillates; finiteness at the origin selects the sine. The reflector has $c_R \le 1$ and decays, vanishing $z_0(c_R)$ mean free paths past $b$. The relaxation rate is $k_0(c_C)$ per mean free path in the core and $1/\nu_0(c_R)$ in the reflector, so the two profiles are
+from which the scalar flux is calculated to be (see slide 2 in Heizler's relevant presentation):
 \begin{equation}
     \phi_C(r) = A\,\frac{\sin\!\left(k_0(c_C)\,\Sigma_{t,C}\,r\right)}{\Sigma_{t,C}\,r},
     \qquad\qquad
     \phi_R(r) = F\,\frac{\sinh\!\left(\left[b + z_0(c_R) - \Sigma_{t,R}\,r\right] / \nu_0(c_R)\right)}{\Sigma_{t,R}\,r}
 \end{equation}
-$k_0$ and $\nu_0$ are Case's discrete eigenvalue on its two branches, the same roots Assignment 1 used: $c\,\text{arctan}(k_0) = k_0$ above $c=1$ and $\text{artanh}(1/\nu_0)/(1/\nu_0) = 1/c$ below it.
+\paragraph{Derivation.} The core has $c_C > 1$, so the coefficient is negative and the solution oscillates. Finiteness at the origin selects the sine. The reflector has $c_R \le 1$ and decays, vanishing $z_0(c_R)$ mean free paths past $b$. The relaxation rate is $k_0(c_C) = \sqrt{(c_C-1)/D_0(c_C)}$ per mean free path in the core and $1/\nu_0(c_R)=\sqrt{(1-c_R)/D_0(c_R)}$ in the reflector. But remember! $k_0$ and $\nu_0$ are Case's discrete eigenvalues on its two branches (for c smaller or greater than 1), following the identities: $c\,\text{arctan}(k_0) = k_0$ for $c>1$ and $\text{artanh}(1/\nu_0)/(1/\nu_0) = 1/c$ otherwise.
 
-\subsection*{Matching, and the one criticality equation}
+\subsection*{Matching, and the three criticality equations}
+The interface at $r = R_C$ carries a flux relation $\phi_R = \rho_{2/1}\,\phi_C$ and a current relation with jump factor $j_{2/1}$. The two continuous approximations set $\rho_{2/1} = j_{2/1} = 1$ and impose both on $\phi$ itself. The discontinuous one takes its two ratios from the plane two-region problem, where $u = r\phi$ plays the part of the plane flux, and so imposes them on $u$. Each set gives one transcendental equation for $a$, and the three cases (a), (b), (c) are the two equations filled with the parameters of Table~1.
 
-The interface at $r = R_C$ carries a flux relation $\phi_R = g\,\phi_C$ and continuity of the net current $J = -D\,d\phi/dr$. In optical variables that current is dimensionless on both sides, $D\,d/dr = D_0\,d/d(\Sigma_t r)$, and the two logarithmic derivatives of $\phi$ at the interface are $k_0\cot(k_0a) - 1/a$ in the core and $-\nu_0^{-1}\coth\!\left(\left[d+z_0\right]/\nu_0\right) - 1/(b-d)$ in the reflector. All three approximations therefore reduce to a single transcendental equation for $a$:
+\paragraph{(a) and (b): $\phi$ and the net current continuous.} The conditions are
+\begin{gather}
+    \phi_R(R_C) = \phi_C(R_C) \\
+    -\frac{D_R}{\Sigma_R}\left(\frac{d\phi_R(r)}{dr}\right)_{r=R_C} = -\frac{D_C}{\Sigma_C}\left(\frac{d\phi_C(r)}{dr}\right)_{r=R_C}
+\end{gather}
+In optical variables that current is dimensionless on both sides, $D\,d/dr = D_0\,d/d(\Sigma_t r)$, so $D_R=D_{0,R}$ and $D_C=D_{0,C}$ below are the dimensionless $D_0$ of Table~1. Under substitution of the scalar fluxes the two conditions turn to:
+\begin{gather}
+    \frac{F}{b-d}\sinh\!\left(\frac{d + z_0(c_R)}{\nu_0(c_R)}\right) = \frac{A}{a}\sin\!\left(k_0(c_C)a\right) \\
+    D_R F\left[\frac{\cosh\!\left(\frac{d + z_0(c_R)}{\nu_0(c_R)}\right)}{\nu_0(c_R)\,(b-d)} + \frac{\sinh\!\left(\frac{d + z_0(c_R)}{\nu_0(c_R)}\right)}{(b-d)^2}\right]
+    = D_C A\left[\frac{\sin\!\left(k_0(c_C)a\right)}{a^2} - \frac{k_0(c_C)\cos\!\left(k_0(c_C)a\right)}{a}\right]
+\end{gather}
+divide the two and get:
 \begin{equation}
-    \boxed{\;D_{0,C}\left[k_0\cot\!\left(k_0 a\right) - \frac{1}{a}\right]
-    \;+\; g\,D_{0,R}\left[\frac{1}{\nu_0}\coth\!\left(\frac{d + z_0(c_R)}{\nu_0}\right) + \frac{1}{b - d}\right] \;=\; 0\;}
+    \boxed{\;\cot\!(k_0a) = \frac{1}{k_0a} - \frac{D_R}{D_C k_0}\left[\frac{1}{\nu_0}\coth\!\left(\frac{d + z_0(c_R)}{\nu_0(c_R)}\right) + \frac{1}{b-d}\right]\;}
     \label{eq:reflcrit}
 \end{equation}
-writing $k_0 = k_0(c_C)$ and $\nu_0 = \nu_0(c_R)$. Here $b - d = \Sigma_{t,R}R_C$ is the interface radius counted in \emph{reflector} mean free paths, which is $a$ itself only when the two media share a mean free path; the code keeps the two conversions apart. The reflector enters through nothing but the optical combination $\left[d + z_0(c_R)\right]/\nu_0(c_R)$, its thickness in its own diffusion lengths. The two $1/r$ terms have no slab counterpart: $\phi$ falls as $1/r$ even where $u$ is flat, so a jump in $D$ at a curved interface drives a current by itself. Equation~\eqref{eq:reflcrit} runs from $+\infty$ at $a \to 0$ to $-\infty$ at $a = \pi/k_0$, the unreflected limit, so the fundamental root is always bracketed by $(0,\pi/k_0)$ and \texttt{brentq} finds it in one call.
 
-The three approximations differ only in what they put into $D_0$, $z_0$ and $g$:
+\paragraph{(c): the fixed jump conditions.} The \textit{fixed} jump conditions for the curvilinear coordinates under the spherical symmetry relation $\phi \to r\phi$ and Zimmerman's $\rho_{2/1} = \mu_0(c_C)/\mu_0(c_R)$, $j_{2/1} = 1$ are:
+\begin{gather}
+    \mu_0(c_R)\left[r \phi_R(r)\right]_{r=R_C} = \mu_0(c_C) \left[r\phi_C(r)\right]_{r=R_C} \\
+    -\frac{D_R}{\Sigma_R}\left(\frac{d[r\phi_R(r)]}{dr}\right)_{r=R_C} = -\frac{D_C}{\Sigma_C}\left(\frac{d[r\phi_C(r)]}{dr}\right)_{r=R_C}
+\end{gather}
+which under substitution of the scalar fluxes turn to:
+\begin{gather}
+    \mu_0(c_R)\frac{F}{\Sigma_{R}}\sinh\!\left(\frac{d + z_0(c_R)}{\nu_0(c_R)}\right) = \mu_0(c_C) \frac{A}{\Sigma_{C}}\sin\!\left(k_0(c_C)a\right) \\
+    -\frac{D_R F}{\Sigma_R\nu_0(c_R)}\cosh\!\left(\frac{d + z_0(c_R)}{\nu_0(c_R)}\right) = \frac{j_{2/1} D_C A\,k_0(c_C)}{\Sigma_C} \cos\!\left(k_0(c_C)a\right)
+\end{gather} 
+divide the two and get:
+\begin{equation}
+    \boxed{\;\cot\!(k_0a) = -\frac{\mu_0(c_C)}{\mu_0(c_R)}\frac{D_R/\nu_0}{D_C k_0}\coth\!\left(\frac{d + z_0(c_R)}{\nu_0(c_R)}\right)\;}
+    \label{eq:reflfixed}
+\end{equation}
+
+writing $k_0 = k_0(c_C)$ and $\nu_0 = \nu_0(c_R)$. Notice that $d$ is defined here such that $b - d = \Sigma_{R}R_C$. The code keeps the two conversions apart. The reflector enters through nothing but the optical combination $\left(d + z_0(c_R)\right)/\nu_0(c_R)$, its thickness in its own diffusion lengths. Both equations run from $+\infty$ at $a \to 0$ to $-\infty$ at $a = \pi/k_0$, the unreflected limit, so the fundamental root is always bracketed by $(0,\pi/k_0)$ and \texttt{brentq} finds it in one call.
+
+So the three cases are
+\begin{equation*}
+    \text{(a)}\;\;\text{with}\;D_0 = \tfrac13,\;z_0 = \tfrac23
+    \qquad
+    \text{(b)}\;\;\text{with the asymptotic}\;D_0,\,z_0
+    \qquad
+    \text{(c)}\;\;\text{with the asymptotic}\;D_0,\,z_0
+\end{equation*}
+
+The three approximations differ only in what they put into $D_0$ and $z_0$:
 
 \begin{table}[htbp]
 \centering
@@ -105,27 +142,32 @@ The three approximations differ only in what they put into $D_0$, $z_0$ and $g$:
  & (a) continuous classic & (b) continuous asymptotic & (c) discontinuous asymptotic \\
 \midrule
 $D_0(c)$ & $1/3$ & $|1-c|\,\nu_0^2$ & $|1-c|\,\nu_0^2$ \\
-relaxation rate & $\sqrt{3|1-c|}$ & $k_0(c)$ or $1/\nu_0(c)$ & $k_0(c)$ or $1/\nu_0(c)$ \\
 $z_0(c)$ & $2/3$ & $0.710446\,[1+q(1-c)^2]/c$ & $0.710446\,[1+q(1-c)^2]/c$ \\
-$g = \phi_R/\phi_C$ & $1$ & $1$ & $\mu_0(c_C)/\mu_0(c_R)$ \\
+$\rho_{2/1} = \phi_R/\phi_C$ & $1$ & $1$ & $\mu_0(c_C)/\mu_0(c_R)$ \\
 \bottomrule
 \end{tabular}
-\caption{Only the last row makes (c) different from (b). Since $\mu_0 = 1/2$ for every medium in the classic theory, (a) is automatically continuous, and with no reflector at all (b) and (c) are the same bare sphere.}
+\caption{The three approximations differ only in what   they put into $D_0$ and $z_0$. The discontinuous one also takes the flux ratio from Zimmerman.}
 \end{table}
 
-\paragraph{Zimmerman's $\mu_0$.} The discontinuity comes from Zimmerman (UCRL-82792), who writes the partial currents of the asymptotic mode as $\phi_\pm = \tfrac12 \mu_0 \phi_0 \pm \tfrac12 \phi_1$, so that $\mu_0\phi_0 = J_+ + J_-$ is the total traffic across a surface and
+\paragraph{Zimmerman's $\mu_0$.} The discontinuity comes from Zimmerman, who writes the partial currents of the asymptotic mode as $j_\pm = \tfrac12 \mu_0 \phi_0 \pm \tfrac12 \phi_1$, so that $\mu_0\phi_0 = J_+ + J_-$ is the total traffic across a surface and
 \begin{equation}
-    \mu_0(c) = \frac{c\,\nu_0^2}{2}\ln\!\left(\frac{\nu_0^2}{\nu_0^2-1}\right)
-    \;\xrightarrow[\;c>1\;]{}\;
-    \frac{c}{2k_0^2}\ln\!\left(1+k_0^2\right)
+    \mu_0(c) = \frac{\int_0^1 \mu \psi_{asym} (\mu)d\mu}{\frac{1}{2}\int_{-1}^{1}\psi_{asym}(\mu)d\mu} = \frac{c\,\nu_0^2}{2}\ln\!\left(\frac{\nu_0^2}{\nu_0^2-1}\right)
 \end{equation}
-the second form being the exact analytic continuation through $\nu_0 = i/k_0$. It is not an ansatz: integrating the discrete mode $\psi(\mu)\propto(\nu_0-\mu)^{-1}$ over the two half-ranges reproduces it identically, and it returns the two textbook limits $\mu_0 = 1/2$ for an isotropic flux and $\mu_0 = 1$ for a one-way beam. Matching the traffic rather than the flux, $\mu_0(c_C)\phi_C = \mu_0(c_R)\phi_R$, is what makes $\phi$ itself jump. Nothing is lost at the interface --- the same current crosses both faces.
+where
+\begin{equation}
+    \qquad
+    \nu_0 = \nu_0(c)\;\;\text{for}\;\;c<1,
+    \qquad
+    |\nu_0| = 1/k_0(c)\;\;\text{for}\;\;c>1
+    \label{eq:mu0}
+\end{equation}
+the second branch being the analytic continuation through $\nu_0 = i/k_0$, which is real and equal to $\tfrac{c}{2k_0^2}\ln(1+k_0^2)$. It returns the two textbook limits $\mu_0 = 1/2$ for an isotropic flux and $\mu_0 = 1$ for a one-way beam.
 
 \begin{table}[htbp]
 \centering
 \begin{tabular}{lccccccc}
 \toprule
-material & $c$ & mfp [cm] & $k_0$ or $1/\nu_0$ & $D_0$ & $D$ [cm] & $\mu_0$ & $z_0$ \\
+material & $c$ & mfp (\Sigma_t^{-1}) [cm] & $k_0$ or $1/\nu_0$ & $D_0$ & $D$ [cm] & $\mu_0$ & $z_0$ \\
 \midrule
 Pu-239 & 1.5000 & 3.064  & 1.45110 & 0.23745 & 0.7275 & 0.40363 & 0.47127 \\
 U-235  & 1.3000 & 3.064  & 1.05708 & 0.26847 & 0.8225 & 0.43639 & 0.54552 \\
@@ -134,7 +176,7 @@ Fe     & 0.9980 & 4.300  & 0.07740 & 0.33387 & 1.4356 & 0.50050 & 0.71187 \\
 Na     & 1.0000 & 11.578 & 0.00000 & 0.33333 & 3.8595 & 0.50000 & 0.71045 \\
 \bottomrule
 \end{tabular}
-\caption{Asymptotic parameters of the five materials. Sodium is a pure scatterer, $\Sigma_c = \Sigma_f = 0$, so $c_R = 1$ exactly: $\nu_0$ diverges, its inverse is $0$, and the reflector solution degenerates to $u_R$ linear in $r$, with $\nu_0^{-1}\coth\!\left(\left[d+z_0\right]/\nu_0\right) \to \left[d+z_0\right]^{-1}$. The code takes that limit explicitly rather than dividing out a near-zero $\kappa$.}
+\caption{Asymptotic parameters of the five materials according to their cross-section values from Assignment 1.}
 \end{table}
 
 \FloatBarrier
@@ -161,23 +203,23 @@ U-235  & 8.1031 & 7.4339 & 42.345 & 32.696 \\
 \toprule
 reflector & $d$ [mfp] & $R_c^{(a)}$ & $R_c^{(b)}$ & $R_c^{(c)}$ & $M_c^{(a)}$ & $M_c^{(b)}$ & $M_c^{(c)}$ \\
 \midrule
-Water  & 1  & 5.3159 & 4.9484 & 4.5400 & 9.879  & 7.968  & 6.154 \\
-Water  & 2  & 5.0855 & 4.7987 & 4.3823 & 8.649  & 7.267  & 5.535 \\
-Water  & 3  & 5.0153 & 4.7499 & 4.3321 & 8.296  & 7.048  & 5.347 \\
-Water  & 10 & 4.9814 & 4.7244 & 4.3061 & 8.129  & 6.935  & 5.251 \\
+Water  & 1  & 5.3159 & 4.9484 & 4.4195 & 9.879  & 7.968  & 5.677 \\
+Water  & 2  & 5.0855 & 4.7987 & 4.2459 & 8.649  & 7.267  & 5.034 \\
+Water  & 3  & 5.0153 & 4.7499 & 4.1906 & 8.296  & 7.048  & 4.840 \\
+Water  & 10 & 4.9814 & 4.7244 & 4.1620 & 8.129  & 6.935  & 4.741 \\
 \midrule
-Iron   & 1  & 5.4212 & 4.9575 & 4.6450 & 10.478 & 8.013  & 6.591 \\
-Iron   & 2  & 5.1056 & 4.7364 & 4.4182 & 8.753  & 6.988  & 5.672 \\
-Iron   & 3  & 4.9506 & 4.6237 & 4.3059 & 7.979  & 6.501  & 5.250 \\
-Iron   & 10 & 4.6790 & 4.4188 & 4.1070 & 6.737  & 5.674  & 4.556 \\
+Iron   & 1  & 5.4212 & 4.9575 & 4.2252 & 10.478 & 8.013  & 4.961 \\
+Iron   & 2  & 5.1056 & 4.7364 & 3.9170 & 8.753  & 6.988  & 3.952 \\
+Iron   & 3  & 4.9506 & 4.6237 & 3.7661 & 7.979  & 6.501  & 3.513 \\
+Iron   & 10 & 4.6790 & 4.4188 & 3.5037 & 6.737  & 5.674  & 2.829 \\
 \midrule
-Sodium & 1  & 6.4397 & 5.7159 & 5.5171 & 17.562 & 12.281 & 11.044 \\
-Sodium & 2  & 6.3134 & 5.6405 & 5.4318 & 16.549 & 11.801 & 10.540 \\
-Sodium & 3  & 6.2505 & 5.6022 & 5.3892 & 16.059 & 11.563 & 10.293 \\
-Sodium & 10 & 6.1315 & 5.5286 & 5.3080 & 15.159 & 11.113 & 9.835 \\
+Sodium & 1  & 6.4397 & 5.7159 & 4.2207 & 17.562 & 12.281 & 4.945 \\
+Sodium & 2  & 6.3134 & 5.6405 & 3.9087 & 16.549 & 11.801 & 3.927 \\
+Sodium & 3  & 6.2505 & 5.6022 & 3.7544 & 16.059 & 11.563 & 3.480 \\
+Sodium & 10 & 6.1315 & 5.5286 & 3.4701 & 15.159 & 11.113 & 2.748  \\
 \bottomrule
 \end{tabular}
-\caption{Pu-239 core: critical radius in cm and critical mass in kg, under (a) continuous classic, (b) continuous asymptotic and (c) discontinuous asymptotic diffusion. Bare: 5.8163 cm / 12.940 kg classic, 5.1890 cm / 9.188 kg asymptotic.}
+\caption{Pu-239 core, critical radius in cm and critical mass in kg, under (a) continuous classic, (b) continuous asymptotic and (c) discontinuous asymptotic diffusion.}
 \end{table}
 
 \begin{table}[htbp]
@@ -186,45 +228,37 @@ Sodium & 10 & 6.1315 & 5.5286 & 5.3080 & 15.159 & 11.113 & 9.835 \\
 \toprule
 reflector & $d$ [mfp] & $R_c^{(a)}$ & $R_c^{(b)}$ & $R_c^{(c)}$ & $M_c^{(a)}$ & $M_c^{(b)}$ & $M_c^{(c)}$ \\
 \midrule
-Water  & 1  & 7.2501 & 6.9113 & 6.5228 & 30.330 & 26.273 & 22.087 \\
-Water  & 2  & 6.9185 & 6.6731 & 6.2694 & 26.355 & 23.649 & 19.611 \\
-Water  & 3  & 6.8146 & 6.5937 & 6.1865 & 25.186 & 22.816 & 18.844 \\
-Water  & 10 & 6.7638 & 6.5520 & 6.1432 & 24.627 & 22.385 & 18.451 \\
+Water  & 1  & 7.2501 & 6.9113 & 6.4284 & 30.330 & 26.273 & 21.143 \\
+Water  & 2  & 6.9185 & 6.6731 & 6.1577 & 26.355 & 23.649 & 18.582 \\
+Water  & 3  & 6.8146 & 6.5937 & 6.0691 & 25.186 & 22.816 & 17.791 \\
+Water  & 10 & 6.7638 & 6.5520 & 6.0228 & 24.627 & 22.385 & 17.387 \\
 \midrule
-Iron   & 1  & 7.2811 & 6.8392 & 6.5656 & 30.720 & 25.460 & 22.525 \\
-Iron   & 2  & 6.8002 & 6.4625 & 6.1789 & 25.027 & 21.480 & 18.775 \\
-Iron   & 3  & 6.5545 & 6.2644 & 5.9804 & 22.411 & 19.565 & 17.023 \\
-Iron   & 10 & 6.1125 & 5.8970 & 5.6199 & 18.176 & 16.320 & 14.126 \\
+Iron   & 1  & 7.2811 & 6.8392 & 6.1246 & 30.720 & 25.460 & 18.284 \\
+Iron   & 2  & 6.8002 & 6.4625 & 5.6147 & 25.027 & 21.480 & 14.087 \\
+Iron   & 3  & 6.5545 & 6.2644 & 5.3543 & 22.411 & 19.565 & 12.217 \\
+Iron   & 10 & 6.1125 & 5.8970 & 4.8895 & 18.176 & 16.320 & 9.303 \\
 \midrule
-Sodium & 1  & 8.4264 & 7.7951 & 7.6194 & 47.618 & 37.697 & 35.205 \\
-Sodium & 2  & 8.2322 & 7.6564 & 7.4692 & 44.401 & 35.721 & 33.164 \\
-Sodium & 3  & 8.1328 & 7.5844 & 7.3919 & 42.811 & 34.722 & 32.145 \\
-Sodium & 10 & 7.9401 & 7.4425 & 7.2414 & 39.840 & 32.809 & 30.221 \\
+Sodium & 1  & 8.4264 & 7.7951 & 6.1175 & 47.618 & 37.697 & 18.220 \\
+Sodium & 2  & 8.2322 & 7.6564 & 5.6006 & 44.401 & 35.721 & 13.981 \\
+Sodium & 3  & 8.1328 & 7.5844 & 5.3339 & 42.811 & 34.722 & 12.077 \\
+Sodium & 10 & 7.9401 & 7.4425 & 4.8292 & 39.840 & 32.809 & 8.963  \\
 \bottomrule
 \end{tabular}
-\caption{U-235 core, same columns. Bare: 8.1031 cm / 42.345 kg classic, 7.4339 cm / 32.696 kg asymptotic.}
+\caption{U-235 core, same columns.}
 \end{table}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figs/q1_critical_radius.pdf}
-\caption{Critical core radius against reflector optical thickness. Dashed and dotted lines are the two bare references. Water saturates by $d \approx 3$ mfp; iron is still improving at $d = 10$; sodium sits above its bare line throughout.}
+\caption{Critical core radius against reflector optical thickness. Dashed and dotted lines are the two bare references. Water saturates by $d = 3$ mfp, iron is still improving at $d = 10$ mfp and the sodium (a) and (b) curves sit above their bare lines throughout, while (c) does not}.
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figs/q1_flux_profiles.pdf}
-\caption{Critical flux across core and reflector for the Pu-239 core behind 3 mfp, normalised to $\phi(0)=1$; dotted verticals mark each theory's interface. The discontinuous curve drops by the factor $g$ at the interface and is continuous in current, not in flux. Note the horizontal scale of the sodium panel, the wide one beneath: 3 mfp of sodium is 34.7 cm.}
+\caption{Critical flux across core and reflector for the Pu-239 core behind 3 mfp, normalised to $\phi(0)=1$. Dotted verticals mark each theory's interface. The discontinuous curve drops by the factor $\mu_0(c_R)/\mu_0(c_C)$ at the interface. Note the horizontal scale of the sodium panel, the wide one beneath: 3 mfp of sodium is 34.7 cm.}
 \end{figure}
 
-\FloatBarrier
-\subsection*{What the three approximations say}
-
-\paragraph{The reflector saving.} Water and iron behave as reflectors should. Both cores lose 12--17\% of their radius behind water and 12--24\% behind iron by theory (c), which because the mass goes as $R^3$ is a factor of nearly two in critical mass: Pu-239 falls from 9.188 kg bare to 4.556 kg behind 10 mfp of iron. The two reflectors saturate differently, and the reason is $c_R$. Water absorbs ($c_R = 0.90$, $\nu_0 = 1.90$), so a neutron more than about two mean free paths deep never returns and the water columns are flat past $d = 3$. Iron barely absorbs ($c_R = 0.998$, $\nu_0 = 12.9$), so its return keeps improving out to $d = 10$ and beyond --- iron starts as the worse reflector at $d=1$ and ends the better one at $d = 10$.
-
-\paragraph{The ordering of the three theories.} At every entry $R_c^{(a)} > R_c^{(b)} > R_c^{(c)}$. The first gap is inherited from the bare problem: the asymptotic $D_0(c_C)$ and $k_0(c_C)$ already give a smaller sphere than $D_0 = 1/3$ does, by 11\% for Pu-239. The second is the jump itself. Every pair here has $\mu_0(c_C) < \mu_0(c_R)$, so $g < 1$ --- $0.766$ for Pu-239 behind water, $0.873$ for U-235 behind iron --- because the multiplying core has the shorter relaxation length and hence the more forward-peaked angular flux, and so carries more current per unit density. A $g$ below one multiplies down both the leakage term and the curvature term of \eqref{eq:reflcrit}, which is why (c) always predicts the smallest core, by a further 8--9\% for water and iron.
-
-\paragraph{The sodium columns are diffusion theory failing.} Every sodium radius above is \emph{larger} than the corresponding bare sphere, which no reflector can do. The condition is being solved correctly --- \eqref{eq:reflcrit} was checked against an independent two-region spherical finite-volume $k$-eigenvalue solve, 3000 cells with harmonic-mean face diffusion coefficients across the material jump, and the two agree to better than $0.4\%$ on exactly these cases. The fault is in the model. Splitting the interface leakage of the Pu-239 core at $d = 10$ mfp into its two parts, $J/\phi = D_R/R_c + D_R/L$, the far-face return being $1/L = \Sigma_{t,R}\,\nu_0^{-1}\coth\!\left(\left[d+z_0\right]/\nu_0\right)$:
 
 \begin{table}[htbp]
 \centering
@@ -240,10 +274,6 @@ Sodium & 3.859 & 115.8 & \textbf{0.6295} & 0.0312 & 0.6607 \\
 \caption{Leakage ratio at the interface, in cm$^{-1}$, classic theory. Sodium's far-face return is the best of the three --- 10 mfp of a pure scatterer really does send almost everything back --- but its geometric term alone exceeds what a bare vacuum surface leaks.}
 \end{table}
 
-The geometric term is the current driven by the $1/r$ spreading of $\phi = u/r$, and it is harmless only while $D_R \ll R_c$. Sodium's $\Sigma_t = 0.086368$ cm$^{-1}$ is a mean free path of $11.58$ cm against a core radius near $6$ cm: a neutron entering the reflector travels two core radii before its first collision, which is precisely the regime Fick's law expands away from. None of the three approximations repairs it, because a pure scatterer has $D_0 = 1/3$ in all of them and $D_R = 3.86$ cm throughout. Measured against its own bare sphere at $d = 10$, (a) is $+5.4\%$, (b) $+6.6\%$ and (c) $+2.3\%$ --- only the Zimmerman jump helps, and only because $g = 0.807$ multiplies the offending term. Transport theory would not make this mistake: the shell is optically thick and purely scattering, so its true albedo is high and the true critical radius must lie below the bare $5.1890$ cm.
-}
-
-{\color{green!55!black}
 \FloatBarrier
 \section*{Question 2: Critical slab half-thickness by $P_N$}
 
@@ -369,21 +399,20 @@ streaming, collision and both boundary conditions, and it does \emph{not} depend
 productions,
 \begin{equation}
     k^{(\ell+1)} = k^{(\ell)}\,
-    \textcolor{blue}{\frac{\displaystyle\int_0^{a/2} \frac{c\,\Sigma_t}{k^{(\ell)}}\,\phi_0^{(\ell+1)}\,dx}
+    {\frac{\displaystyle\int_0^{a/2} \frac{c\,\Sigma_t}{k^{(\ell)}}\,\phi_0^{(\ell+1)}\,dx}
                           {\displaystyle\int_0^{a/2} \frac{c\,\Sigma_t}{k^{(\ell)}}\,\phi_0^{(\ell)}\,dx}
     \;=\; k^{(\ell)}\,}
     \frac{\displaystyle\int_0^{a/2} \phi_0^{(\ell+1)}\,dx}
          {\displaystyle\int_0^{a/2} \phi_0^{(\ell)}\,dx}
     \label{eq:kupdate}
 \end{equation}
-\textcolor{blue}{The middle form is what the method actually compares: the fission source
+The middle form is what the method actually compares: the fission source
 \eqref{eq:box} that $\phi_0^{(\ell+1)}$ would build against the one that produced it, so it is
-an exact ratio of sources and not of fluxes that happen to resemble them.} The constant
-$c\,\Sigma_t/k^{(\ell)}$ is common to both and cancels. \textcolor{red}{The iterate is then rescaled by $\max_j\phi_{0,j}$, which
+an exact ratio of sources and not of fluxes that happen to resemble them. The iterate is then rescaled by $\max_j\phi_{0,j}$, which
 has no effect on \eqref{eq:kupdate} --- it only keeps the vector from drifting towards $0$ or
 $\infty$ as $k^{\ell}$ compounds --- and the loop stops on $|k^{(\ell+1)}-k^{(\ell)}|<\epsilon_k$.
 Convergence is linear at the dominance ratio of the two leading eigenvalues, which for a bare
-slab is well separated}, and the starting guess
+slab is well separated, and the starting guess
 \begin{equation}
     \phi_0^{(0)}(x)=\cos\!\left(\frac{\pi x}{2\,(a/2+0.7104)}\right),\qquad k^{(0)}=1
 \end{equation}
@@ -397,7 +426,6 @@ thickness, so criticality is a root search on
 \end{equation}
 
 
-{\color{blue}
 \begin{algorithm}[H]
 \caption{Critical half-thickness by the box $P_N$ scheme --- \texttt{homework3.pn.box}}
 \label{alg:pnbox}
@@ -436,23 +464,18 @@ thickness, so criticality is a root search on
 \tcc{critical\_half\_thickness, which defers to sn.core}
 \KwRet{\CritSize{$a/2 \mapsto \KEig{a/2}-1$, $(a/2)_0$}}
 \end{algorithm}
-}
 
 \begin{sloppypar}
-\textcolor{blue}{Every name in Algorithm~\ref{alg:pnbox} is the identifier the code uses.
+Every name in Algorithm~\ref{alg:pnbox} is the identifier the code uses.
 \texttt{BoxSystem} is the constructor \texttt{pn.box.BoxSystem.\_\_init\_\_}, \texttt{splu} is
 \texttt{scipy.sparse.linalg.splu} applied to the CSC form, and \texttt{critical\_size} is
-borrowed from \texttt{sn.core} --- the one place Question 2 reuses the $S_N$ package.}
+borrowed from \texttt{sn.core} --- the one place Question 2 reuses the $S_N$ package.
 \end{sloppypar}
 
 \paragraph{Errors.} The box scheme is second order, so the discretisation error in
 $(a/2)_{\text{crit}}$ falls as $\Delta x^2$ and is separable from the truncation error in $N$ by
 running the same $N$ on a refined mesh --- the check reported in Question 3 for $S_N$.
 
-\textcolor{blue}{Equation \eqref{eq:pnmatrix} is a linear system of coupled ODEs with constant
-coefficients, so it can also be integrated analytically, with no spatial mesh at all. That
-solution is not needed for the results below and is left to the Appendix, where it serves as
-the independent check on this one.}
 
 \FloatBarrier
 \subsection*{Results}
@@ -929,113 +952,4 @@ U-235 & $S_{16}$ & 1.300 & 7.4231 & 32.553 & 7.4339 & $-0.15\%$ \\
 \end{figure}
 
 Diffusion overestimates both radii, and by more for Pu-239 than for U-235: the surface sits about two mean free paths from the centre in both cases, but the higher $c$ makes the Pu-239 flux fall off faster and its surface angular flux more forward-peaked, which is exactly what a diffusion approximation cannot represent. $S_{16}$ recovers the difference to within $0.3\%$ of the transport-theory radius.
-
-{\color{green!55!black}
-\FloatBarrier
-\section*{Appendix: the coupled $P_N$ ODE system solved analytically}
-
-The box scheme of Question 2 carries two errors, one in $N$ and one in $\Delta x$. Since
-\eqref{eq:pnmatrix} is a linear system of coupled ODEs with constant coefficients, it can be
-integrated in closed form at $k=1$ instead, with criticality imposed directly on the boundary
-conditions. That removes the $\Delta x$ error altogether and leaves only the truncation in $N$,
-which is what makes it an independent check on the mesh solution rather than a repetition of
-it.
-
-Split the $N+1$ moments into $M=\tfrac{N+1}{2}$ even and $M$ odd,
-$\boldsymbol{\Phi}_{\text{even}}=(\phi_0,\phi_2,\dots)$ and
-$\boldsymbol{\Phi}_{\text{odd}}=(\phi_1,\phi_3,\dots)$. Every derivative in \eqref{eq:pnrec}
-changes the parity of its index, so the even-$n$ and odd-$n$ equations separate:
-\begin{equation}
-    \mathbf{A}\frac{d\boldsymbol{\Phi}_{\text{odd}}}{dx} + \mathbf{\Sigma}_0(k)\,\boldsymbol{\Phi}_{\text{even}} = 0,
-    \qquad
-    \mathbf{B}\frac{d\boldsymbol{\Phi}_{\text{even}}}{dx} + \boldsymbol{\Phi}_{\text{odd}} = 0,
-    \qquad
-    \mathbf{\Sigma}_0(k)=\text{diag}\!\left(1-\tfrac{c}{k},1,\dots,1\right)
-\end{equation}
-$\mathbf{A}$ and $\mathbf{B}$ being the two off-diagonal blocks of $\mathbf{\tilde A}$ under
-that reordering, $\mathbf{\tilde A}=\left(\begin{smallmatrix}0&\mathbf{A}\\\mathbf{B}&0\end{smallmatrix}\right)$,
-with rows $A_{m,\cdot}$ from $n=2m$ and $B_{m,\cdot}$ from $n=2m+1$. Substituting
-$\boldsymbol{\Phi}_{\text{odd}}=-\mathbf{B}\,\boldsymbol{\Phi}_{\text{even}}'$ into the first
-equation eliminates the odd moments and leaves a coupled Helmholtz system,
-\begin{equation}
-    \frac{d^2\boldsymbol{\Phi}_{\text{even}}}{dx^2} + \mathbf{K}^2(k)\,\boldsymbol{\Phi}_{\text{even}} = 0,
-    \qquad
-    \mathbf{K}^2(k) = -\,(\mathbf{A}\mathbf{B})^{-1}\mathbf{\Sigma}_0(k)
-    \label{eq:helm}
-\end{equation}
-The minus sign is not cosmetic and is the easiest thing to lose: the elimination produces
-$\mathbf{A}\mathbf{B}\,\boldsymbol{\Phi}_{\text{even}}''=\mathbf{\Sigma}_0\boldsymbol{\Phi}_{\text{even}}$,
-and moving that to the form \eqref{eq:helm} flips it. At $N=1$ it reads $\phi_0''+3(c-1)\phi_0=0$,
-the classic diffusion buckling $B=\sqrt{3(c-1)}$ of the table in Question 1 --- with the sign dropped
-one gets $\cosh$ where $\cos$ belongs and no critical thickness at all.
-
-\paragraph{The spectrum of $\mathbf{K}^2$.} Since
-$\mathbf{\tilde A}^2=\left(\begin{smallmatrix}\mathbf{AB}&0\\0&\mathbf{BA}\end{smallmatrix}\right)$ and the
-eigenvalues of $\mathbf{\tilde A}$ are the $N+1$ roots $\pm\mu_i$ of $P_{N+1}$, the matrix
-$\mathbf{A}\mathbf{B}$ has the $M$ eigenvalues $\mu_i^2>0$ and is similar to a positive definite
-matrix. By Sylvester's law of inertia the eigenvalues of \eqref{eq:helm} then carry the signs of
-$-\mathbf{\Sigma}_0$, which for $c>1$ at $k=1$ has one negative and $M-1$ positive entries:
-\textbf{exactly one eigenvalue $\lambda_1^2=B_0^2>0$, and $M-1$ eigenvalues
-$\lambda_j^2=-\kappa_j^2<0$}. The one oscillatory mode is the fundamental; the rest are the
-boundary layers, and at $c=1$ the positive one collapses to $B_0=0$, an infinite critical slab.
-
-\paragraph{Assembling the criticality condition.} Diagonalise
-$\mathbf{K}^2(1)=\mathbf{V}\mathbf{\Lambda}\mathbf{V}^{-1}$. The solution even about $x=0$,
-which satisfies \eqref{eq:pnsym} identically because
-$\boldsymbol{\Phi}_{\text{odd}}=-\mathbf{B}\boldsymbol{\Phi}_{\text{even}}'$ vanishes wherever
-$\boldsymbol{\Phi}_{\text{even}}'$ does, is
-\begin{align}
-    \boldsymbol{\Phi}_{\text{even}}(x) &= C_1\mathbf{v}_1\cos(B_0x)
-        + \sum_{j=2}^{M} C_j\mathbf{v}_j\cosh(\kappa_jx) \\
-    \boldsymbol{\Phi}_{\text{odd}}(x) &= C_1(\mathbf{B}\mathbf{v}_1)B_0\sin(B_0x)
-        - \sum_{j=2}^{M} C_j(\mathbf{B}\mathbf{v}_j)\kappa_j\sinh(\kappa_jx)
-\end{align}
-$M$ free constants against the $M$ Marshak conditions \eqref{eq:marshak}. Splitting the
-coefficient matrix $c_{mn}$ into its even and odd columns
-$\mathbf{M}_{\text{even}},\mathbf{M}_{\text{odd}}$ and evaluating at $x=a/2$ gives $M$ homogeneous
-equations $\mathbf{H}(a/2)\mathbf{C}=\mathbf{0}$ with
-\begin{align*}
-    \mathbf{H}_{\cdot1} &= \mathbf{M}_{\text{even}}\mathbf{v}_1\cos\!\left(\tfrac{B_0a}{2}\right)
-        +\mathbf{M}_{\text{odd}}(\mathbf{B}\mathbf{v}_1)\,B_0\sin\!\left(\tfrac{B_0a}{2}\right) \\
-    \mathbf{H}_{\cdot j} &= \mathbf{M}_{\text{even}}\mathbf{v}_j\cosh\!\left(\tfrac{\kappa_ja}{2}\right)
-        -\mathbf{M}_{\text{odd}}(\mathbf{B}\mathbf{v}_j)\,\kappa_j\sinh\!\left(\tfrac{\kappa_ja}{2}\right),
-        \qquad j\ge2
-\end{align*}
-and a non-trivial flux exists only where
-\begin{equation}
-    \boxed{\;\det\mathbf{H}(a/2)=0\;}
-    \label{eq:hdet}
-\end{equation}
-$(a/2)_{\text{crit}}$ is its smallest positive root. Two numerical points: the $\cosh$ and $\sinh$
-columns overflow once $\tfrac12\kappa_ja\gtrsim700$, so each is divided by its own $\cosh(\tfrac12\kappa_ja)$,
-which leaves $\mathbf{v}_j$ and $-(\mathbf{B}\mathbf{v}_j)\kappa_j\tanh(\tfrac12\kappa_ja)$ and cannot
-move a zero of the determinant, a column scaling being a non-zero factor of it; and the
-determinant itself spans many orders of magnitude across the bracket, so it is the sign change
-that is tracked, not the value.
-
-
-\paragraph{Against the box scheme.} The two solutions are the only free check on each other,
-since they share nothing but the matrices of \eqref{eq:pnmatrix} and
-\eqref{eq:marshak}: one iterates a discretised operator, the other never discretises space at
-all. They agree to between one and three parts in $10^{6}$, and that residue is the box scheme's
-$\Delta x^2$ and nothing else. Refining the mesh at $c=1.5$, $N=5$ against the analytic
-$0.612134509$:
-
-\begin{center}
-\begin{tabular}{cccccc}
-\toprule
-cells $J$ & 25 & 50 & 100 & 200 & 400 \\
-\midrule
-error [mfp] & $6.61\cdot10^{-5}$ & $1.65\cdot10^{-5}$ & $4.13\cdot10^{-6}$ & $1.03\cdot10^{-6}$ & $2.58\cdot10^{-7}$ \\
-ratio & --- & 4.00 & 4.00 & 4.00 & 4.00 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-Each halving of $\Delta x$ divides the error by $4.00$ to three digits, which is the second
-order claimed in Question 2 measured rather than asserted, and it confirms that the boundary rows are
-as accurate as the interior ones --- a first-order boundary closure would have shown up here as
-a ratio of $2$.
-}
-
 \end{document}

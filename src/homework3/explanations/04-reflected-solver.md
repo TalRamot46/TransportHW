@@ -1,78 +1,63 @@
 # 04 — The Reflected-Sphere Solver
 
-**Three approximations, one code path: everything that distinguishes them is packed into a
-`Region` and a single scalar `g`.**
+**Two criticality equations and three theories: `Region` carries the theory, `_continuous` and
+`_fixed` carry the equations, and nothing else in the module knows which is running.**
 
-## `Region` absorbs the whole theory choice
+## The map to the report
 
-`reflected.region(material, theory)` returns the six numbers report Table 2 tabulates —
-`sigma_t, c, D0, rate, mu0, z0`. After that call, nothing downstream knows or asks which
-approximation it is running:
+| report | code |
+|---|---|
+| eq. (3), `k0(c_C)` and `1/nu0(c_R)` | `relaxation_rate` |
+| eq. (14), `mu0(c)` | `partial_current_factor` |
+| Table 1, the `D0`, `z0`, `rho_2/1` of one theory | `region`, `jump_ratio` |
+| eq. (8), theories (a) and (b) | `_continuous` |
+| eq. (13), theory (c) | `_fixed` |
+| `a` → `R_c` in cm | `critical_radius` |
+| eq. (2), both regions | `flux_profile` |
 
-- `'classic'` returns `mu0 = 0.5` for *every* material, so `jump_ratio` gives `g = 1` and flux
-  continuity falls out with no branch anywhere.
-- `'asymptotic'` and `'zimmerman'` build **identical** `Region`s. They differ only in that
-  `jump_ratio` returns `mu0_C/mu0_R` for the second.
+Each equation function is one line of algebra: report eq. (8) or (13) with its right-hand side
+moved across, so the critical `a` is a zero. Their shared pieces are named after the terms they
+are — `_far_face_return` is `coth([d+z0]/nu0)/nu0`, `_leakage` is `D_R/(D_C k0)`,
+`_interface_in_reflector_mfp` is `b - d`. `_continuous` differs from `_fixed` by exactly the two
+`1/r` terms of report eq. (42), and by nothing else.
 
-`_residual` is report equation (4) transcribed literally, so it works in the optical radius
-`a = Sigma_t,C R_C` of report equation (1) and every term in it is dimensionless;
-`critical_radius` divides the root by `sigma_t` once, at the end, to hand back cm. The
-reflector's share of the interface is counted in *reflector* mean free paths — `b - d`, which
-is `a * sigma_t_R / sigma_t_C`, not `a` — because the two media do not share a mean free path
-in any of these pairs. `_setup` exists so that
-`critical_radius` and `flux_profile` cannot disagree about the pair they are solving — the
-flux profile must be evaluated with exactly the `g` that produced the radius, or the interface
-value is inconsistent.
+Everything works in the optical radius `a` of report eq. (1); `critical_radius` divides by
+`sigma_t` once, at the end, to hand back cm. The reflector's side of the interface is counted in
+*reflector* mean free paths, `b - d`, not in `a` — none of these pairs shares a mean free path.
+
+## Why the split is not symmetric
+
+The obvious refactor is one formula for all three theories, with the curvature terms switched
+off for Zimmerman. It would be wrong, and report Appendix A is why: (a) and (b) impose the exact
+matching conditions of the diffusion operator, while (c) transcribes a *plane* amplitude ratio
+onto a sphere and so imposes it on `r phi`. **(c) therefore does not reduce to (b) as
+`mu0_C -> mu0_R`.** That is a property of the pair of theories, not a bug to be fixed.
+
+The cost, also in Appendix A: `_fixed` does not conserve `J` at the interface. The finite-volume
+cross-check of [06](06-verification.md) is conservative by construction, so it validates
+`_continuous` and can say nothing about `_fixed`.
 
 ## The `c = 1` branch is real, not defensive
 
 Sodium is a pure scatterer, so `c_R = 1` **exactly** — not nearly. `nu0` diverges, `rate` is
-`0`, and four expressions become `0/0`. All four limits are elementary and all four are taken
-explicitly:
+`0`, and four expressions become `0/0`. All four limits are elementary and all four are taken:
 
 | function | `rate != 0` | `rate == 0` |
 |---|---|---|
-| `_coth_over_length` | `coth(L/nu0)/nu0` | `1/L` |
+| `_far_face_return` | `coth(L/nu0)/nu0` | `1/L` |
 | `_decay` | `nu0 sinh(s/nu0)` | `s` |
 | `partial_current_factor` | the two log forms | `1/2` |
 | `region` → `D0` | `abs(c-1)/rate^2` | `1/3` |
 
 Letting a near-zero `rate` divide out numerically would survive iron (`rate = 0.077`) and fail
-outright on sodium. `relaxation_rate` is the single place the `c > 1` / `c < 1` split appears,
-and it dispatches to Assignment 1's two validated solvers — see
-[05](05-assignment-1-reuse.md).
+outright on sodium.
 
-## Two small things worth not rediscovering
+## Two things worth not rediscovering
 
 **`np.sinc`.** `flux_profile` writes the core shape as `np.sinc(k0 sigma_t r / pi)`, because
-`np.sinc(x) = sin(pi x)/(pi x)` supplies the value `1` at `r = 0` that `sin(k0 a)/(k0 a)`
-cannot.
+`np.sinc(x) = sin(pi x)/(pi x)` supplies the value `1` at `r = 0` that `sin(k0 a)/(k0 a)` cannot.
 
-**The bracket is exact, not a guess.** `_residual` runs from `+inf` at `a -> 0` to `-inf` at
-`a = pi/k0`, and `pi/k0` is precisely the unreflected limit in mean free paths, so `(0, pi/k0)`
-is guaranteed to bracket the fundamental mode. `critical_radius` hands that interval straight to `brentq` with
-no widening search — unlike `sn.core._bracket`, which has no such analytic endpoint available.
-
-## The alternative that was rejected
-
-`_residual` keeps the two curvature terms, `-D0_C/a` and `+g D0_R/(b - d)`. The tempting
-alternative is to match
-`-D du/dr` instead of the true current `-D dphi/dr`: `u = r phi` obeys a planar equation, and
-Zimmerman's derivation is planar, so the substitution looks natural and cancels the term
-outright.
-
-It is not conservative. `-D du/dr` equals `r J + D phi`, so making *that* continuous conserves
-`r J + D phi` rather than `J`, and quietly leaks particles at the interface. Zimmerman's
-Eq. (9) is a statement about the physical net current.
-
-The choice is worth up to a third of the answer, so it is recorded rather than left to be
-rediscovered — Pu-239 core:
-
-| reflector | `d` [mfp] | `J` continuous | curvature dropped |
-|---|---|---|---|
-| water  | 3  | 4.3321 cm | 4.1906 cm (−3.3%) |
-| iron   | 10 | 4.1070 cm | 3.5037 cm (−14.7%) |
-| sodium | 10 | 5.3080 cm | 3.4701 cm (−34.6%) |
-
-The finite-volume cross-check in [06](06-verification.md) reproduces the left-hand column, as
-any conservative discretisation must.
+**The bracket is exact, not a guess.** Both residuals run from `+inf` at `a -> 0` to `-inf` at
+`a = pi/k0`, and `pi/k0` is precisely the unreflected limit, so `(0, pi/k0)` is guaranteed to
+bracket the fundamental mode — `brentq` gets it with no widening search, unlike
+`sn.core._bracket`.

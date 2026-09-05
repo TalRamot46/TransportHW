@@ -5,7 +5,7 @@ correct; each is something that would have failed loudly if it were not.**
 
 ## Question 1 — the reflected sphere
 
-**Against an independent discretisation.** The closed-form root of report equation (4) was
+**Against an independent discretisation.** The closed-form root of report equation (8) was
 checked against a two-region spherical finite-volume `k`-eigenvalue solve — 3000 cells,
 harmonic-mean face diffusion coefficients across the material jump, the same extrapolated-zero
 outer condition — for Pu-239 behind all three reflectors at `d = 1, 3, 10` mfp in both
@@ -13,11 +13,15 @@ continuous theories. Agreement is better than **0.4%** everywhere, and better th
 except sodium at `d = 10`, whose 124 cm extrapolation layer is the least well resolved by a
 uniform mesh.
 
+`_continuous` and `_fixed` are report eqs. (8) and (13) transcribed, and were checked to
+reproduce every published radius after the module was rewritten around them: agreement to
+better than **5e-5 cm** on the tabulated entries, i.e. every printed digit.
+
 That check is what makes the sodium anomaly of report Question 1 reportable: two independent
 discretisations of the same equation agree, so the anomaly is in the model and not in the
-solver. It also fixes the interface convention — a conservative finite-volume scheme conserves
-`J`, and it reproduces the current-continuous column of [04](04-reflected-solver.md), not the
-curvature-dropped one.
+solver. It also fixes the interface convention for the two continuous theories — a conservative finite-volume scheme conserves
+`J`, and it reproduces the eq. (8) column of [04](04-reflected-solver.md), not the eq. (13) one.
+It therefore says nothing about (c), whose curvature fixup is deliberately non-conservative.
 
 **`partial_current_factor`.** Against direct half-range integration of the discrete mode
 `psi ∝ (nu0 - mu)^-1`: agrees to **eight digits** at `c = 0.9` and `c = 0.998`. Its `c > 1`

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from scipy.optimize import brentq
 
 from homework1.criticality import extrapolation_distance, MARSHAK_EXTRAPOLATION
-from homework1.exact_solution import compute_nu0_numerical, compute_nu0_magnitude_numerical
+from homework1.exact_solution import compute_nu0_numerical, compute_k0_numerical
 
 THEORIES = ('classic', 'asymptotic', 'zimmerman')
 
@@ -21,14 +21,14 @@ class Region:
     sigma_t: float
     c: float
     D0: float
-    rate: float
+    rate: float # nu0 or k0 depending on c < 1 or c > 1 
     mu0: float
     z0: float
 
 def relaxation_rate(c):
-    """1/|nu0(c)|: the Helmholtz wavenumber above c = 1, the decay rate below it."""
+    """1/nu0(c) or 1/k0(c)."""
     if c > 1.0:
-        return 1.0 / compute_nu0_magnitude_numerical(c)
+        return 1.0 / compute_k0_numerical(c)
     if c < 1.0:
         return 1.0 / compute_nu0_numerical(c)
     # A pure scatterer neither grows nor decays; r phi is linear there. See explanations/04.
@@ -55,45 +55,71 @@ def region(material, theory):
                   float(extrapolation_distance(c)))
 
 def jump_ratio(core, reflector, theory):
-    """phi_R/phi_C at the interface: mu0_C/mu0_R for Zimmerman, 1 for the continuous pair."""
+    """The mu0 ratio in front of the reflector in report eq. (13); 1 for the continuous pair."""
     return core.mu0 / reflector.mu0 if theory == 'zimmerman' else 1.0
 
-def _coth_over_length(rate, thickness):
-    """coth(thickness/nu0)/nu0 in reflector mfp, and its 1/thickness limit at c = 1."""
+# Report eqs. (8) and (13), each written as cot(k0 a) minus its own right-hand side, so that
+# the critical a is a zero of whichever of the two applies.
+
+def _cot(x):
+    """cot(x), which numpy does not provide."""
+    return 1.0 / np.tan(x)
+
+def _far_face_return(reflector, thickness):
+    """coth([d + z0]/nu0)/nu0 in reflector mfp, and its 1/[d + z0] limit at c = 1."""
+    rate = reflector.rate
     return rate / np.tanh(rate * thickness) if rate else 1.0 / thickness
+
+def _leakage(core, reflector):
+    """D_R/(D_C k0), the factor both equations put in front of the reflector."""
+    return reflector.D0 / (core.D0 * core.rate)
+
+def _interface_in_reflector_mfp(a, core, reflector):
+    """b - d: the interface radius a, counted in reflector mean free paths instead of core."""
+    return a * reflector.sigma_t / core.sigma_t
+
+def _continuous(a, core, reflector, thickness):
+    """Report eq. (8): phi and the net current continuous, theories (a) and (b)."""
+    k0a = core.rate * a
+    curvature = 1.0 / _interface_in_reflector_mfp(a, core, reflector)
+    return (_cot(k0a) - 1.0 / k0a
+            + _leakage(core, reflector) * (_far_face_return(reflector, thickness) + curvature))
+
+def _fixed(a, core, reflector, thickness, mu_ratio):
+    """Report eq. (13): the jump imposed on r phi with j_2/1 = 1, theory (c)."""
+    return (_cot(core.rate * a)
+            + mu_ratio * _leakage(core, reflector) * _far_face_return(reflector, thickness))
+
+def _residual(a, core, reflector, thickness, mu_ratio, theory):
+    """Whichever of the two criticality equations this theory is solved from."""
+    if theory == 'zimmerman':
+        return _fixed(a, core, reflector, thickness, mu_ratio)
+    return _continuous(a, core, reflector, thickness)
 
 def _decay(rate, depth):
     """nu0 sinh(depth/nu0) in reflector mfp, which is depth itself at c = 1."""
     return np.sinh(rate * depth) / rate if rate else depth
 
-def _residual(a, core, reflector, thickness, g):
-    """Report eq. (4) at core radius a mfp; its zero in (0, pi/k0) is the critical radius."""
-    # b - d: the same interface, counted in reflector mean free paths instead of core ones.
-    b_minus_d = a * reflector.sigma_t / core.sigma_t
-    return (core.D0 * (core.rate / np.tan(core.rate * a) - 1.0 / a)
-            + g * reflector.D0 * (_coth_over_length(reflector.rate, thickness)
-                                  + 1.0 / b_minus_d))
-
 def _setup(core_material, reflector_material, theory):
-    """(core, reflector, jump ratio) of one pair under one theory."""
+    """(core, reflector, mu0_C/mu0_R) of one pair under one theory."""
     core = region(core_material, theory)
     reflector = region(reflector_material, theory)
     return core, reflector, jump_ratio(core, reflector, theory)
 
 def critical_radius(core_material, reflector_material, d, theory):
     """Critical core radius in cm behind d mean free paths of reflector."""
-    core, reflector, g = _setup(core_material, reflector_material, theory)
+    core, reflector, mu_ratio = _setup(core_material, reflector_material, theory)
 
-    # The residual runs from +infinity at a -> 0 to -infinity at a = pi/k0, the bare
+    # Both residuals run from +infinity at a -> 0 to -infinity at a = pi/k0, the bare
     # unreflected limit, so the fundamental mode is always bracketed by that interval.
     span = np.pi / core.rate
-    a = brentq(lambda a: _residual(a, core, reflector, d + reflector.z0, g),
+    a = brentq(lambda a: _residual(a, core, reflector, d + reflector.z0, mu_ratio, theory),
                1e-6 * span, span * (1.0 - 1e-12), xtol=1e-13, rtol=8.9e-16)
     return a / core.sigma_t
 
 def flux_profile(core_material, reflector_material, d, theory, n_points=400):
     """(r, phi) in cm across core and reflector at criticality, normalised to phi(0) = 1."""
-    core, reflector, g = _setup(core_material, reflector_material, theory)
+    core, reflector, mu_ratio = _setup(core_material, reflector_material, theory)
     R = critical_radius(core_material, reflector_material, d, theory)
     thickness = d + reflector.z0
 
@@ -103,7 +129,7 @@ def flux_profile(core_material, reflector_material, d, theory, n_points=400):
 
     r_ref = np.linspace(R, R + d / reflector.sigma_t, n_points)
     depth = thickness - reflector.sigma_t * (r_ref - R)
-    phi_ref = (g * phi_core[-1] * (R / r_ref)
+    phi_ref = (mu_ratio * phi_core[-1] * (R / r_ref)
                * _decay(reflector.rate, depth) / _decay(reflector.rate, thickness))
 
     return np.concatenate([r_core, r_ref]), np.concatenate([phi_core, phi_ref])
