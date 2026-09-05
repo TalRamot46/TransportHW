@@ -167,7 +167,7 @@ the second branch being the analytic continuation through $\nu_0 = i/k_0$, which
 \centering
 \begin{tabular}{lccccccc}
 \toprule
-material & $c$ & mfp (\Sigma_t^{-1}) [cm] & $k_0$ or $1/\nu_0$ & $D_0$ & $D$ [cm] & $\mu_0$ & $z_0$ \\
+material & $c$ & mfp ($\Sigma_t^{-1}$) [cm] & $k_0$ or $1/\nu_0$ & $D_0$ & $D$ [cm] & $\mu_0$ & $z_0$ \\
 \midrule
 Pu-239 & 1.5000 & 3.064  & 1.45110 & 0.23745 & 0.7275 & 0.40363 & 0.47127 \\
 U-235  & 1.3000 & 3.064  & 1.05708 & 0.26847 & 0.8225 & 0.43639 & 0.54552 \\
@@ -545,15 +545,13 @@ with the diamond closure $\psi_{i,m} = \tfrac12\left(\psi_{i+1/2,m}+\psi_{i-1/2,
 relating the cell centre to its two faces. Which face is the outflow depends on the sign of
 $\mu_m$, and that is the whole of the difference between the two sweeps.
 
-\textcolor{blue}{\emph{Forward sweep}, $\mu_m>0$: the flux enters at $x_{i-1/2}$ and leaves at
-$x_{i+1/2}$, so the closure is used as $\psi_{i+1/2,m}=2\psi_{i,m}-\psi_{i-1/2,m}$. Substituting
-it into \eqref{eq:slabbalance} removes the outgoing face,}
-\begin{equation}
-    \mu_m\left(2\psi_{i,m}-2\psi_{i-\frac12,m}\right) + \Sigma_t \Delta x\,\psi_{i,m}
-    = \frac{S_i}{2}\Delta x
-\end{equation}
-\textcolor{blue}{and collecting $\psi_{i,m}$ gives the cell centre and then, from the closure
-again, the flux handed to the next cell $i+1$:}
+\begin{notebox}[Derivation of the sweeping formulas][blue]
+\emph{Forward sweep}, $\mu_m>0$: the flux enters at $x_{i-1/2}$ and leaves at $x_{i+1/2}$, so
+the closure is used as $\psi_{i+1/2,m}=2\psi_{i,m}-\psi_{i-1/2,m}$. Substituting it into
+\eqref{eq:slabbalance} removes the outgoing face, leaving
+$2\mu_m\left(\psi_{i,m}-\psi_{i-1/2,m}\right)+\Sigma_t\Delta x\,\psi_{i,m}=\tfrac12 S_i\Delta x$.
+Collecting $\psi_{i,m}$ gives the cell centre, and the closure again gives the flux handed to
+cell $i+1$:
 \begin{equation}
     \psi_{i,m} = \frac{\tfrac12 S_i \Delta x + 2\mu_m\,\psi_{i-\frac12,m}}
                       {\Sigma_t \Delta x + 2\mu_m},
@@ -561,13 +559,12 @@ again, the flux handed to the next cell $i+1$:}
     \psi_{i+\frac12,m} = 2\psi_{i,m} - \psi_{i-\frac12,m}
     \label{eq:slabsweep}
 \end{equation}
-\textcolor{blue}{marched from $x=0$ outwards, starting from the reflected flux there.}
+marched from $x=0$ outwards, starting from the reflected flux there.
 
-\textcolor{blue}{\emph{Backward sweep}, $\mu_m<0$: the roles swap. Writing $\mu_m=-|\mu_m|$ turns
-the leading term of \eqref{eq:slabbalance} into
-$|\mu_m|(\psi_{i-1/2,m}-\psi_{i+1/2,m})$, so the flux enters at $x_{i+1/2}$ and leaves at
-$x_{i-1/2}$, and the closure is used the other way round,
-$\psi_{i-1/2,m}=2\psi_{i,m}-\psi_{i+1/2,m}$:}
+\emph{Backward sweep}, $\mu_m<0$: the roles swap. Writing $\mu_m=-|\mu_m|$ turns the leading
+term of \eqref{eq:slabbalance} into $|\mu_m|(\psi_{i-1/2,m}-\psi_{i+1/2,m})$, so the inflow is
+now at $x_{i+1/2}$ and the closure is used the other way round,
+$\psi_{i-1/2,m}=2\psi_{i,m}-\psi_{i+1/2,m}$:
 \begin{equation}
     \psi_{i,m} = \frac{\tfrac12 S_i \Delta x + 2|\mu_m|\,\psi_{i+\frac12,m}}
                       {\Sigma_t \Delta x + 2|\mu_m|},
@@ -575,15 +572,15 @@ $\psi_{i-1/2,m}=2\psi_{i,m}-\psi_{i+1/2,m}$:}
     \psi_{i-\frac12,m} = 2\psi_{i,m} - \psi_{i+\frac12,m}
     \label{eq:slabsweepback}
 \end{equation}
-\textcolor{blue}{marched from the vacuum face at $x=a/2$ inwards, starting from
-$\psi_{I+1/2,m}=0$. The two are the same formula with the inflow face exchanged, which is why
-one $|\mu_m|$ serves both.}
+marched inwards from the vacuum face at $x=a/2$, where $\psi_{I+1/2,m}=0$. The two are one
+formula with the inflow face exchanged, which is why a single $|\mu_m|$ serves both.
+\end{notebox}
 
 \paragraph{Space, sphere.} The spherical equation carries an angular redistribution term, that can be seen in Eq. (2.46) in Pomraning's book (pg. 30):
 \begin{equation}
     \mu \frac{\partial \psi}{\partial r} + \frac{1-\mu^2}{r}\frac{\partial \psi}{\partial \mu} + \Sigma_t \psi = \frac{S}{2}
 \end{equation}
-whose conservative form integrates over the cell $(r,\mu)\in[r_{i-1/2}, r_{i+1/2}]\times[\mu_{m-1/2}, \mu_{m+1/2}]$ to
+whose \texttt{conservative} form (not discussed here) integrates over the cell $(r,\mu)\in[r_{i-1/2}, r_{i+1/2}]\times[\mu_{m-1/2}, \mu_{m+1/2}]$ to
 \begin{equation}
     \mu_m\left(A_{i+\frac12}\psi_{i+\frac12,m} - A_{i-\frac12}\psi_{i-\frac12,m}\right)
     + \beta_{i,m}\left(\alpha_{m+\frac12}\psi_{i,m+\frac12} - \alpha_{m-\frac12}\psi_{i,m-\frac12}\right)
@@ -598,20 +595,18 @@ $\beta_{i,m} = \left(A_{i+1/2}-A_{i-1/2}\right)/w_m$. The angular coefficients f
 \end{equation}
 The recursion needs a starting value $\psi_{i,1/2}$ at $\mu_{1/2}=-1$, where $1-\mu^2=0$ and the angular derivative drops out; what remains, $-\partial \psi/\partial r + \Sigma_t \psi = S/2$, is \eqref{eq:slabsweepback} at $|\mu|=1$, run inwards from the vacuum boundary.
 
-\textcolor{blue}{\paragraph{The two faces of a spherical cell.} Equation \eqref{eq:sphbalance} is
-\eqref{eq:slabbalance} with a second outgoing face. They are not alike and it is worth naming
-them separately:}
+\begin{notebox}[Sweeping mechanism for spherical shells][blue]
+Equation \eqref{eq:sphbalance} is \eqref{eq:slabbalance} with a second outgoing face. The two
+are not alike, and it is worth naming them apart:
 \begin{itemize}
-    \item \textcolor{blue}{the \emph{radial face}, weighted by the two shell areas
-    $A_{i\pm1/2}$, whose outflow feeds the \textbf{next radial cell} of the same ordinate.
-    Which of the two areas is the outflow depends on the sign of $\mu_m$, exactly as in the
-    slab;}
-    \item \textcolor{blue}{the \emph{angular face}, weighted by the two coefficients
-    $\alpha_{m\pm1/2}$ of the angular bin, whose outflow feeds the \textbf{next ordinate} in
-    the same cell. This one never swaps: $d\mu/ds\ge0$ means $\mu$ only increases, so the
-    inflow is always at $m-\tfrac12$ and the outflow always at $m+\tfrac12$.}
+    \item the \emph{radial face}, weighted by the shell areas $A_{i\pm1/2}$, whose outflow
+    feeds the \textbf{next radial cell} at the same ordinate. Which area is the outflow depends
+    on the sign of $\mu_m$, exactly as in the slab;
+    \item the \emph{angular face}, weighted by the coefficients $\alpha_{m\pm1/2}$ of the
+    angular bin, whose outflow feeds the \textbf{next ordinate} in the same cell. This one
+    never swaps: $d\mu/ds\ge0$, so the inflow is always at $m-\tfrac12$.
 \end{itemize}
-\textcolor{blue}{Each closes with its own diamond relation,}
+Each closes with its own diamond relation,
 \begin{align}
     \psi_{i+\frac12,m} &= 2\psi_{i,m} - \psi_{i-\frac12,m}
         \quad (\mu_m>0), \qquad
@@ -621,18 +616,16 @@ them separately:}
         \label{eq:closmu}
 \end{align}
 
-\textcolor{blue}{Take the forward sweep, $\mu_m>0$, so that the radial outflow is
-$A_{\text{out}}=A_{i+1/2}$ and the inflow $A_{\text{in}}=A_{i-1/2}$. Substituting
-\eqref{eq:closr} and \eqref{eq:closmu} into \eqref{eq:sphbalance} eliminates both outgoing
-fluxes at once:}
-\begin{multline}
+Take the forward sweep, $\mu_m>0$, so the radial outflow is $A_{\text{out}}=A_{i+1/2}$ and the
+inflow $A_{\text{in}}=A_{i-1/2}$. Substituting \eqref{eq:closr} and \eqref{eq:closmu} into
+\eqref{eq:sphbalance} eliminates both outgoing fluxes at once,
+\begin{multline*}
     \mu_m\left(2A_{\text{out}}\psi_{i,m} - \left(A_{\text{out}}+A_{\text{in}}\right)\psi_{i-\frac12,m}\right) \\
     + \beta_{i,m}\left(2\alpha_{m+\frac12}\psi_{i,m} - \left(\alpha_{m+\frac12}+\alpha_{m-\frac12}\right)\psi_{i,m-\frac12}\right)
     + \Sigma_t V_i \psi_{i,m} = \frac{S_i}{2}V_i
-    \label{eq:sphcollect}
-\end{multline}
-\textcolor{blue}{Every term now carries either $\psi_{i,m}$ or a known inflow, so collecting
-$\psi_{i,m}$ on the left gives the cell solve outright:}
+\end{multline*}
+leaving every term carrying either $\psi_{i,m}$ or a known inflow, so collecting $\psi_{i,m}$
+gives the cell solve outright:
 \begin{equation}
     \boxed{\;
     \psi_{i,m} = \frac{\tfrac12 S_i V_i
@@ -641,16 +634,15 @@ $\psi_{i,m}$ on the left gives the cell solve outright:}
         {\Sigma_t V_i + 2\mu_m A_{\text{out}} + 2\beta_{i,m}\alpha_{m+\frac12}}\;}
     \label{eq:cellflux}
 \end{equation}
-\textcolor{blue}{and \eqref{eq:closr} and \eqref{eq:closmu} then hand on the two fluxes the
-march needs next --- $\psi_{i+1/2,m}$ to radial cell $i+1$, and $\psi_{i,m+1/2}$ to ordinate
-$m+1$. The backward sweep is \eqref{eq:cellflux} with $A_{\text{out}}=A_{i-1/2}$,
-$A_{\text{in}}=A_{i+1/2}$, $\mu_m$ replaced by $|\mu_m|$ and the radial inflow taken as
-$\psi_{i+1/2,m}$; the angular half of the formula is untouched. Setting
+and \eqref{eq:closr} and \eqref{eq:closmu} then hand on the two fluxes the march needs next:
+$\psi_{i+1/2,m}$ to radial cell $i+1$, and $\psi_{i,m+1/2}$ to ordinate $m+1$. The backward
+sweep is \eqref{eq:cellflux} with the two areas exchanged, $\mu_m$ replaced by $|\mu_m|$ and
+the radial inflow taken as $\psi_{i+1/2,m}$; the angular half is untouched. Setting
 $A_{\text{out}}=A_{\text{in}}=1$, $V_i=\Delta x$ and $\alpha_{m\pm1/2}=0$ returns
-\eqref{eq:slabsweep} exactly, which is the check that the two cell solves are the same
-balance. \textbf{In code they are kept apart on purpose: \texttt{sn.slab.cell\_flux} takes one
-inflow, \texttt{sn.sphere.cell\_flux} takes a \texttt{radial\_face} and an
-\texttt{angular\_face}.}}
+\eqref{eq:slabsweep} exactly, which is the check that the two cell solves are the same balance.
+\textbf{In code they are kept apart on purpose: \texttt{sn.slab.cell\_flux} takes one inflow,
+\texttt{sn.sphere.cell\_flux} takes a \texttt{radial\_face} and an \texttt{angular\_face}.}
+\end{notebox}
 
 
 \paragraph{Fixup.} Whenever a diamond outgoing flux $2\psi_{i,m}-\psi_{\text{in}}$ of \eqref{eq:closr} or \eqref{eq:closmu} comes out negative it is set to zero and the cell balance is re-solved with it held there, in angle as well as in space. Frankly, this never occurs in Questions 3--5: the fission source is proportional to the flux itself, so no cell is ever starved, and a critical system is thin enough that $\Sigma_t \Delta x / |\mu_m| < 2$ at every ordinate.
@@ -665,7 +657,6 @@ inflow, \texttt{sn.sphere.cell\_flux} takes a \texttt{radial\_face} and an
 Dividing the fission source by $k$ makes a solution exist at \emph{every} system size, so criticality becomes a root search: \texttt{brentq} on $k(\text{size})-1$, which costs 8 evaluations of $k$.
 
 
-{\color{blue}
 \begin{algorithm}[H]
 \caption{One transport solve --- backward ordinates, then forward ones ---
          \texttt{homework3.sn.slab} / \texttt{homework3.sn.sphere}}
@@ -721,13 +712,11 @@ Dividing the fission source by $k$ makes a solution exist at \emph{every} system
 \tcc{The radial face swaps with the sign of $\mu_m$; the angular face never does --- its
      inflow is always $\psi_{i,m-1/2}$ and its outflow always $\psi_{i,m+1/2}$.}
 \end{algorithm}
-}
 
 % This one floats rather than taking [H]: it does not fit under Algorithm 2, and [H] would
 % place it anyway and overrun the footer. The \color is inside the float, not around it --
 % a float is shipped out after an enclosing colour group has closed and would come out black.
 \begin{algorithm}[tbp]
-\color{blue}
 \caption{The two iterations --- scattering inside, Bell \& Glasstone outside ---
          \texttt{homework3.sn.core}}
 \label{alg:snk}
@@ -762,13 +751,13 @@ Dividing the fission source by $k$ makes a solution exist at \emph{every} system
 \end{algorithm}
 
 \begin{sloppypar}
-\textcolor{blue}{Every name in Algorithms~\ref{alg:sweep} and~\ref{alg:snk} is the identifier
+Every name in Algorithms~\ref{alg:sweep} and~\ref{alg:snk} is the identifier
 the code uses. \texttt{sweep\_backward}, \texttt{sweep\_forward},
 \texttt{sweep\_all\_angles} and
 \texttt{\_starting\_direction} are methods of \texttt{sn.slab.SlabSolver} and
 \texttt{sn.sphere.SphereSolver} --- the two geometries supply them independently, which is why
 everything in \texttt{sn.core} is written against neither. Three nested loops, and not one
-matrix among them.}
+matrix among them.
 \end{sloppypar}
 
 \FloatBarrier
@@ -818,7 +807,6 @@ In slab geometry the two are algebraically the same interior equations. Expandin
 \end{itemize}
 With Mark conditions the two agree; with Marshak they do not. Concretely at $c=1.5$: $S_2$ above gives $a/2 = 0.78001$, and $P_1$ with the Mark extrapolation $l_0=1/\sqrt3$ gives $\arctan(1/Bl_0)/B = 0.78001$ --- the same five digits --- while $P_1$ with the Marshak $l_0 = 2/3$ gives $0.72348$, a 7\% spread between two methods that share every interior equation.
 
-{\color{green!55!black}
 Question 2 supplies the rest of that comparison, since it solves the same slab at
 $N = 1,3,5,9$ under Marshak conditions:
 
@@ -848,19 +836,23 @@ $c$ & pair & $P_N$ (Marshak) & $S_{N+1}$ (Mark) & $S_{N+1}/P_N - 1$ & exact tran
 $S_{N+1}$ partner and closer to the exact value, and the gap closes as $N$ grows.}
 \end{table}
 
-Three things in that table follow from the argument above. \textbf{The sign of the gap is the
-sign of $l_0$}: Marshak's extrapolation $2/3$ is longer than Mark's $1/\sqrt3 = 0.577$, so the
-$P_N$ flux is driven to zero further outside the slab and less material is needed --- $P_N$ is
-below $S_{N+1}$ at every one of the twelve entries. \textbf{The gap is a boundary effect, so it
-shrinks with $N$}, from $5$--$9\%$ at $N=1$ to under $1\%$ at $N=9$; by then both boundary
-conditions are resolving the same half-range flux and the choice between them stops mattering.
-And \textbf{it grows with $c$} at fixed $N$ --- $5.13\%$, $7.81\%$, $9.33\%$ at $N=1$ ---
-because a larger $c$ means a thinner slab, a shorter relaxation length and a more forward-peaked
-surface flux, which is exactly the shape a half-range condition of low order cannot capture.
-The whole difference is worth at most a factor of two in either method's error: at $c=1.5$,
-$P_9$ is $+0.23\%$ from the true $0.605055$ mfp where $S_{10}$ is $+0.66\%$, so a $P_N$ solve
-buys roughly the accuracy of an $S_N$ solve of the next order up.
-}
+\begin{notebox}[Three things in the table that follow from the argument above][blue]
+\begin{enumerate}
+    \item \textbf{The sign of the gap is the sign of $l_0$.} Marshak's extrapolation $2/3$ is
+    longer than Mark's $1/\sqrt3 = 0.577$, so the $P_N$ flux is driven to zero further outside
+    the slab and less material is needed --- $P_N$ is below $S_{N+1}$ at every one of the
+    twelve entries.
+
+    \item \textbf{The gap is a boundary effect, so it shrinks with $N$}, from $5$--$9\%$ at
+    $N=1$ to under $1\%$ at $N=9$; by then both boundary conditions are resolving the same
+    half-range flux and the choice between them stops mattering.
+
+    \item \textbf{It grows with $c$} at fixed $N$ --- $5.13\%$, $7.81\%$, $9.33\%$ at $N=1$ ---
+    because a larger $c$ means a thinner slab, a shorter relaxation length and a more
+    forward-peaked surface flux, which is exactly the shape a half-range condition of low order
+    cannot capture.
+\end{enumerate}
+\end{notebox}
 
 All of that is a statement about \emph{slabs}. In the sphere the equivalence fails at the interior equations themselves: the angular derivative $\frac{1-\mu^2}{r}\frac{\partial\psi}{\partial\mu}$ couples the Legendre moments in a different pattern from the way the $\alpha$ recursion of \eqref{eq:sphbalance} couples the ordinates, so $P_1$ and $S_2$ are genuinely different approximations there rather than the same one under two boundary conditions.
 
@@ -900,56 +892,98 @@ $c$ & order & $R_c$ [mfp] & exact transport [mfp] & departure \\
 \caption{The same three panels for the sphere. The $S_2$ curve is the outlier in all three: in curvilinear geometry $S_2$ is not the $P_1$ equation, and the angular redistribution term it misrepresents is a loss from the interior directions.}
 \end{figure}
 
-\paragraph{Cross-check between the two geometries.} Both drive the asymptotic flux to zero at the same extrapolated surface, so $a/2 + z_0 = \tfrac{\pi}{2}\nu_0$ and $R_c + z_0 = \pi \nu_0$, and therefore
-\begin{equation}
-    z_0 = R_c - 2\,(a/2)
-\end{equation}
-which lets the two tables above check each other without any further calculation:
+
+\FloatBarrier
+\section*{Question 5: Critical mass of U-235 and Pu-239 by $S_N$}
+
+The cross sections are the Question 5 table of Assignment 1 --- $\Sigma_t = 0.32640$ cm$^{-1}$ for both, giving $c = 1.500$ for Pu-239 and $c = 1.300$ for U-235 --- and the critical mass follows from the converged radius as $M_c = \tfrac{4}{3}\pi R_c^3 \rho$. Here $\Sigma_s > 0$, so the inner iteration does real work: about ten sweeps per outer, against one for the $c$-only problems above.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ccccc}
+\toprule
+material & order & $R_c$ [cm] & change [cm] & $M_c$ [kg] \\
+\midrule
+Pu-239 & $S_2$    & 4.92418 &           & 7.8522 \\
+Pu-239 & $S_4$    & 5.10842 & $+0.18423$ & 8.7669 \\
+Pu-239 & $S_8$    & 5.15863 & $+0.05021$ & 9.0280 \\
+Pu-239 & $S_{16}$ & 5.17298 & $+0.01435$ & 9.1035 \\
+Pu-239 & $S_{32}$ & 5.17693 & $+0.00395$ & 9.1244 \\
+Pu-239 & $S_{64}$ & 5.17797 & $+0.00103$ & 9.1299 \\
+\midrule
+U-235 & $S_2$    & 7.12179 &           & 28.7481 \\
+U-235 & $S_4$    & 7.35140 & $+0.22961$ & 31.6193 \\
+U-235 & $S_8$    & 7.40721 & $+0.05581$ & 32.3449 \\
+U-235 & $S_{16}$ & 7.42305 & $+0.01585$ & 32.5529 \\
+U-235 & $S_{32}$ & 7.42744 & $+0.00439$ & 32.6107 \\
+U-235 & $S_{64}$ & 7.42860 & $+0.00115$ & 32.6259 \\
+\bottomrule
+\end{tabular}
+\caption{The $S_N$ ladder. The change column falls by roughly a factor of four at every doubling of $N$ --- the measured ratios are $3.7$, $3.5$, $3.6$, $3.8$ --- which is the second-order convergence in $1/N$ the quadrature should have. The last rung moves the radius by $1\times10^{-3}$ cm, and fitting $A/N^2$ to the last two increments puts the error remaining at $S_{64}$ near $3.4\times10^{-4}$ cm for Pu-239 and $3.8\times10^{-4}$ cm for U-235 --- well inside the four decimals the comparison below prints.}
+\end{table}
 
 \begin{table}[htbp]
 \centering
 \begin{tabular}{cccccc}
 \toprule
-$c$ & from $S_2$ & from $S_4$ & from $S_6$ & from $S_{10}$ & Case's table \\
+material & $c$ & method & $R_c$ [cm] & $M_c$ [kg] & vs converged $S_N$ \\
 \midrule
-1.2 & 0.091 & 0.509 & 0.563 & 0.583 & 0.592 \\
-1.5 & 0.047 & 0.368 & 0.438 & 0.468 & 0.475 \\
-1.8 & 0.032 & 0.287 & 0.354 & 0.391 & 0.397 \\
+Pu-239 & 1.500 & converged $S_{64}$   & 5.1780 & 9.130  & --- \\
+Pu-239 & 1.500 & classical diffusion  & 5.8163 & 12.940 & $+12.33\%$ \\
+Pu-239 & 1.500 & asymptotic diffusion & 5.1890 & 9.188  & $+0.21\%$ \\
+Pu-239 & 1.500 & asymptotic + Milne   & 5.1780 & 9.130  & $+0.0006\%$ \\
+\midrule
+U-235 & 1.300 & converged $S_{64}$   & 7.4286 & 32.626 & --- \\
+U-235 & 1.300 & classical diffusion  & 8.1031 & 42.345 & $+9.08\%$ \\
+U-235 & 1.300 & asymptotic diffusion & 7.4339 & 32.696 & $+0.07\%$ \\
+U-235 & 1.300 & asymptotic + Milne   & 7.4289 & 32.630 & $+0.0037\%$ \\
 \bottomrule
 \end{tabular}
-\caption{Extrapolation distance $z_0$ implied by the two geometries, in mean free paths. At $S_{10}$ it is 1.5\% below Case's value at all three $c$ --- the same shortfall three times, which is the relation's own asymptotic error. At $S_2$ it nearly vanishes, which is the sharpest statement of what low-order $S_N$ gets wrong: the boundary, not the interior.}
+\caption{The four methods on the same two spheres. Classical diffusion is out by 9--12\% in radius, which the cube turns into 30--42\% in mass; asymptotic diffusion recovers all but a fifth of a percent; and the asymptotic + Milne relation is inside $4\times10^{-5}$ of the converged transport answer.}
 \end{table}
 
-\FloatBarrier
-\section*{Question 5: Critical mass of U-235 and Pu-239 by $S_N$}
 
-The cross sections are the Question 5 table of Assignment 1 --- $\Sigma_t = 0.32640$ cm$^{-1}$ for both, giving $c = 1.500$ for Pu-239 and $c = 1.300$ for U-235 --- and the critical mass follows from the converged radius as $M_c = \tfrac{4}{3}\pi R_c^3 \rho$. Here $\Sigma_s > 0$, so the inner iteration does real work: about ten sweeps per outer, against one for the $c$-only problems above. The orders are $S_2$ to $S_{16}$ rather than the $S_2$--$S_{10}$ of the previous questions, since the mass goes as the cube of the radius and is the more demanding quantity.
+\FloatBarrier
+\section*{Every closed form against converged $S_N$}
+
+Assignment 1 Question 3 produced five closed forms for the critical size, all of them the same
+extrapolated-endpoint relation $\tfrac{a}{2} = \tfrac{\pi}{2}\ell - z_0$, or
+$\Sigma_t R_c = \pi\ell - z_0$ in the sphere, under different choices
+of the relaxation length $\ell$ and the extrapolation distance $z_0$. None is a transport
+calculation. Questions 3 and 4 above provide the transport answer they were missing, so this is
+the place to settle what each is worth.
 
 \begin{table}[htbp]
 \centering
-\begin{tabular}{ccccccc}
+\begin{tabular}{lrrrr}
 \toprule
-material & order & $c$ & $R_c$ [cm] & $M_c$ [kg] & asympt.\ diffusion $R_c$ [cm] & departure \\
+ & \multicolumn{2}{c}{slab, $a/2$ [mfp]} & \multicolumn{2}{c}{sphere, $\Sigma_t R_c$ [mfp]} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+method & value & vs $S_N$ & value & vs $S_N$ \\
 \midrule
-Pu-239 & $S_2$    & 1.500 & 4.9242 & 7.852 & 5.1890 & $-5.10\%$ \\
-Pu-239 & $S_4$    & 1.500 & 5.1084 & 8.767 & 5.1890 & $-1.55\%$ \\
-Pu-239 & $S_8$    & 1.500 & 5.1586 & 9.028 & 5.1890 & $-0.59\%$ \\
-Pu-239 & $S_{16}$ & 1.500 & 5.1730 & 9.104 & 5.1890 & $-0.31\%$ \\
+\multicolumn{5}{l}{\emph{$c = 1.2$}} \\
+(a) = (d) exact transport & 1.2898 & $+0.03\%$ & 3.1720 & $-0.00\%$ \\
+(b) classical, Marshak & 1.3612 & $+5.57\%$ & 3.3891 & $+6.84\%$ \\
+(c) classical, Mark & 1.4505 & $+12.50\%$ & 3.4784 & $+9.66\%$ \\
+(e) asymptotic, $\mu_0$ closure & 1.3017 & $+0.95\%$ & 3.1839 & $+0.37\%$ \\
+converged $S_{160}$ & 1.2894 & --- & 3.1721 & --- \\
 \midrule
-U-235 & $S_2$    & 1.300 & 7.1218 & 28.748 & 7.4339 & $-4.20\%$ \\
-U-235 & $S_4$    & 1.300 & 7.3514 & 31.619 & 7.4339 & $-1.11\%$ \\
-U-235 & $S_8$    & 1.300 & 7.4072 & 32.345 & 7.4339 & $-0.36\%$ \\
-U-235 & $S_{16}$ & 1.300 & 7.4231 & 32.553 & 7.4339 & $-0.15\%$ \\
+\multicolumn{5}{l}{\emph{$c = 1.5$}} \\
+(a) = (d) exact transport & 0.6076 & $+0.42\%$ & 1.6901 & $-0.00\%$ \\
+(b) classical, Marshak & 0.6159 & $+1.79\%$ & 1.8984 & $+12.32\%$ \\
+(c) classical, Mark & 0.7052 & $+16.55\%$ & 1.9877 & $+17.61\%$ \\
+(e) asymptotic, $\mu_0$ closure & 0.5955 & $-1.58\%$ & 1.6780 & $-0.72\%$ \\
+converged $S_{160}$ & 0.6051 & --- & 1.6902 & --- \\
+\midrule
+\multicolumn{5}{l}{\emph{$c = 1.8$}} \\
+(a) = (d) exact transport & 0.3931 & $+1.12\%$ & 1.1830 & $-0.03\%$ \\
+(b) classical, Marshak & 0.3473 & $-10.68\%$ & 1.3612 & $+15.04\%$ \\
+(c) classical, Mark & 0.4366 & $+12.30\%$ & 1.4505 & $+22.59\%$ \\
+(e) asymptotic, $\mu_0$ closure & 0.3699 & $-4.85\%$ & 1.1598 & $-1.99\%$ \\
+converged $S_{160}$ & 0.3888 & --- & 1.1833 & --- \\
 \bottomrule
 \end{tabular}
-\caption{Critical radius and mass, against the asymptotic diffusion result of Assignment 1 Question 5. The mass is the cube of the radius, so the $5\%$ radius error of $S_2$ is a $14\%$ error in mass.}
+\caption{Assignment 1's parts 3(a)--3(e) against the $S_N$ solver of Questions 3 and 4, run to
+$S_{160}$ on 800 cells. Both geometries, same materials, same $c$.}
 \end{table}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=\textwidth]{figs/q5_critical_mass.pdf}
-\caption{$k$ against sphere radius at $S_{16}$, with the $k=1$ crossing that fixes the critical mass.}
-\end{figure}
-
-Diffusion overestimates both radii, and by more for Pu-239 than for U-235: the surface sits about two mean free paths from the centre in both cases, but the higher $c$ makes the Pu-239 flux fall off faster and its surface angular flux more forward-peaked, which is exactly what a diffusion approximation cannot represent. $S_{16}$ recovers the difference to within $0.3\%$ of the transport-theory radius.
 \end{document}
