@@ -1,7 +1,7 @@
 # 05 — Verification
 
-**Six checks in `main.py`, run on every invocation. There is no separate test file, so these
-are the whole safety net — the numbers below are from the current code.**
+**Eleven checks in `main.py`, run on every invocation. There is no separate test file, so
+these are the whole safety net — the numbers below are from the current code.**
 
 ## 1. Normalisation — `check_normalisation`
 
@@ -71,3 +71,65 @@ Falling roughly as `1/t`, which is the expected approach. This is the only check
 and it is the quantitative form of the report's central claim — that diffusion is the
 late-time limit of transport, and the `t = 1 … 15` figures sit in the range where it is not yet
 reached.
+
+## 7. Solver conservation — `check_solver_conservation`
+
+`2 * trapezoid(u, x)` against `e^{-(1-c)t}`, over `c = 0.6, 1.0, 1.5` and `t = 1, 4, 15`. The
+relative error is between `0` and `1.1e-15` in all nine cases — round-off, not discretisation.
+
+That is not an accuracy result but a structural one: report eq. (45) says the only leak is
+`-r h u[N-1]` at the far boundary, and the truncation is placed where `u[N-1]` is denormal. A
+wrong factor in the symmetry row would break this immediately while leaving every plot looking
+right, which is what the check is for.
+
+## 8. Solver against the closed form — `check_solver_against_closed_form`
+
+Max relative error within three standard deviations:
+
+| `t` | 1 | 4 | 15 |
+|---|---|---|---|
+| error | 1.52e-3 | 3.81e-4 | 1.02e-4 |
+
+identical for every `c`, which is the expected answer rather than a suspicious one: with the
+classical `D = 1/3` the grid does not depend on `c` at all, and the absorption prefactor
+cancels in a *relative* error.
+
+The error falls as `1/t` — the signature of a fixed offset in the variance of the computed
+Gaussian, whose relative effect decays as the true variance `2Dvt` grows. Check 11 shows that
+offset is not the smeared source, so what is left is the scheme's own truncation.
+
+## 9. Solver order — `check_solver_order`
+
+Bulk error at `t = 4` against the node count, at fixed `r`:
+
+| `N` | 500 | 1000 | 2000 |
+|---|---|---|---|
+| error | 1.007e-3 | 2.586e-4 | 6.466e-5 |
+| ratio | — | 3.89 | 4.00 |
+
+Second order, as the `O(dt) + O(h^2)` truncation with `dt ~ h^2` requires. This is the check
+that would fail if the `j = 0` row were only first-order accurate — a mistake that leaves
+conservation intact and so slips past check 7.
+
+## 10. The stability edge — `check_solver_stability_edge`
+
+400 sweeps of an isolated spike on 101 nodes, either side of `r = 1/2`:
+
+| `r` | 0.49 | 0.51 |
+|---|---|---|
+| peak amplitude | 2.014e-2 | 1.310e5 |
+
+Seven orders of magnitude apart across a 4% change in `r`. Report eq. (41) predicts exactly
+this: past the limit the `theta = pi` mode grows as `|1-4r|^n`, so the scheme does not lose
+accuracy, it explodes.
+
+## 11. The source treatment — `check_solver_source_treatment`
+
+Starting from the smeared delta versus from the analytic Gaussian at `WARM_T0`, compared at
+`t = 4`: the two agree to `8.08e-7`, against a discretisation error of `6.47e-5` at the same
+point.
+
+**This is the empirical form of report eq. (43).** The source treatment sits nearly two orders
+of magnitude below what limits the solver, so smoothing the initial spike — into a half-Gaussian
+or anything else — would buy nothing. It also rules out the opposite worry: that the first cell
+being the entire source leaves a defect the march never recovers from.

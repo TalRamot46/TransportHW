@@ -135,7 +135,7 @@ Define
 \end{equation}
 and apply both to \eqref{eq:vform} term by term, with $\phi(x,0^-) = 0$:
 \begin{align}
-    \frac{\partial \phi}{\partial t} &\;\longrightarrow\; s\,\tilde{\phi} - \hat{\phi}(k,0^-) = s\,\tilde{\phi} \\
+    \frac{\partial \phi}{\partial t} &\;\longrightarrow\; s\,\tilde{\phi} - \hat{\phi}(k,0^-) = s\,\tilde{\phi} \\W
     -Dv\frac{\partial^2 \phi}{\partial x^2} &\;\longrightarrow\; Dvk^2\,\tilde{\phi} \\
     v\Sigma_a\,\phi &\;\longrightarrow\; v\Sigma_a\,\tilde{\phi} \\
     v\,\delta(x)\delta(t) &\;\longrightarrow\; v
@@ -197,5 +197,131 @@ plotted; all three solutions are even in $x$.
     \includegraphics[width=\textwidth]{figs/q3_comparison_c1.5.pdf}
     \caption{$c = 1.5$.}
 \end{figure}
+
+% >>> BLUE BLOCK: part 3(c), added for review. Delete this line, the {\color{blue}
+% below, and the matching brace marked "END BLUE BLOCK" to accept it.
+{\color{blue}
+\subsection*{Part 3(c): the numerical solution}
+\label{sec:numerical}
+
+Part 3(c) asks for \eqref{eq:vform} solved numerically for $t>0$ on the whole line. Before
+discretising, the absorption is removed exactly, as in Step 2: with
+$\phi(x,t) = e^{-v\Sigma_a t}u(x,t)$ the term $v\Sigma_a\phi$ cancels identically and what is
+left is the pure heat equation carrying the pulse as its initial condition,
+\begin{equation}
+    \frac{\partial u}{\partial t} = Dv\frac{\partial^2 u}{\partial x^2},
+    \qquad u(x,0^+) = v\,\delta(x)
+    \label{eq:heat}
+\end{equation}
+This is exact, not an approximation, and it is worth doing: $c$ then enters only through $D$
+and through the prefactor reapplied on the way out, so one solver covers both approximations
+and every $c$, including $c>1$ where the prefactor grows instead of decaying.
+
+All three solutions are even in $x$, so \eqref{eq:heat} is solved on the half domain $[0,L]$
+with the symmetry condition $\partial u/\partial x = 0$ at $x=0$ and the truncation $u(L,t)=0$.
+The Gaussian has variance $\sigma^2 = 2Dvt$, so taking
+\begin{equation}
+    L = x_{\max} + 8\sqrt{2Dv\,t_{\max}}
+\end{equation}
+places the truncation eight standard deviations beyond the last point to be plotted, where the
+solution is of order $e^{-32}$ of its peak.
+
+\paragraph{The grid, and the discrete pulse.} Take nodes $x_j = jh$, $j = 0\ldots N$ with
+$h = L/N$, and levels $t^n = n\Delta t$. On a node-centred grid the trapezoid weight of node
+$0$ on the half line is $h/2$, and the full-line integral is twice the half-line one, so the
+cell straddling the origin carries total weight $h$:
+\begin{equation}
+    \int_{-\infty}^{\infty} u(x,0)\,dx \;\approx\; 2\cdot\frac{h}{2}\,u_0^0 \;=\; h\,u_0^0
+    \;\overset{!}{=}\; v
+    \qquad\Longrightarrow\qquad
+    u_0^0 = \frac{v}{h}, \quad u_{j\ge1}^0 = 0
+    \label{eq:ic}
+\end{equation}
+so the spike of height $v/h$ in the first cell is the correctly normalised delta --- the
+factor of two from the symmetry and the half-weight of the boundary node cancel.
+
+\paragraph{The update.} Central second differences in space, evaluated at the old level, give
+the explicit scheme. With $r = Dv\,\Delta t/h^2$,
+\begin{align}
+    u_j^{n+1} &= u_j^n + r\left(u_{j-1}^n - 2u_j^n + u_{j+1}^n\right), \qquad 1 \le j \le N-1
+    \label{eq:ftcs} \\
+    u_0^{n+1} &= u_0^n + 2r\left(u_1^n - u_0^n\right) \\
+    u_N^{n+1} &= 0
+\end{align}
+the row at $j=0$ following from the symmetry condition written as the ghost value
+$u_{-1} = u_1$.
+
+\paragraph{Stability.} Substituting the Fourier mode $u_j^n = \xi^n e^{ij\theta}$ into
+\eqref{eq:ftcs} gives the amplification factor
+\begin{equation}
+    \xi(\theta) = 1 + r\left(e^{-i\theta} - 2 + e^{i\theta}\right) = 1 - 4r\sin^2(\theta/2)
+    \label{eq:stab}
+\end{equation}
+and $|\xi| \le 1$ for every $\theta$ requires $4r \le 2$, i.e.
+\begin{equation}
+    r \le \frac{1}{2}
+    \qquad\Longleftrightarrow\qquad
+    \Delta t \le \frac{h^2}{2Dv}
+\end{equation}
+This is a hard limit rather than an accuracy guideline: past it the $\theta = \pi$ mode grows
+like $|1-4r|^n$ and the solution does not degrade, it explodes. The local truncation error is
+$\mathcal{O}(\Delta t) + \mathcal{O}(h^2)$, so holding $r$ fixed makes the scheme
+$\mathcal{O}(h^2)$ overall --- at the price that halving $h$ quarters $\Delta t$, and with
+work per step proportional to $N$ the total cost grows as $h^{-3}$.
+
+
+\paragraph{Conservation, as the check.} Let $M^n$ be the trapezoid mass on the half line, so
+that $\int_{-\infty}^{\infty}u\,dx \approx 2M^n$:
+\begin{equation}
+    M^n = h\left[\tfrac{1}{2}u_0^n + \sum_{j=1}^{N-1}u_j^n + \tfrac{1}{2}u_N^n\right]
+\end{equation}
+Summing \eqref{eq:ftcs} against these weights, the second differences telescope to their two
+end values and the $j=0$ row cancels the $j=1$ end exactly, leaving
+\begin{equation}
+    M^{n+1} - M^n = r h\left(u_N^n - u_{N-1}^n\right) = -\,r h\,u_{N-1}^n
+    \label{eq:conserve}
+\end{equation}
+So the scheme conserves particles to machine precision until the tail reaches the truncation,
+and the only leak is through the far boundary, at a rate that is directly observable as
+$u_{N-1}^n$. Restoring the prefactor, the check on the solver is
+$\int\phi\,dx = e^{-v\Sigma_a t}$, the same identity already used on the exact solution.
+
+\paragraph{Results.} The scheme is implemented in \texttt{src/homework2/solver.py} and run at
+$N = 2000$ nodes, which puts $h \approx 0.022$ and $\Delta t \approx 6.5\times10^{-4}$, i.e.
+about $2\times10^{4}$ sweeps to reach $t = 15$. Figure~\ref{fig:q3c_solver} places it over the
+closed form it discretises and Figure~\ref{fig:q3c_error} measures what separates them. Three
+results are worth quoting:
+\begin{itemize}
+    \item \textbf{Conservation is exact.} $\int\phi\,dx$ matches $e^{-(1-c)t}$ to between $0$
+    and $1.1\times10^{-15}$ over $c = 0.6, 1.0, 1.5$ and $t = 1, 4, 15$ --- round-off, not
+    discretisation, as \eqref{eq:conserve} requires.
+    \item \textbf{The scheme is second order.} The peak error at $t = 4$ falls
+    $1.007\times10^{-3} \to 2.586\times10^{-4} \to 6.466\times10^{-5}$ as $N$ doubles from
+    $500$ to $2000$: ratios of $3.89$ and $4.00$.
+\end{itemize}
+The error profile of Figure~\ref{fig:q3c_error} falls as $1/t$, the signature of a fixed
+offset in the variance of the computed Gaussian; since the third result rules out the source as
+that offset, what remains is the scheme's own truncation.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3c_solver.pdf}
+    \caption{Part 3(c): the explicit solver (markers, thinned) over the closed-form diffusion
+    Green's function it discretises (solid), at $c = 1$ and $N = 2000$. The two are
+    indistinguishable at this scale over eight decades of flux; what separates them is
+    Figure~\ref{fig:q3c_error}.}
+    \label{fig:q3c_solver}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3c_solver_error.pdf}
+    \caption{Part 3(c): the solver's relative error against the closed form, within three
+    standard deviations. Left, across the domain at three times --- the downward spikes are
+    sign changes, where the error passes through zero. Right, the peak error at $t = 4$ against
+    the node count, against a second-order guide.}
+    \label{fig:q3c_error}
+\end{figure}
+}% <<< END BLUE BLOCK
 
 \end{document}
