@@ -5,7 +5,7 @@
 
 Assignment 2 proves a scaling identity (Q1), derives the planar-source flux from Paasschens'
 point-source solution (Q2), compares it against classical and asymptotic diffusion (Q3a, Q3b),
-and solves the diffusion equation numerically (Q3c).
+solves the diffusion equation numerically (Q3c), and measures what separates the two (Q3d).
 The report derives all of it. What follows is the map from those formulas to the modules, the
 numerical care the closed forms need, and what was verified.
 
@@ -18,8 +18,9 @@ and the scalar flux equals the number density.
 | [02](02-evaluating-the-closed-form.md) | Evaluating the Closed Form | Why `exact.py` uses Dawson instead of `erfi`, and works in log space. |
 | [03](03-diffusion-module.md) | The Diffusion Module | The one sign trick that makes `D0(c)` a single expression on both sides of `c = 1`. |
 | [04](04-figures.md) | The Figures | The autoscaling heuristic, and why the exact curve is masked past the front. |
-| [05](05-verification.md) | Verification | The twelve checks in `main.py` and the numbers they produce. |
+| [05](05-verification.md) | Verification | The fourteen checks in `main.py` and the numbers they produce. |
 | [06](06-q3c-solver-spec.md) | The Q3(c) Solver | Why factoring the absorption out first keeps the module to 70 lines, and the two rows that are easy to get wrong. |
+| [07](07-q3d-metrics.md) | The Q3(d) Metrics | Why the misplaced fraction is integrated on its own grid and not on the solver’s. |
 
 Nothing here re-derives the report. Where a physical result is needed it is cited by its
 section or equation number in `homework2.tex`.

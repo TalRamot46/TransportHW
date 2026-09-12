@@ -545,15 +545,15 @@ with the diamond closure $\psi_{i,m} = \tfrac12\left(\psi_{i+1/2,m}+\psi_{i-1/2,
 relating the cell centre to its two faces. Which face is the outflow depends on the sign of
 $\mu_m$, and that is the whole of the difference between the two sweeps.
 
-\textcolor{blue}{\emph{Forward sweep}, $\mu_m>0$: the flux enters at $x_{i-1/2}$ and leaves at
+\emph{Forward sweep}, $\mu_m>0$: the flux enters at $x_{i-1/2}$ and leaves at
 $x_{i+1/2}$, so the closure is used as $\psi_{i+1/2,m}=2\psi_{i,m}-\psi_{i-1/2,m}$. Substituting
-it into \eqref{eq:slabbalance} removes the outgoing face,}
+it into \eqref{eq:slabbalance} removes the outgoing face,
 \begin{equation}
     \mu_m\left(2\psi_{i,m}-2\psi_{i-\frac12,m}\right) + \Sigma_t \Delta x\,\psi_{i,m}
     = \frac{S_i}{2}\Delta x
 \end{equation}
-\textcolor{blue}{and collecting $\psi_{i,m}$ gives the cell centre and then, from the closure
-again, the flux handed to the next cell $i+1$:}
+and collecting $\psi_{i,m}$ gives the cell centre and then, from the closure
+again, the flux handed to the next cell $i+1$:
 \begin{equation}
     \psi_{i,m} = \frac{\tfrac12 S_i \Delta x + 2\mu_m\,\psi_{i-\frac12,m}}
                       {\Sigma_t \Delta x + 2\mu_m},
@@ -561,13 +561,13 @@ again, the flux handed to the next cell $i+1$:}
     \psi_{i+\frac12,m} = 2\psi_{i,m} - \psi_{i-\frac12,m}
     \label{eq:slabsweep}
 \end{equation}
-\textcolor{blue}{marched from $x=0$ outwards, starting from the reflected flux there.}
+marched from $x=0$ outwards, starting from the reflected flux there.
 
-\textcolor{blue}{\emph{Backward sweep}, $\mu_m<0$: the roles swap. Writing $\mu_m=-|\mu_m|$ turns
+\emph{Backward sweep}, $\mu_m<0$: the roles swap. Writing $\mu_m=-|\mu_m|$ turns
 the leading term of \eqref{eq:slabbalance} into
 $|\mu_m|(\psi_{i-1/2,m}-\psi_{i+1/2,m})$, so the flux enters at $x_{i+1/2}$ and leaves at
 $x_{i-1/2}$, and the closure is used the other way round,
-$\psi_{i-1/2,m}=2\psi_{i,m}-\psi_{i+1/2,m}$:}
+$\psi_{i-1/2,m}=2\psi_{i,m}-\psi_{i+1/2,m}$:
 \begin{equation}
     \psi_{i,m} = \frac{\tfrac12 S_i \Delta x + 2|\mu_m|\,\psi_{i+\frac12,m}}
                       {\Sigma_t \Delta x + 2|\mu_m|},
@@ -575,9 +575,9 @@ $\psi_{i-1/2,m}=2\psi_{i,m}-\psi_{i+1/2,m}$:}
     \psi_{i-\frac12,m} = 2\psi_{i,m} - \psi_{i+\frac12,m}
     \label{eq:slabsweepback}
 \end{equation}
-\textcolor{blue}{marched from the vacuum face at $x=a/2$ inwards, starting from
+marched from the vacuum face at $x=a/2$ inwards, starting from
 $\psi_{I+1/2,m}=0$. The two are the same formula with the inflow face exchanged, which is why
-one $|\mu_m|$ serves both.}
+one $|\mu_m|$ serves both.
 
 \paragraph{Space, sphere.} The spherical equation carries an angular redistribution term, that can be seen in Eq. (2.46) in Pomraning's book (pg. 30):
 \begin{equation}
@@ -602,16 +602,16 @@ The recursion needs a starting value $\psi_{i,1/2}$ at $\mu_{1/2}=-1$, where $1-
 \eqref{eq:slabbalance} with a second outgoing face. They are not alike and it is worth naming
 them separately:}
 \begin{itemize}
-    \item \textcolor{blue}{the \emph{radial face}, weighted by the two shell areas
+    \item the \emph{radial face}, weighted by the two shell areas
     $A_{i\pm1/2}$, whose outflow feeds the \textbf{next radial cell} of the same ordinate.
     Which of the two areas is the outflow depends on the sign of $\mu_m$, exactly as in the
-    slab;}
-    \item \textcolor{blue}{the \emph{angular face}, weighted by the two coefficients
+    slab.
+    \item the \emph{angular face}, weighted by the two coefficients
     $\alpha_{m\pm1/2}$ of the angular bin, whose outflow feeds the \textbf{next ordinate} in
     the same cell. This one never swaps: $d\mu/ds\ge0$ means $\mu$ only increases, so the
-    inflow is always at $m-\tfrac12$ and the outflow always at $m+\tfrac12$.}
+    inflow is always at $m-\tfrac12$ and the outflow always at $m+\tfrac12$.
 \end{itemize}
-\textcolor{blue}{Each closes with its own diamond relation,}
+Each closes with its own diamond relation,
 \begin{align}
     \psi_{i+\frac12,m} &= 2\psi_{i,m} - \psi_{i-\frac12,m}
         \quad (\mu_m>0), \qquad
@@ -644,7 +644,7 @@ $\psi_{i,m}$ on the left gives the cell solve outright:}
 \textcolor{blue}{and \eqref{eq:closr} and \eqref{eq:closmu} then hand on the two fluxes the
 march needs next --- $\psi_{i+1/2,m}$ to radial cell $i+1$, and $\psi_{i,m+1/2}$ to ordinate
 $m+1$. The backward sweep is \eqref{eq:cellflux} with $A_{\text{out}}=A_{i-1/2}$,
-$A_{\text{in}}=A_{i+1/2}$, $\mu_m$ replaced by $|\mu_m|$ and the radial inflow taken as
+$A_{\text{in}}=A_{i+1/2}$, $\mu_m$ replaced by $|\mu_m|$ and the radial inflow (Eq. \eqref{eq:closr}) taken as
 $\psi_{i+1/2,m}$; the angular half of the formula is untouched. Setting
 $A_{\text{out}}=A_{\text{in}}=1$, $V_i=\Delta x$ and $\alpha_{m\pm1/2}=0$ returns
 \eqref{eq:slabsweep} exactly, which is the check that the two cell solves are the same

@@ -355,56 +355,159 @@ the solver}. The downward spikes are sign changes, where the error passes throug
     \label{fig:q3d}
 \end{figure}
 
+\paragraph{One number for the whole profile.} A relative error at a point is a choice of point,
+and \eqref{eq:relerr} has no single value to quote. Both fluxes carry the same population,
+$\int\phi\,dx = e^{-(1-c)t}$ for the exact solution and for either diffusion, so dividing by it
+turns each into a probability density,
+\begin{equation}
+    p(x,t;c) = e^{(1-c)t}\phi(x,t;c), \qquad \int_{-\infty}^{\infty} p\,dx = 1
+\end{equation}
+and the single number is then half the $L^1$ distance between the two densities,
+\begin{equation}
+    \delta(t;c) = \frac{1}{2}\int_{-\infty}^{\infty}
+    \left|p_{\mathrm{diff}}(x,t) - p_{\mathrm{exact}}(x,t)\right|dx \;\in\; [0,1]
+    \label{eq:tv}
+\end{equation}
+which reads as \textbf{the fraction of the population that diffusion puts in the wrong place}.
+It is not an arbitrary norm. Splitting the integral at the front, where $p_{\mathrm{exact}}$
+stops,
+\begin{equation}
+    2\delta(t;c) = \underbrace{\int_{|x|<vt} p_{\mathrm{exact}}\,E\,dx}_{\text{$E$ averaged over the particles}}
+    \;+\; \underbrace{\int_{|x|>vt} p_{\mathrm{diff}}\,dx}_{\textstyle \equiv\, L(t;c)}
+    \label{eq:tvsplit}
+\end{equation}
+so $\delta$ is exactly the pointwise error of Figure~\ref{fig:q3d} averaged with the exact flux
+as its weight, plus the flux diffusion has put outside the causal front altogether. The two
+terms answer different questions, and they do not behave alike.
 
 \begin{table}[htbp]
     \centering
-    \begin{tabular}{ccrrr}
+    \begin{tabular}{llrrrrrr}
         \toprule
-        $c$ & $D_0(c)$ & $t$ & classical & asymptotic \\
+        & & \multicolumn{5}{c}{$\delta(t;c)$} & \\
+        \cmidrule(lr){3-7}
+        $c$ & $D$ & $t=1$ & $t=2$ & $t=4$ & $t=7$ & $t=15$ & $\delta_\infty$ \\
         \midrule
-        0.6 & 0.48588 & 1  & $-19.96\%$ & $-33.70\%$ \\
-            &         & 4  & $+11.05\%$ & $-8.02\%$ \\
-            &         & 15 & $+23.88\%$ & $+2.61\%$ \\
+        0.6 & classical, $1/3$      & 22.09\% & 8.32\%  & 5.59\%  & 7.71\%  & 10.12\% & 12.29\% \\
+            & asymptotic, $0.48588$ & 31.02\% & 15.70\% & 6.17\%  & 2.12\%  & 1.15\%  & 3.24\% \\
         \midrule
-        0.8 & 0.39629 & 1  & $-24.18\%$ & $-30.47\%$ \\
-            &         & 4  & $-0.27\%$  & $-8.54\%$ \\
-            &         & 15 & $+8.39\%$  & $-0.59\%$ \\
+        0.8 & classical, $1/3$      & 22.09\% & 9.09\%  & 2.18\%  & 2.10\%  & 3.73\%  & 5.39\% \\
+            & asymptotic, $0.39629$ & 26.18\% & 12.94\% & 5.64\%  & 2.60\%  & 0.59\%  & 1.21\% \\
         \midrule
-        1.0 & 0.33333 & 1  & $-27.86\%$ & $-27.86\%$ \\
-            &         & 4  & $-8.78\%$  & $-8.78\%$ \\
-            &         & 15 & $-2.46\%$  & $-2.46\%$ \\
+        1.0 & both, $1/3$           & 22.41\% & 11.20\% & 5.38\%  & 3.00\%  & 1.38\%  & 0 \\
         \midrule
-        1.2 & 0.28717 & 1  & $-31.08\%$ & $-25.75\%$ \\
-            &         & 4  & $-15.47\%$ & $-8.93\%$ \\
-            &         & 15 & $-10.59\%$ & $-3.67\%$ \\
+        1.2 & classical, $1/3$      & 23.22\% & 13.63\% & 8.84\%  & 6.89\%  & 5.55\%  & 4.41\% \\
+            & asymptotic, $0.28717$ & 19.62\% & 10.04\% & 5.24\%  & 3.28\%  & 1.94\%  & 0.80\% \\
         \midrule
-        1.5 & 0.23745 & 1  & $-35.25\%$ & $-23.29\%$ \\
-            &         & 4  & $-23.24\%$ & $-9.05\%$ \\
-            &         & 15 & $-19.70\%$ & $-4.85\%$ \\
+        1.5 & classical, $1/3$      & 24.86\% & 17.07\% & 13.30\% & 11.76\% & 10.69\% & 9.78\% \\
+            & asymptotic, $0.23745$ & 16.66\% & 8.89\%  & 5.11\%  & 3.58\%  & 2.51\%  & 1.60\% \\
         \bottomrule
     \end{tabular}
-    \caption{Signed relative error at $x = 0$, both approximations, from
-    \texttt{check\_diffusion\_error} in \texttt{src/homework2/main.py}.}
+    \caption{The misplaced fraction \eqref{eq:tv} of the numerical diffusion solutions, and the
+    floor \eqref{eq:floor} each one settles on. From \texttt{check\_total\_variation} in
+    \texttt{src/homework2/main.py}.}
     \label{tab:q3d}
 \end{table}
-\paragraph{Discussing the results.} Table~\ref{tab:q3d} is $E$ signed, at $x = 0$.
-We will discuss two observations about the result, each is visible in Figure~\ref{fig:q3d}.
 
-\textbf{Diffusion is a late-time limit, and the table is the rate.} Every column shrinks with
-$t$: the exact solution relaxes onto its diffusive shape only once a particle has scattered
-many times, and at $t = 1$ --- one mean free time, one collision --- there is nothing diffusive
-about it, which is why all ten entries at $t=1$ sit between $-20\%$ and $-35\%$ regardless of
-which $D$ is used.
+\paragraph{The leak past the front decays, and exponentially.} The second term of
+\eqref{eq:tvsplit} is elementary, $p_{\mathrm{diff}}$ being the Gaussian of variance
+$\sigma^2 = 2Dvt$:
+\begin{equation}
+    L(t;c) = 2\int_{vt}^{\infty} \frac{e^{-x^2/(4Dvt)}}{\sqrt{4\pi Dvt}}\,dx
+           = \operatorname{erfc}\!\left(\frac{vt}{\sqrt{4Dvt}}\right)
+           = \operatorname{erfc}\sqrt{\frac{vt}{4D}}
+    \label{eq:leak}
+\end{equation}
+The front sits at $vt/\sigma = \sqrt{vt/2D}$ standard deviations, and that \emph{grows} as
+$\sqrt{t}$: the packet widens like $\sqrt{t}$ while the front runs away linearly, so in the
+only units that matter the front recedes from the packet. Hence $L \sim e^{-vt/4D}$, and with
+$D = 1/3$ it falls from $22.07\%$ at $t=1$ through $1.43\%$ at $t=4$ to $2.10\times10^{-6}$ at
+$t=15$, the front standing at $1.22$, $2.45$ and $4.74$ standard deviations. The solver
+reproduces those as $21.47\%$, $1.41\%$ and $2.03\times10^{-6}$ --- agreement to $3\%$ in a
+tail six decades down, which is as much as an $\mathcal{O}(h^2)$ scheme can be asked for there.
 
-\textbf{Once relaxed, $D_0(c)$ is the better coefficient, and by a large factor.} At $t = 15$
-the asymptotic error at the origin is $2.61\%$ against $23.88\%$ at $c=0.6$, $0.59\%$ against
-$8.39\%$ at $c=0.8$, $3.67\%$ against $10.59\%$ at $c=1.2$ and $4.85\%$ against $19.70\%$ at
-$c=1.5$ --- a factor of four to fourteen. That is the payoff of the asymptotic coefficient:
-$D_0 = (1-c)\nu_0^2$ is built from the discrete eigenvalue that governs the exact solution at long times, whereas
-$1/3$ is not built from anything about the medium at all. The exception is $t = 1$ at $c < 1$,
-where the asymptotic value is the worse of the two ($-33.70\%$ against $-19.96\%$ at $c=0.6$):
-the coefficient is right only once the asymptotic discrete mode dominates, and choosing it early is no
-better than a guess.
+\paragraph{The rest of the error does not decay, unless $c=1$.} The Question 1 identity
+\eqref{eq:identity} fixes the late-time limit exactly. In density form it reads
+$p(x,t;c) = c\,p(cx,ct;1)$, and the $c=1$ density relaxes onto the classical Gaussian of
+variance $2vt/3$, so
+\begin{equation}
+    p(x,t;c) \;\longrightarrow\; c\,\frac{e^{-(cx)^2/(4ct/3)}}{\sqrt{4\pi ct/3}}
+    = \frac{e^{-x^2/(4D_\infty vt)}}{\sqrt{4\pi D_\infty vt}},
+    \qquad \boxed{\;D_\infty(c) = \frac{1}{3c\,\Sigma_t}\;}
+    \label{eq:dinf}
+\end{equation}
+The coefficient the exact flux actually spreads with is therefore \emph{neither} $1/3$ nor
+$D_0(c)$ --- though $D_0$ is much the closer of the two: $0.48588$ against $D_\infty = 0.55556$
+at $c = 0.6$, and $0.23745$ against $0.22222$ at $c = 1.5$, where the classical $1/3$ is out by
+$40\%$ in one direction and $50\%$ in the other.
+
+A wrong coefficient leaves a residue that never goes away. Two centred Gaussians of variances
+$2D_< vt$ and $2D_> vt$ cross where their exponents and prefactors balance,
+\begin{equation}
+    \frac{x^{*2}}{4vt}\left(\frac{1}{D_<}-\frac{1}{D_>}\right) = \ln a,
+    \qquad a^2 \equiv \frac{D_>}{D_<}
+    \qquad\Longrightarrow\qquad
+    x^{*2} = 4vt\,D_<\,\frac{a^2\ln a}{a^2-1}
+\end{equation}
+and the narrower one exceeds the wider inside $x^*$, so that \eqref{eq:tv} between them is
+\begin{equation}
+    \delta_\infty = \operatorname{erf}\sqrt{\frac{a^2\ln a}{a^2-1}}
+                  - \operatorname{erf}\sqrt{\frac{\ln a}{a^2-1}}
+    \label{eq:floor}
+\end{equation}
+in which every $t$ has cancelled --- $x^{*2}$ grows exactly as $\sigma^2$ does. \textbf{Two
+Gaussians whose variances hold a fixed ratio stay a fixed distance apart however far they
+spread}, so $\delta$ cannot decay past $\delta_\infty(D, D_\infty(c))$, the last column of
+Table~\ref{tab:q3d}. Figure~\ref{fig:q3dsummary} carries the solutions out to $t = 40$ and they
+do settle there: at $c=0.6$ the classical curve measures $11.48\%$ against a floor of
+$12.29\%$ and the asymptotic $2.41\%$ against $3.24\%$; at $c=1.5$, $10.12\%$ against $9.78\%$
+and $1.94\%$ against $1.60\%$. Only at $c=1$, where $D_\infty = 1/3$ exactly, is the floor zero
+--- and there $\delta$ keeps falling, $1.38\%$ at $t=15$ and $0.51\%$ at $t=40$.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3d_summary.pdf}
+    \caption{Part 3(d). Left and centre, on one scale: the misplaced fraction \eqref{eq:tv}
+    against time for each approximation, with the floor \eqref{eq:floor} of each $c$ dotted
+    beneath its curve. Every classical curve turns and climbs onto its floor; the asymptotic
+    ones sit far lower and the $c=1$ curve, alone in having no floor, decays throughout. Right:
+    the leak past the front \eqref{eq:leak}, which depends on $c$ only through $D$ --- so the
+    classical case is one curve for every $c$ --- with the solver's own leak marked on it.}
+    \label{fig:q3dsummary}
+\end{figure}
+
+\subsection*{Discussing the results}
+\begin{enumerate}
+    \item \textbf{Diffusion is a late-time limit} The relative error of both diffusion solutions falls steeply with time, and the fall is faster the closer $c$ is to $1$.
+    In addition, the quality of the approximation generally improves with time: the exact solution relaxes onto its diffusive shape only once a particle has scattered
+    many times, and at $t = 1$ --- one mean free time, one collision --- there is nothing diffusive
+    about it. It does not, however, improve without limit: only the acausal part of the error
+    \eqref{eq:leak} decays to nothing, and for $c \neq 1$ the fall turns at $t \approx 4$ and
+    settles on the floor \eqref{eq:floor}, which is a property of $D$ against $D_\infty(c)$ and
+    not of the time.
+
+    \item \textbf{Once relaxed, $D_0(c)$ is the better coefficient, and by a large factor.} At $t = 15$
+    the asymptotic $\delta$ is $1.15\%$ against $10.12\%$ at $c=0.6$, $0.59\%$ against
+    $3.73\%$ at $c=0.8$, $1.94\%$ against $5.55\%$ at $c=1.2$ and $2.51\%$ against $10.69\%$ at
+    $c=1.5$ --- a factor of three to nine, and the gap between the two floors is wider still.
+    That is the payoff of the asymptotic coefficient:
+    $D_0 = (1-c)\nu_0^2$ is built from the discrete eigenvalue that governs the exact solution at long times, whereas
+    $1/3$ is not built from anything about the medium at all. The exception is $t = 1$ at $c < 1$,
+    where the asymptotic value is the worse of the two ($31.02\%$ against $22.09\%$ at $c=0.6$):
+    the coefficient is right only once the asymptotic discrete mode dominates, and choosing it early is no
+    better than a guess.
+
+    \item \textbf{Neither coefficient is the right one for this problem.} $D_\infty = 1/(3c)$ of
+    \eqref{eq:dinf} is, and it is exact rather than asymptotic --- it follows from the Question 1
+    identity and the $c=1$ diffusion limit alone. $D_0(c)$ is the coefficient of the
+    \emph{steady} problem, where $\nu_0$ sets the spatial decay $e^{-|x|/\nu_0}$; that it is also
+    close to $D_\infty$ here is what makes it the better of the two on offer, not the right one.
+    Expanding about $c = 1$ puts a number on ``closer'': $D_\infty = \tfrac13 + \tfrac13(1-c) +
+    \mathcal{O}\!\left((1-c)^2\right)$ against $D_0 = \tfrac13 + \tfrac{4}{15}(1-c) +
+    \mathcal{O}\!\left((1-c)^2\right)$, so the asymptotic coefficient recovers four fifths of the
+    first-order correction and the classical one recovers none of it. The ratio of the two
+    departures measures $0.79982$ at $c = 0.999$ and $0.80018$ at $c = 1.001$.
+\end{enumerate}
 }% <<< END BLUE BLOCK
 
 \end{document}
