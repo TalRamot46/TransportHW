@@ -12,13 +12,13 @@ so `main.py` spends most of its time checking identities.**
 | `solver.py` | Part 3(c): the explicit FTCS march of the heat equation ([06](06-q3c-solver-spec.md)). |
 | `plots.py` | The Q3 comparison figure: one figure per `c`, one panel per `t`. |
 | `figures.py` | Matplotlib helpers — headless backend, three-column grid, safe save. |
-| `main.py` | Eleven verification checks, then the figures. |
+| `main.py` | Twelve verification checks, then the figures. |
 
 ## `main.py` is a test suite
 
 Unlike Assignments 1 and 3, there is no `qN.report(figs)` structure, because parts 3(a) and
 3(b) have nothing to solve — all three curves being compared are closed forms. So `main.py` is
-eleven `check_*` functions ([05](05-verification.md)) followed by one `generate_figures()`.
+twelve `check_*` functions ([05](05-verification.md)) followed by one `generate_figures()`.
 Each check is independent; none of them feeds the figures, and the five solver checks are the
 only place `solver.py` is exercised at all.
 

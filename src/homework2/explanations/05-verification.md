@@ -1,6 +1,6 @@
 # 05 — Verification
 
-**Eleven checks in `main.py`, run on every invocation. There is no separate test file, so
+**Twelve checks in `main.py`, run on every invocation. There is no separate test file, so
 these are the whole safety net — the numbers below are from the current code.**
 
 ## 1. Normalisation — `check_normalisation`
@@ -133,3 +133,22 @@ point.
 of magnitude below what limits the solver, so smoothing the initial spike — into a half-Gaussian
 or anything else — would buy nothing. It also rules out the opposite worry: that the first cell
 being the entire source leaves a defect the march never recovers from.
+
+## 12. Diffusion against exact transport — `check_diffusion_error`
+
+The part 3(d) measurement, and the only check whose output the report quotes as a table rather
+than as a bound. Signed relative error of each numeric diffusion flux against `phi_exact`, at
+the origin and at `x = 0.9 vt`; the report's Table 2 is the `x = 0` half of it.
+
+Two choices inside it are worth recording:
+
+- **`form="series"`, not the default interpolation.** Check 2 puts the interpolation's own cost
+  at up to `1.5%`, and the asymptotic error at `c = 0.8, t = 15` is `-0.59%` — the reference
+  would otherwise be less accurate than the quantity being measured.
+- **`0.9 vt`, not the front itself.** `phi_exact` is identically zero beyond `vt`, so the ratio
+  has no limit there; `0.9` is far enough out to show the failure (`+144415%` at `c = 1.5`,
+  `t = 15`) without dividing by zero.
+
+The five `c` values are solved twice each, once per approximation, and each solve marches
+through all of `SOLVER_TIMES` in one pass — ten marches, not thirty. That matters: this check
+and `plot_diffusion_error` together are most of the runtime of `main.py`.

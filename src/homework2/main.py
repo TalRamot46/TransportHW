@@ -15,7 +15,7 @@ from homework2.diffusion import (
 from homework2.solver import solve, step, mass, bulk
 from homework2.figures import figs_dir
 from homework2.plots import (plot_comparison_for_c, plot_solver, plot_solver_error,
-                             C_VALUES, TIMES)
+                             plot_diffusion_error, C_VALUES, TIMES)
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
@@ -134,6 +134,22 @@ def check_solver_source_treatment():
     logger.info(f"  max relative difference = {difference:.2e}, against a discretisation error of "
                 f"{_bulk_error(x, pulse[4.0], 4.0, 1.0):.2e}")
 
+def _error_at(x, phi, t, c, fraction):
+    """Relative error of a numeric flux against exact transport, at the node nearest x = fraction vt."""
+    j = int(np.argmin(np.abs(x - fraction * t)))
+    return phi[j] / float(phi_exact(x[j], t, c, "series")) - 1.0
+
+def check_diffusion_error():
+    """Part 3(d): how far each numeric diffusion solution sits from the exact transport flux."""
+    logger.info("\nDiffusion against exact transport, relative error at x = 0 and at x = 0.9 vt")
+    logger.info(f"{'c':<6} | {'t':<6} | {'classical':<22} | {'asymptotic':<22}")
+    for c in C_VALUES:
+        runs = {a: solve(c, a, times=SOLVER_TIMES) for a in ('classical', 'asymptotic')}
+        for t in SOLVER_TIMES:
+            cells = [f"{_error_at(x, fluxes[t], t, c, 0.0):+8.2%} {_error_at(x, fluxes[t], t, c, 0.9):+11.2%}"
+                     for x, fluxes in runs.values()]
+            logger.info(f"{c:<6} | {t:<6.0f} | {cells[0]:<22} | {cells[1]:<22}")
+
 def generate_figures():
     """Writes one comparison figure per value of c into the report's figure directory."""
     directory = figs_dir()
@@ -142,6 +158,7 @@ def generate_figures():
         plot_comparison_for_c(c, TIMES, os.path.join(directory, f"q3_comparison_c{c:g}.pdf"))
     plot_solver(save_path=os.path.join(directory, "q3c_solver.pdf"))
     plot_solver_error(save_path=os.path.join(directory, "q3c_solver_error.pdf"))
+    plot_diffusion_error(save_path=os.path.join(directory, "q3d_diffusion_error.pdf"))
 
 def main():
     logger.info("=== Assignment 2, Question 3: exact transport vs. diffusion ===")
@@ -160,6 +177,9 @@ def main():
     check_solver_order()
     check_solver_stability_edge()
     check_solver_source_treatment()
+
+    logger.info("\n--- Part 3(d): the numeric diffusion solutions against exact transport ---")
+    check_diffusion_error()
 
     generate_figures()
 

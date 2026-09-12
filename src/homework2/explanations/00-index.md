@@ -18,7 +18,7 @@ and the scalar flux equals the number density.
 | [02](02-evaluating-the-closed-form.md) | Evaluating the Closed Form | Why `exact.py` uses Dawson instead of `erfi`, and works in log space. |
 | [03](03-diffusion-module.md) | The Diffusion Module | The one sign trick that makes `D0(c)` a single expression on both sides of `c = 1`. |
 | [04](04-figures.md) | The Figures | The autoscaling heuristic, and why the exact curve is masked past the front. |
-| [05](05-verification.md) | Verification | The eleven checks in `main.py` and the numbers they produce. |
+| [05](05-verification.md) | Verification | The twelve checks in `main.py` and the numbers they produce. |
 | [06](06-q3c-solver-spec.md) | The Q3(c) Solver | Why factoring the absorption out first keeps the module to 70 lines, and the two rows that are easy to get wrong. |
 
 Nothing here re-derives the report. Where a physical result is needed it is cited by its
