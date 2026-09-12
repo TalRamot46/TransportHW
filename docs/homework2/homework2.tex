@@ -116,7 +116,7 @@ $k$ separately:
     \qquad\Longrightarrow\qquad
     \hat u(k,t) = v\,e^{-Dvk^2t}
 \end{equation}
-the initial value being $v$ because the transform of $v\delta(x)$ is the constant $v$ --- a
+the initial value being $v$ because the transform of $v\delta(x)$ is the constant $v$ - a
 delta excites every wavenumber equally.
 
 \paragraph{Step 4: invert.} Completing the square in the exponent,
@@ -176,7 +176,7 @@ which is \eqref{eq:green}, with $\Sigma_a = (1-c)\Sigma_t$.
 
 Each figure fixes $c$ and shows $t = 1, 2, 3, 4, 7, 15$. The vertical line marks the causal
 front $|x| = vt$, beyond which the exact solution is identically zero. Only $x \ge 0$ is
-plotted; all three solutions are even in $x$.
+plotted. All three solutions are even in $x$.
 
 \begin{figure}[h]
     \centering
@@ -239,7 +239,7 @@ cell straddling the origin carries total weight $h$:
     u_0^0 = \frac{v}{h}, \quad u_{j\ge1}^0 = 0
     \label{eq:ic}
 \end{equation}
-so the spike of height $v/h$ in the first cell is the correctly normalised delta --- the
+so the spike of height $v/h$ in the first cell is the correctly normalised delta - the
 factor of two from the symmetry and the half-weight of the boundary node cancel.
 
 \paragraph{The update.} Central second differences in space, evaluated at the old level, give
@@ -288,7 +288,7 @@ closed form it discretises and Figure~\ref{fig:q3c_error} measures what separate
 results are worth quoting:
 \begin{itemize}
     \item \textbf{Conservation is exact.} $\int\phi\,dx$ matches $e^{-(1-c)t}$ to between $0$
-    and $1.1\times10^{-15}$ over $c = 0.6, 1.0, 1.5$ and $t = 1, 4, 15$ --- round-off, not
+    and $1.1\times10^{-15}$ over $c = 0.6, 1.0, 1.5$ and $t = 1, 4, 15$ - round-off, not
     discretisation, as \eqref{eq:conserve} requires.
     \item \textbf{The scheme is second order.} The peak error at $t = 4$ falls
     $1.007\times10^{-3} \to 2.586\times10^{-4} \to 6.466\times10^{-5}$ as $N$ doubles from
@@ -300,7 +300,7 @@ results are worth quoting:
     \includegraphics[width=\textwidth]{figs/q3c_solver.pdf}
     \caption{Part 3(c): the explicit solver (markers, thinned) over the closed-form diffusion
     Green's function it discretises (solid), at $c = 1$ and $N = 2000$. The two are
-    indistinguishable at this scale over eight decades of flux; what separates them is
+    indistinguishable at this scale over eight decades of flux. What separates them is
     Figure~\ref{fig:q3c_error}.}
     \label{fig:q3c_solver}
 \end{figure}
@@ -329,7 +329,7 @@ flux carried to $c \neq 1$ by the scaling \eqref{eq:identity}, evaluated from th
 $G$.
 
 Two choices fix the domain of Figure~\ref{fig:q3d}. The exact solution is identically zero
-beyond the causal front, so \eqref{eq:relerr} is cut at $0.98\,vt$, just inside it; and since
+beyond the causal front, so \eqref{eq:relerr} is cut at $0.98\,vt$, just inside it. And since
 the front moves, the abscissa is the scaled position $x/vt$, which puts every time on one axis
 with the front always at $1$.
 
@@ -352,13 +352,13 @@ the solver}. The downward spikes are sign changes, where the error passes throug
 \begin{enumerate}
     \item \textbf{Diffusion is a late-time limit} The relative error of both diffusion solutions decays with time, and the decay is faster the closer $c$ is to $1$.
     In addition, the quality of the approximation generally improves with time: the exact solution relaxes onto its diffusive shape only once a particle has scattered
-    many times, and at $t = 1$ --- one mean free time, one collision --- there is nothing diffusive
+    many times, and at $t = 1$ - one mean free time, one collision - there is nothing diffusive
     about it.
 
     \item \textbf{Once relaxed, $D_0(c)$ is the better coefficient, and by a large factor.} At $t = 15$
     the asymptotic error at the origin is $2.61\%$ against $23.88\%$ at $c=0.6$, $0.59\%$ against
     $8.39\%$ at $c=0.8$, $3.67\%$ against $10.59\%$ at $c=1.2$ and $4.85\%$ against $19.70\%$ at
-    $c=1.5$ --- a factor of four to fourteen. That is the payoff of the asymptotic coefficient:
+    $c=1.5$ - a factor of four to fourteen. That is the payoff of the asymptotic coefficient:
     $D_0 = (1-c)\nu_0^2$ is built from the discrete eigenvalue that governs the exact solution at long times, whereas
     $1/3$ is not built from anything about the medium at all.
 \end{enumerate}

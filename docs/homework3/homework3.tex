@@ -37,7 +37,7 @@
 \SetKwFunction{CritSize}{critical\_size}
 \SetKwFunction{Brentq}{brentq}
 
-% Third argument passes extra tcolorbox keys; existing two-argument uses are unaffected.
+% Third argument passes extra tcolorbox keys. Existing two-argument uses are unaffected.
 % It is how the algorithm boxes set coltext: a plain \color inside a breakable box is lost
 % at the page break, since each part re-enters with the ambient colour.
 \DeclareTColorBox{notebox}{ O{Note} O{blue} O{} }{
@@ -271,7 +271,7 @@ Iron   & 1.433 & 43.0  & 0.3063 & 0.0381 & 0.3444 \\
 Sodium & 3.859 & 115.8 & \textbf{0.6295} & 0.0312 & 0.6607 \\
 \bottomrule
 \end{tabular}
-\caption{Leakage ratio at the interface, in cm$^{-1}$, classic theory. Sodium's far-face return is the best of the three --- 10 mfp of a pure scatterer really does send almost everything back --- but its geometric term alone exceeds what a bare vacuum surface leaks.}
+\caption{Leakage ratio at the interface, in cm$^{-1}$, classic theory. Sodium's far-face return is the best of the three - 10 mfp of a pure scatterer really does send almost everything back - but its geometric term alone exceeds what a bare vacuum surface leaks.}
 \end{table}
 
 \FloatBarrier
@@ -279,7 +279,7 @@ Sodium & 3.859 & 115.8 & \textbf{0.6295} & 0.0312 & 0.6607 \\
 
 A homogeneous slab of total thickness $a$, reflective at the midplane $x=0$ and vacuum at
 $x=a/2$, in mean free paths ($\Sigma_t=1$), for $c\in\{1.2,1.5,1.8\}$ and $N\in\{1,3,5,9\}$.
-The unknown is the critical half-thickness $a/2$ at which $k_{\text{eff}}=1$ --- the same
+The unknown is the critical half-thickness $a/2$ at which $k_{\text{eff}}=1$ - the same
 quantity Question 3 tabulates for $S_N$, written the same way, so the two tables compare entry
 by entry.
 
@@ -303,7 +303,7 @@ nothing else, so $\Sigma_s$ is a free parameter: every split $\nu\Sigma_f = c-\S
 $0\le\Sigma_s\le c$ realises the stated $c$, and they are different media. The split cannot
 change the quantity asked for, because at $k=1$ the bracket collapses to $\tfrac{c}{2}\phi$
 whatever it is, so the critical half-thickness is \uline{a function of $c$ alone.} It does change $k$
-at every other half-thickness --- $\Sigma_s$ is not divided by $k$ --- so $c$ alone fixes the
+at every other half-thickness - $\Sigma_s$ is not divided by $k$ - so $c$ alone fixes the
 root of $k(a/2)-1$ but not $k(a/2)$ itself. 
 \end{notebox}
 Expanding $\psi(x,\mu)=\sum_{n^\prime\ge0}\frac{2n^\prime+1}{2}\phi_{n^\prime}(x)P_{n^\prime}(\mu)$, multiplying
@@ -328,7 +328,7 @@ of the $P_N$ approximation (also notice that $\mathbf{\tilde A_{0,-1}=0}$ so thi
     \label{eq:pnmatrix}
 \end{equation}
 $\mathbf{\tilde A}$ is the Jacobi matrix of the Legendre recurrence truncated at order $N$, so
-its $N+1$ eigenvalues are exactly the roots of $P_{N+1}(\mu)$ --- the Gauss--Legendre ordinates
+its $N+1$ eigenvalues are exactly the roots of $P_{N+1}(\mu)$ - the Gauss--Legendre ordinates
 of $S_{N+1}$. That is the algebraic content of the claim in Question 3 that the two methods share
 their interior equations and differ only at the boundary.
 
@@ -371,8 +371,8 @@ rule mapped to $[0,1]$ evaluates it \uline{exactly} rather than approximately as
 
 \paragraph{The scheme.} Divide $[0,a/2]$ into $J$ cells of width $\Delta x = a/(2J)$ with nodes
 $x_j=j\Delta x$. Integrating \eqref{eq:pnmatrix} over one cell and closing it with the
-midpoint rule --- derivative by the difference across the cell, value by the average of the
-two faces ---
+midpoint rule - derivative by the difference across the cell, value by the average of the
+two faces -
 \begin{equation}
     \left.\frac{d\phi_n}{dx}\right|_{j+\frac12}\!\!\approx \frac{\phi_{n,j+1}-\phi_{n,j}}{\Delta x},
     \qquad
@@ -409,8 +409,8 @@ productions,
 The middle form is what the method actually compares: the fission source
 \eqref{eq:box} that $\phi_0^{(\ell+1)}$ would build against the one that produced it, so it is
 an exact ratio of sources and not of fluxes that happen to resemble them. The iterate is then rescaled by $\max_j\phi_{0,j}$, which
-has no effect on \eqref{eq:kupdate} --- it only keeps the vector from drifting towards $0$ or
-$\infty$ as $k^{\ell}$ compounds --- and the loop stops on $|k^{(\ell+1)}-k^{(\ell)}|<\epsilon_k$.
+has no effect on \eqref{eq:kupdate} - it only keeps the vector from drifting towards $0$ or
+$\infty$ as $k^{\ell}$ compounds - and the loop stops on $|k^{(\ell+1)}-k^{(\ell)}|<\epsilon_k$.
 Convergence is linear at the dominance ratio of the two leading eigenvalues, which for a bare
 slab is well separated, and the starting guess
 \begin{equation}
@@ -427,7 +427,7 @@ thickness, so criticality is a root search on
 
 
 \begin{algorithm}[H]
-\caption{Critical half-thickness by the box $P_N$ scheme --- \texttt{homework3.pn.box}}
+\caption{Critical half-thickness by the box $P_N$ scheme - \texttt{homework3.pn.box}}
 \label{alg:pnbox}
 \KwIn{secondaries $c$, order $N$, cells $J$, initial guess $(a/2)_0$}
 \KwOut{$(a/2)_{\text{crit}}$ such that $k=1$}
@@ -435,10 +435,10 @@ thickness, so criticality is a root search on
   \tcc{Setup -- once per $(a/2,N)$, outside every loop}
   $\Delta x \leftarrow (a/2)/J$\;
   assemble $\mathbf{L}$ of order $(J+1)(N+1)$: $\tfrac{N+1}{2}$ symmetry rows
-    \eqref{eq:pnsym} on $\boldsymbol{\Phi}_0$; $J$ cell blocks \eqref{eq:box}; $\tfrac{N+1}{2}$
+    \eqref{eq:pnsym} on $\boldsymbol{\Phi}_0$. $J$ cell blocks \eqref{eq:box}. $\tfrac{N+1}{2}$
     Marshak rows \eqref{eq:marshak} on $\boldsymbol{\Phi}_J$\;
   \KwRet{\Splu{$\mathbf{L}$}}
-    \tcp*{\textbf{factorise once}; banded, half-bandwidth $N+1$}
+    \tcp*{\textbf{factorise once}. Banded, half-bandwidth $N+1$}
 }
 \BlankLine
 \Fn{\KEig{$a/2$, medium, $N$, $J$}}{
@@ -469,12 +469,12 @@ thickness, so criticality is a root search on
 Every name in Algorithm~\ref{alg:pnbox} is the identifier the code uses.
 \texttt{BoxSystem} is the constructor \texttt{pn.box.BoxSystem.\_\_init\_\_}, \texttt{splu} is
 \texttt{scipy.sparse.linalg.splu} applied to the CSC form, and \texttt{critical\_size} is
-borrowed from \texttt{sn.core} --- the one place Question 2 reuses the $S_N$ package.
+borrowed from \texttt{sn.core} - the one place Question 2 reuses the $S_N$ package.
 \end{sloppypar}
 
 \paragraph{Errors.} The box scheme is second order, so the discretisation error in
 $(a/2)_{\text{crit}}$ falls as $\Delta x^2$ and is separable from the truncation error in $N$ by
-running the same $N$ on a refined mesh --- the check reported in Question 3 for $S_N$.
+running the same $N$ on a refined mesh - the check reported in Question 3 for $S_N$.
 
 
 \FloatBarrier
@@ -513,7 +513,7 @@ $a/2 = \tfrac{\pi}{2}\nu_0 - z_0$ of Assignment 1.}
 \caption{Top left: convergence of $(a/2)_{\text{crit}}$ with $N$, dashed lines the
 exact-transport values. Top right: $k$ against half-thickness at $c=1.5$, circles the $k=1$
 crossings, which for $P_3$, $P_5$ and $P_9$ are already almost on top of one another. Beneath
-them: the normalised critical flux --- as in Question 3, the order changes the surface value
+them: the normalised critical flux - as in Question 3, the order changes the surface value
 and not the interior shape.}
 \end{figure}
 
@@ -596,7 +596,7 @@ $\beta_{i,m} = \left(A_{i+1/2}-A_{i-1/2}\right)/w_m$. The angular coefficients f
     \alpha_{\frac12} = 0, \qquad \alpha_{m+\frac12} = \alpha_{m-\frac12} - w_m \mu_m,
     \qquad \alpha_{N+\frac12} = 0 \ \text{ since } \sum_m w_m \mu_m = 0
 \end{equation}
-The recursion needs a starting value $\psi_{i,1/2}$ at $\mu_{1/2}=-1$, where $1-\mu^2=0$ and the angular derivative drops out; what remains, $-\partial \psi/\partial r + \Sigma_t \psi = S/2$, is \eqref{eq:slabsweepback} at $|\mu|=1$, run inwards from the vacuum boundary.
+The recursion needs a starting value $\psi_{i,1/2}$ at $\mu_{1/2}=-1$, where $1-\mu^2=0$ and the angular derivative drops out. What remains, $-\partial \psi/\partial r + \Sigma_t \psi = S/2$, is \eqref{eq:slabsweepback} at $|\mu|=1$, run inwards from the vacuum boundary.
 
 \paragraph{The two faces of a spherical cell.} Equation \eqref{eq:sphbalance} is
 \eqref{eq:slabbalance} with a second outgoing face. They are not alike and it is worth naming
@@ -642,7 +642,7 @@ $\psi_{i,m}$ on the left gives the cell solve outright:
     \label{eq:cellflux}
 \end{equation}
 and \eqref{eq:closr} and \eqref{eq:closmu} then hand on the two fluxes the
-march needs next --- $\psi_{i+1/2,m}$ to radial cell $i+1$, and $\psi_{i,m+1/2}$ to ordinate
+march needs next - $\psi_{i+1/2,m}$ to radial cell $i+1$, and $\psi_{i,m+1/2}$ to ordinate
 $m+1$. The backward sweep is \eqref{eq:cellflux} with $A_{\text{out}}=A_{i-1/2}$,
 $A_{\text{in}}=A_{i+1/2}$, $\mu_m$ replaced by $|\mu_m|$ and the radial inflow (eq. \eqref{eq:closr}) taken as
 $\psi_{i+1/2,m}$. The angular half of the formula is untouched. Setting
@@ -655,9 +655,9 @@ inflow, \texttt{sn.sphere.cell\_flux} takes a \texttt{radial\_face} and an
 
 \paragraph{Fixup.} Whenever a diamond outgoing flux $2\psi_{i,m}-\psi_{\text{in}}$ of \eqref{eq:closr} or \eqref{eq:closmu} comes out negative it is set to zero and the cell balance is re-solved with it held there, in angle as well as in space. Frankly, this never occurs in Questions 3--5: the fission source is proportional to the flux itself, so no cell is ever starved, and a critical system is thin enough that $\Sigma_t \Delta x / |\mu_m| < 2$ at every ordinate.
 
-\paragraph{Boundary conditions.} Reflective at the symmetry point, $\psi_{1/2,m} = \psi_{1/2,m'}$ with $\mu_{m'}=-\mu_m$; vacuum at the outer face, $\psi_{I+1/2,m}=0$ for $\mu_m<0$.
+\paragraph{Boundary conditions.} Reflective at the symmetry point, $\psi_{1/2,m} = \psi_{1/2,m'}$ with $\mu_{m'}=-\mu_m$. Vacuum at the outer face, $\psi_{I+1/2,m}=0$ for $\mu_m<0$.
 
-\paragraph{Eigenvalue.} Outer iteration $l$ fixes the fission source $Q_{f,i}^{(l)} = \nu\Sigma_{f,i}\phi_i^{(l)}/k^{(l)}$; inner iteration $n$ sweeps $S_i = \Sigma_{s,i}\phi_i^{(n)} + Q_{f,i}^{(l)}$ until $\phi$ settles; then
+\paragraph{Eigenvalue.} Outer iteration $l$ fixes the fission source $Q_{f,i}^{(l)} = \nu\Sigma_{f,i}\phi_i^{(l)}/k^{(l)}$. Inner iteration $n$ sweeps $S_i = \Sigma_{s,i}\phi_i^{(n)} + Q_{f,i}^{(l)}$ until $\phi$ settles. Then
 \begin{equation}
     k^{(l+1)} = k^{(l)}\,\frac{P^{(l+1)}}{P^{(l)}},
     \qquad P^{(l)} = \sum_i \nu\Sigma_{f,i}\,\phi_i^{(l)}\,V_i
@@ -665,14 +665,13 @@ inflow, \texttt{sn.sphere.cell\_flux} takes a \texttt{radial\_face} and an
 Dividing the fission source by $k$ makes a solution exist at \emph{every} system size, so criticality becomes a root search: \texttt{brentq} on $k(\text{size})-1$, which costs 8 evaluations of $k$.
 
 
-{\color{blue}
 \begin{algorithm}[H]
-\caption{One transport solve --- backward ordinates, then forward ones ---
+\caption{One transport solve - backward ordinates, then forward ones -
          \texttt{homework3.sn.slab} / \texttt{homework3.sn.sphere}}
 \label{alg:sweep}
 \KwIn{isotropic source $S_i$}
 \KwOut{scalar flux $\phi_i$}
-\KwData{$\psi_{\cdot,m-\frac12}$, the \emph{angular inflow column} --- one value per spatial
+\KwData{$\psi_{\cdot,m-\frac12}$, the \emph{angular inflow column} - one value per spatial
   cell, the half-angle flux ordinate $m$ consumes through its angular face. Sweeping $m$
   replaces it with $\psi_{\cdot,m+\frac12}$, which ordinate $m+1$ consumes in turn
   (\texttt{psi\_low} and \texttt{psi\_high} in the code). The slab has no such column.}
@@ -680,7 +679,7 @@ Dividing the fission source by $k$ makes a solution exist at \emph{every} system
   $q_i \leftarrow S_i/2$\;
   \lIf{sphere}{$\psi_{\cdot,\frac12} \leftarrow \StartDir{$q$}$
     \tcp*[f]{$\mu_{1/2}=-1$: no angular term, a plane march}}
-  $\phi \leftarrow 0$;\quad $\psi_{\frac12,\cdot} \leftarrow 0$
+  $\phi \leftarrow 0$.\quad $\psi_{\frac12,\cdot} \leftarrow 0$
     \tcp*{the reflective face, one value per ordinate}
   \For{$m$ \textnormal{with} $\mu_m<0$, \textnormal{ascending}}{
     $\psi_{\cdot,m},\ \psi_{\cdot,m+\frac12},\ \psi_{\frac12,m'} \leftarrow
@@ -718,7 +717,7 @@ Dividing the fission source by $k$ makes a solution exist at \emph{every} system
   \KwRet{$\psi_{\cdot,m}$, $\psi_{\cdot,m+\frac12}$}
 }
 \BlankLine
-\tcc{The radial face swaps with the sign of $\mu_m$; the angular face never does --- its
+\tcc{The radial face swaps with the sign of $\mu_m$. The angular face never does - its
      inflow is always $\psi_{i,m-1/2}$ and its outflow always $\psi_{i,m+1/2}$.}
 \end{algorithm}
 }
@@ -727,8 +726,7 @@ Dividing the fission source by $k$ makes a solution exist at \emph{every} system
 % place it anyway and overrun the footer. The \color is inside the float, not around it --
 % a float is shipped out after an enclosing colour group has closed and would come out black.
 \begin{algorithm}[tbp]
-\color{blue}
-\caption{The two iterations --- scattering inside, Bell \& Glasstone outside ---
+\caption{The two iterations - scattering inside, Bell \& Glasstone outside -
          \texttt{homework3.sn.core}}
 \label{alg:snk}
 \KwIn{medium, geometry, initial guess $\text{size}_0$}
@@ -743,7 +741,7 @@ Dividing the fission source by $k$ makes a solution exist at \emph{every} system
 }
 \BlankLine
 \Fn{\KEig{solver}}{
-  $\phi \leftarrow 1$;\quad $k \leftarrow 1$;\quad
+  $\phi \leftarrow 1$.\quad $k \leftarrow 1$.\quad
     $P \leftarrow \sum_i \nu\Sigma_{f,i}\,\phi_i V_i$\;
   \Repeat{$|k_{\text{new}}-k| < \epsilon_k |k_{\text{new}}|$}{
     $\phi^{\text{new}} \leftarrow \RunSn{$\nu\Sigma_f \phi / k$}$
@@ -762,13 +760,13 @@ Dividing the fission source by $k$ makes a solution exist at \emph{every} system
 \end{algorithm}
 
 \begin{sloppypar}
-\textcolor{blue}{Every name in Algorithms~\ref{alg:sweep} and~\ref{alg:snk} is the identifier
+Every name in Algorithms~\ref{alg:sweep} and~\ref{alg:snk} is the identifier
 the code uses. \texttt{sweep\_backward}, \texttt{sweep\_forward},
 \texttt{sweep\_all\_angles} and
 \texttt{\_starting\_direction} are methods of \texttt{sn.slab.SlabSolver} and
-\texttt{sn.sphere.SphereSolver} --- the two geometries supply them independently, which is why
+\texttt{sn.sphere.SphereSolver} - the two geometries supply them independently, which is why
 everything in \texttt{sn.core} is written against neither. Three nested loops, and not one
-matrix among them.}
+matrix among them.
 \end{sloppypar}
 
 \FloatBarrier
@@ -804,7 +802,7 @@ $c$ & order & $a/2$ [mfp] & exact transport [mfp] & departure \\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figs/q3_slab_orders.pdf}
-\caption{Top left: convergence of $a/2$ with $N$, dashed lines the exact-transport values. Top right: $k$ against half-thickness at $c=1.5$, circles the $k=1$ crossings. Beneath them: the normalised critical flux, which barely moves with $N$ --- the order affects the boundary, not the interior.}
+\caption{Top left: convergence of $a/2$ with $N$, dashed lines the exact-transport values. Top right: $k$ against half-thickness at $c=1.5$, circles the $k=1$ crossings. Beneath them: the normalised critical flux, which barely moves with $N$ - the order affects the boundary, not the interior.}
 \end{figure}
 
 The exact one-speed value at $c=1.5$ is $0.605055$ mfp, the Sood \emph{et al.} Pu-239 slab ($1.853722$ cm at $\Sigma_t = 0.32640$ cm$^{-1}$, the same table Assignment 1 Question 5 uses). The $S_N$ sequence walks down onto it monotonically: $0.609042$ at $S_{10}$, $0.606407$ at $S_{16}$, $0.605631$ at $S_{24}$, $0.605195$ at $S_{48}$.
@@ -813,14 +811,12 @@ The exact one-speed value at $c=1.5$ is $0.605055$ mfp, the Sood \emph{et al.} P
 
 In slab geometry the two are algebraically the same interior equations. Expanding $\psi$ in $N+1$ Legendre moments and truncating gives the same $N+1$ coupled ODEs as collocating at the $N+1$ Gauss--Legendre points, because a Gauss--Legendre rule of order $N+1$ integrates polynomials up to degree $2N+1$ exactly. \textbf{Any difference between $P_N$ and $S_{N+1}$ is therefore a difference of boundary condition}, and it is largest at low $N$ where the boundary is the whole story:
 \begin{itemize}
-    \item $S_{N+1}$ sets $\psi(a/2,\mu_m)=0$ on each incoming ordinate --- the \emph{Mark} condition.
-    \item $P_N$ needs conditions on moments instead. \emph{Marshak}'s, $\int_0^1 P_{2j+1}(\mu)\psi\,d\mu = 0$, weight the whole incoming half-range; Mark's pin the same isolated directions $S_{N+1}$ does.
+    \item $S_{N+1}$ sets $\psi(a/2,\mu_m)=0$ on each incoming ordinate - the \emph{Mark} condition.
+    \item $P_N$ needs conditions on moments instead. \emph{Marshak}'s, $\int_0^1 P_{2j+1}(\mu)\psi\,d\mu = 0$, weight the whole incoming half-range. Mark's pin the same isolated directions $S_{N+1}$ does.
 \end{itemize}
-With Mark conditions the two agree; with Marshak they do not. Concretely at $c=1.5$: $S_2$ above gives $a/2 = 0.78001$, and $P_1$ with the Mark extrapolation $l_0=1/\sqrt3$ gives $\arctan(1/Bl_0)/B = 0.78001$ --- the same five digits --- while $P_1$ with the Marshak $l_0 = 2/3$ gives $0.72348$, a 7\% spread between two methods that share every interior equation.
+With Mark conditions the two agree. With Marshak they do not. Concretely at $c=1.5$: $S_2$ above gives $a/2 = 0.78001$, and $P_1$ with the Mark extrapolation $l_0=1/\sqrt3$ gives $\arctan(1/Bl_0)/B = 0.78001$ - the same five digits - while $P_1$ with the Marshak $l_0 = 2/3$ gives $0.72348$, a 7\% spread between two methods that share every interior equation.
 
-{\color{green!55!black}
-Question 2 supplies the rest of that comparison, since it solves the same slab at
-$N = 1,3,5,9$ under Marshak conditions:
+
 
 \begin{table}[htbp]
 \centering
@@ -850,17 +846,13 @@ $S_{N+1}$ partner and closer to the exact value, and the gap closes as $N$ grows
 
 Three things in that table follow from the argument above. \textbf{The sign of the gap is the
 sign of $l_0$}: Marshak's extrapolation $2/3$ is longer than Mark's $1/\sqrt3 = 0.577$, so the
-$P_N$ flux is driven to zero further outside the slab and less material is needed --- $P_N$ is
+$P_N$ flux is driven to zero further outside the slab and less material is needed - $P_N$ is
 below $S_{N+1}$ at every one of the twelve entries. \textbf{The gap is a boundary effect, so it
-shrinks with $N$}, from $5$--$9\%$ at $N=1$ to under $1\%$ at $N=9$; by then both boundary
+shrinks with $N$}, from $5$--$9\%$ at $N=1$ to under $1\%$ at $N=9$. By then both boundary
 conditions are resolving the same half-range flux and the choice between them stops mattering.
-And \textbf{it grows with $c$} at fixed $N$ --- $5.13\%$, $7.81\%$, $9.33\%$ at $N=1$ ---
+And \textbf{it grows with $c$} at fixed $N$ - $5.13\%$, $7.81\%$, $9.33\%$ at $N=1$ -
 because a larger $c$ means a thinner slab, a shorter relaxation length and a more forward-peaked
 surface flux, which is exactly the shape a half-range condition of low order cannot capture.
-The whole difference is worth at most a factor of two in either method's error: at $c=1.5$,
-$P_9$ is $+0.23\%$ from the true $0.605055$ mfp where $S_{10}$ is $+0.66\%$, so a $P_N$ solve
-buys roughly the accuracy of an $S_N$ solve of the next order up.
-}
 
 All of that is a statement about \emph{slabs}. In the sphere the equivalence fails at the interior equations themselves: the angular derivative $\frac{1-\mu^2}{r}\frac{\partial\psi}{\partial\mu}$ couples the Legendre moments in a different pattern from the way the $\alpha$ recursion of \eqref{eq:sphbalance} couples the ordinates, so $P_1$ and $S_2$ are genuinely different approximations there rather than the same one under two boundary conditions.
 
@@ -917,13 +909,13 @@ $c$ & from $S_2$ & from $S_4$ & from $S_6$ & from $S_{10}$ & Case's table \\
 1.8 & 0.032 & 0.287 & 0.354 & 0.391 & 0.397 \\
 \bottomrule
 \end{tabular}
-\caption{Extrapolation distance $z_0$ implied by the two geometries, in mean free paths. At $S_{10}$ it is 1.5\% below Case's value at all three $c$ --- the same shortfall three times, which is the relation's own asymptotic error. At $S_2$ it nearly vanishes, which is the sharpest statement of what low-order $S_N$ gets wrong: the boundary, not the interior.}
+\caption{Extrapolation distance $z_0$ implied by the two geometries, in mean free paths. At $S_{10}$ it is 1.5\% below Case's value at all three $c$ - the same shortfall three times, which is the relation's own asymptotic error. At $S_2$ it nearly vanishes, which is the sharpest statement of what low-order $S_N$ gets wrong: the boundary, not the interior.}
 \end{table}
 
 \FloatBarrier
 \section*{Question 5: Critical mass of U-235 and Pu-239 by $S_N$}
 
-The cross sections are the Question 5 table of Assignment 1 --- $\Sigma_t = 0.32640$ cm$^{-1}$ for both, giving $c = 1.500$ for Pu-239 and $c = 1.300$ for U-235 --- and the critical mass follows from the converged radius as $M_c = \tfrac{4}{3}\pi R_c^3 \rho$. Here $\Sigma_s > 0$, so the inner iteration does real work: about ten sweeps per outer, against one for the $c$-only problems above. The orders are $S_2$ to $S_{16}$ rather than the $S_2$--$S_{10}$ of the previous questions, since the mass goes as the cube of the radius and is the more demanding quantity.
+The cross sections are the Question 5 table of Assignment 1 - $\Sigma_t = 0.32640$ cm$^{-1}$ for both, giving $c = 1.500$ for Pu-239 and $c = 1.300$ for U-235 - and the critical mass follows from the converged radius as $M_c = \tfrac{4}{3}\pi R_c^3 \rho$. Here $\Sigma_s > 0$, so the inner iteration does real work: about ten sweeps per outer, against one for the $c$-only problems above. The orders are $S_2$ to $S_{16}$ rather than the $S_2$--$S_{10}$ of the previous questions, since the mass goes as the cube of the radius and is the more demanding quantity.
 
 \begin{table}[htbp]
 \centering

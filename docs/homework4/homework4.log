@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.6)  8 AUG 2026 11:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (MiKTeX 26.5) (preloaded format=pdflatex 2026.7.6)  12 SEP 2026 12:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -468,12 +468,12 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 (C:\Users\TLP-001\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-<figs/density_analysis.pdf, id=36, 787.26494pt x 318.30638pt>
+<figs/density_analysis.pdf, id=4, 787.26494pt x 318.30638pt>
 File: figs/density_analysis.pdf Graphic file (type pdf)
 <use figs/density_analysis.pdf>
 Package pdftex.def Info: figs/density_analysis.pdf  used on input line 44.
 (pdftex.def)             Requested size: 352.31625pt x 142.4497pt.
-<figs/probability_analysis.pdf, id=38, 787.26494pt x 318.74803pt>
+<figs/probability_analysis.pdf, id=7, 787.26494pt x 318.74803pt>
 File: figs/probability_analysis.pdf Graphic file (type pdf)
 <use figs/probability_analysis.pdf>
 Package pdftex.def Info: figs/probability_analysis.pdf  used on input line 57.
@@ -482,7 +482,7 @@ Package pdftex.def Info: figs/probability_analysis.pdf  used on input line 57.
 
 {C:/Users/TLP-001/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map}{C:/Users/TL
 P-001/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]
-<figs/deep_probability_analysis.pdf, id=56, 787.26494pt x 318.74803pt>
+<figs/deep_probability_analysis.pdf, id=31, 787.26494pt x 318.74803pt>
 File: figs/deep_probability_analysis.pdf Graphic file (type pdf)
 <use figs/deep_probability_analysis.pdf>
 Package pdftex.def Info: figs/deep_probability_analysis.pdf  used on input line
@@ -495,16 +495,16 @@ LaTeX2e <2026-06-01>
 L3 programming layer <2026-06-18>
  ***********
 Package rerunfilecheck Info: File `homework4.out' has not changed.
-(rerunfilecheck)             Checksum: D81AE28DA1A33A130AA676EA2885DE2E;1472.
+(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 12278 strings out of 467510
- 193567 string characters out of 5407823
- 652930 words of memory out of 5000000
- 41315 multiletter control sequences out of 15000+600000
- 635938 words of font info for 92 fonts, out of 8000000 for 9000
+ 12271 strings out of 467510
+ 193473 string characters out of 5407823
+ 653915 words of memory out of 5000000
+ 41304 multiletter control sequences out of 15000+600000
+ 636040 words of font info for 94 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 74i,6n,79p,1008b,482s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 74i,6n,79p,1008b,481s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/c
 m/cmbx10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public
 /amsfonts/cm/cmbx12.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/t
@@ -517,9 +517,9 @@ Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8
 .pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfont
 s/cm/cmsy10.pfb><C:/Users/TLP-001/AppData/Local/Programs/MiKTeX/fonts/type1/pub
 lic/cm-super/sfrm1095.pfb>
-Output written on homework4.pdf (3 pages, 193933 bytes).
+Output written on homework4.pdf (3 pages, 191586 bytes).
 PDF statistics:
- 275 PDF objects out of 1000 (max. 8388607)
+ 253 PDF objects out of 1000 (max. 8388607)
  15 named destinations out of 1000 (max. 500000)
- 20560 words of extra memory for PDF output out of 20736 (max. 10000000)
+ 20496 words of extra memory for PDF output out of 20736 (max. 10000000)
 

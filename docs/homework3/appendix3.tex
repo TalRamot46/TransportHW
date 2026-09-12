@@ -2,11 +2,11 @@
 \FloatBarrier
 \subsection*{What the three approximations say}
 
-\paragraph{The reflector saving.} Water and iron behave as reflectors should. Both cores lose 14--20\% of their radius behind water and 18--34\% behind iron by theory (c), which because the mass goes as $R^3$ is a factor of more than three in critical mass: Pu-239 falls from 9.188 kg bare to 2.829 kg behind 10 mfp of iron. The two reflectors saturate differently, and the reason is $c_R$. Water absorbs ($c_R = 0.90$, $\nu_0 = 1.90$), so a neutron more than about two mean free paths deep never returns and the water columns are flat past $d = 3$. Iron barely absorbs ($c_R = 0.998$, $\nu_0 = 12.9$), so its return keeps improving out to $d = 10$ and beyond --- iron starts as the worse reflector at $d=1$ and ends the better one at $d = 10$ under (a) and (b); under (c) it is already ahead at $d = 1$.
+\paragraph{The reflector saving.} Water and iron behave as reflectors should. Both cores lose 14--20\% of their radius behind water and 18--34\% behind iron by theory (c), which because the mass goes as $R^3$ is a factor of more than three in critical mass: Pu-239 falls from 9.188 kg bare to 2.829 kg behind 10 mfp of iron. The two reflectors saturate differently, and the reason is $c_R$. Water absorbs ($c_R = 0.90$, $\nu_0 = 1.90$), so a neutron more than about two mean free paths deep never returns and the water columns are flat past $d = 3$. Iron barely absorbs ($c_R = 0.998$, $\nu_0 = 12.9$), so its return keeps improving out to $d = 10$ and beyond - iron starts as the worse reflector at $d=1$ and ends the better one at $d = 10$ under (a) and (b). Under (c) it is already ahead at $d = 1$.
 
-\paragraph{The ordering of the three theories.} At every entry $R_c^{(a)} > R_c^{(b)} > R_c^{(c)}$. The first gap is inherited from the bare problem: the asymptotic $D_0(c_C)$ and $k_0(c_C)$ already give a smaller sphere than $D_0 = 1/3$ does, by 11\% for Pu-239. The second is the jump itself. Every pair here has $\mu_0(c_C) < \mu_0(c_R)$, so $g < 1$ --- $0.766$ for Pu-239 behind water, $0.873$ for U-235 behind iron --- because the multiplying core has the shorter relaxation length and hence the more forward-peaked angular flux, and so carries more current per unit density. A $g$ below one multiplies down the leakage term of \eqref{eq:reflfixed}, which is why (c) always predicts the smallest core: 7--12\% below (b) for water, 10--21\% for iron and 22--37\% for sodium. Part of that second gap is the change of criticality equation rather than the jump itself; Appendix~A separates the two.
+\paragraph{The ordering of the three theories.} At every entry $R_c^{(a)} > R_c^{(b)} > R_c^{(c)}$. The first gap is inherited from the bare problem: the asymptotic $D_0(c_C)$ and $k_0(c_C)$ already give a smaller sphere than $D_0 = 1/3$ does, by 11\% for Pu-239. The second is the jump itself. Every pair here has $\mu_0(c_C) < \mu_0(c_R)$, so $g < 1$ - $0.766$ for Pu-239 behind water, $0.873$ for U-235 behind iron - because the multiplying core has the shorter relaxation length and hence the more forward-peaked angular flux, and so carries more current per unit density. A $g$ below one multiplies down the leakage term of \eqref{eq:reflfixed}, which is why (c) always predicts the smallest core: 7--12\% below (b) for water, 10--21\% for iron and 22--37\% for sodium. Part of that second gap is the change of criticality equation rather than the jump itself. Appendix~A separates the two.
 
-\paragraph{The sodium columns of (a) and (b) are diffusion theory failing.} Every sodium radius in those two columns is \emph{larger} than the corresponding bare sphere, which no reflector can do. The condition is being solved correctly --- \eqref{eq:reflcrit} was checked against an independent two-region spherical finite-volume $k$-eigenvalue solve, 3000 cells with harmonic-mean face diffusion coefficients across the material jump, and the two agree to better than $0.4\%$ on exactly these cases. The fault is in the model. Splitting the interface leakage of the Pu-239 core at $d = 10$ mfp into its two parts, $J/\phi = D_R/R_c + D_R/L$, the far-face return being $1/L = \Sigma_{t,R}\,\nu_0^{-1}\coth\!\left(\left[d+z_0\right]/\nu_0\right)$:
+\paragraph{The sodium columns of (a) and (b) are diffusion theory failing.} Every sodium radius in those two columns is \emph{larger} than the corresponding bare sphere, which no reflector can do. The condition is being solved correctly - \eqref{eq:reflcrit} was checked against an independent two-region spherical finite-volume $k$-eigenvalue solve, 3000 cells with harmonic-mean face diffusion coefficients across the material jump, and the two agree to better than $0.4\%$ on exactly these cases. The fault is in the model. Splitting the interface leakage of the Pu-239 core at $d = 10$ mfp into its two parts, $J/\phi = D_R/R_c + D_R/L$, the far-face return being $1/L = \Sigma_{t,R}\,\nu_0^{-1}\coth\!\left(\left[d+z_0\right]/\nu_0\right)$:
 
 
 {\color{red}
@@ -28,7 +28,7 @@ with $D_R/D_C$ the ratio of the two \emph{dimensional} diffusion coefficients,
 $D_{0,R}\Sigma_{t,C}/D_{0,C}\Sigma_{t,R}$. The underbraced bracket is the whole difference: it
 carries the two $1/r$ curvature terms of \eqref{eq:reflcrit}, and \eqref{eq:reflfixed} does not
 have it, because imposing the jump on $u = r\phi$ absorbs them. It is negative in every pair
-here --- $-0.12$ for U-235 behind water, where the two diffusion coefficients are within $35\%$
+here - $-0.12$ for U-235 behind water, where the two diffusion coefficients are within $35\%$
 of each other, and $-3.28$ for Pu-239 behind sodium, where $D_R/D_C = 5.3$. Being negative it
 lifts $a$, so dropping it is what pulls (c) below (b) by more than $\rho_{2/1} < 1$ alone
 accounts for. Both equations still run from $+\infty$ at $a \to 0$ to $-\infty$ at
@@ -55,7 +55,7 @@ Sodium & 10 & 5.5286 & 3.5066 & 5.3080 & 3.4701 & 5.5286 / 3.4701 \\
 \end{tabular}
 \caption{Critical radius in cm, Pu-239 core, under each equation and each parameter set. The
 last column is the pair actually reported in Question 1. Bare asymptotic sphere: $5.1890$ cm.
-Reading across the sodium row, the jump alone is worth $4\%$ and the change of equation a further $35\%$ --- and
+Reading across the sodium row, the jump alone is worth $4\%$ and the change of equation a further $35\%$ - and
 only \eqref{eq:reflfixed} keeps sodium below the bare sphere at all, which is the reason the
 curvature-fixed form is the one used for (c).}
 \end{table}
@@ -63,8 +63,8 @@ curvature-fixed form is the one used for (c).}
 \paragraph{A.3 The price.} Matching $-D\,d[r\phi]/dr$ does not conserve $J$ across the
 interface: it conserves $rJ + D\phi$, leaving a residual
 $\left(\rho_{2/1}D_R - D_C\right)\phi_C/R_C^2$ of the same order as the geometric term it
-discards. That is the content of the fix rather than an oversight --- Fick's law is not the
-true transport current near a curved interface either --- and it is why the finite-volume
+discards. That is the content of the fix rather than an oversight - Fick's law is not the
+true transport current near a curved interface either - and it is why the finite-volume
 cross-check of the code, which is conservative by construction, reproduces \eqref{eq:reflcrit}
 and can say nothing about \eqref{eq:reflfixed}.
 }
@@ -103,7 +103,7 @@ equation eliminates the odd moments and leaves a coupled Helmholtz system,
 The minus sign is not cosmetic and is the easiest thing to lose: the elimination produces
 $\mathbf{A}\mathbf{B}\,\boldsymbol{\Phi}_{\text{even}}''=\mathbf{\Sigma}_0\boldsymbol{\Phi}_{\text{even}}$,
 and moving that to the form \eqref{eq:helm} flips it. At $N=1$ it reads $\phi_0''+3(c-1)\phi_0=0$,
-the classic diffusion buckling $B=\sqrt{3(c-1)}$ of the table in Question 1 --- with the sign dropped
+the classic diffusion buckling $B=\sqrt{3(c-1)}$ of the table in Question 1 - with the sign dropped
 one gets $\cosh$ where $\cos$ belongs and no critical thickness at all.
 
 \paragraph{The spectrum of $\mathbf{K}^2$.} Since
@@ -113,7 +113,7 @@ $\mathbf{A}\mathbf{B}$ has the $M$ eigenvalues $\mu_i^2>0$ and is similar to a p
 matrix. By Sylvester's law of inertia the eigenvalues of \eqref{eq:helm} then carry the signs of
 $-\mathbf{\Sigma}_0$, which for $c>1$ at $k=1$ has one negative and $M-1$ positive entries:
 \textbf{exactly one eigenvalue $\lambda_1^2=B_0^2>0$, and $M-1$ eigenvalues
-$\lambda_j^2=-\kappa_j^2<0$}. The one oscillatory mode is the fundamental; the rest are the
+$\lambda_j^2=-\kappa_j^2<0$}. The one oscillatory mode is the fundamental. The rest are the
 boundary layers, and at $c=1$ the positive one collapses to $B_0=0$, an infinite critical slab.
 
 \paragraph{Assembling the criticality condition.} Diagonalise
@@ -146,7 +146,7 @@ and a non-trivial flux exists only where
 $(a/2)_{\text{crit}}$ is its smallest positive root. Two numerical points: the $\cosh$ and $\sinh$
 columns overflow once $\tfrac12\kappa_ja\gtrsim700$, so each is divided by its own $\cosh(\tfrac12\kappa_ja)$,
 which leaves $\mathbf{v}_j$ and $-(\mathbf{B}\mathbf{v}_j)\kappa_j\tanh(\tfrac12\kappa_ja)$ and cannot
-move a zero of the determinant, a column scaling being a non-zero factor of it; and the
+move a zero of the determinant, a column scaling being a non-zero factor of it. And the
 determinant itself spans many orders of magnitude across the bracket, so it is the sign change
 that is tracked, not the value.
 
@@ -164,13 +164,13 @@ $0.612134509$:
 cells $J$ & 25 & 50 & 100 & 200 & 400 \\
 \midrule
 error [mfp] & $6.61\cdot10^{-5}$ & $1.65\cdot10^{-5}$ & $4.13\cdot10^{-6}$ & $1.03\cdot10^{-6}$ & $2.58\cdot10^{-7}$ \\
-ratio & --- & 4.00 & 4.00 & 4.00 & 4.00 \\
+ratio & - & 4.00 & 4.00 & 4.00 & 4.00 \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 Each halving of $\Delta x$ divides the error by $4.00$ to three digits, which is the second
 order claimed in Question 2 measured rather than asserted, and it confirms that the boundary rows are
-as accurate as the interior ones --- a first-order boundary closure would have shown up here as
+as accurate as the interior ones - a first-order boundary closure would have shown up here as
 a ratio of $2$.
 }

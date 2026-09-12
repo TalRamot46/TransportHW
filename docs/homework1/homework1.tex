@@ -131,7 +131,7 @@ which is exactly Case's asymptotic mode: this approximation reproduces $\phi_{\t
 \begin{figure}[hbt!]
     \centering
     \includegraphics[width=0.85\textwidth]{figs/diffusion_comparison_numerical.pdf}
-    \caption{Exact scalar flux against the classical and asymptotic diffusion approximations, for $c = 0, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95$. Each approximation appears both as its closed form and as the numerical solution of Question 2; the two agree to $2 \times 10^{-8}\,\%$ and are indistinguishable here.}
+    \caption{Exact scalar flux against the classical and asymptotic diffusion approximations, for $c = 0, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95$. Each approximation appears both as its closed form and as the numerical solution of Question 2. The two agree to $2 \times 10^{-8}\,\%$ and are indistinguishable here.}
     \label{fig:diffusion_comparison}
 \end{figure}
 
@@ -166,7 +166,7 @@ The medium is symmetric, so the problem is solved on the half-domain $x \in [0,a
 \end{equation}
 which is satisfied by $e^{-\kappa x}$. Thus the truncation is exact for any $a$. We take $a = 10/\kappa$ in the presented plots.
 
-\paragraph{One integration.} The equation is linear and homogeneous away from the source, so the solution is proportional to its starting amplitude and no root-finding is needed. We integrate once from $a$ to $0$ --- the direction in which the solution grows, which is the stable one --- from $[y_1, y_2]^T = [1, -\kappa]^T$, then rescale by $[-1/(2D)]/y_2(0)$ to enforce the source condition. Both classic \& asymptotic approximations use this one solver, since
+\paragraph{One integration.} The equation is linear and homogeneous away from the source, so the solution is proportional to its starting amplitude and no root-finding is needed. We integrate once from $a$ to $0$ - the direction in which the solution grows, which is the stable one - from $[y_1, y_2]^T = [1, -\kappa]^T$, then rescale by $[-1/(2D)]/y_2(0)$ to enforce the source condition. Both classic \& asymptotic approximations use this one solver, since
 \begin{equation}
     \Sigma_a = 1 - c, \qquad D_{\text{classical}} = \frac{1}{3}, \qquad D_{\text{asymptotic}} = (1-c)\,\nu_0^2
 \end{equation}
@@ -194,6 +194,7 @@ which is satisfied by $e^{-\kappa x}$. Thus the truncation is exact for any $a$.
     \label{fig:q2_convergence}
 \end{figure}
 
+\newpage
 \section*{Question 3: Critical Half-Thickness and Critical Radius}
 
 \subsection*{The Eigenvalue for $c > 1$}
@@ -219,7 +220,7 @@ The asymptotic flux extrapolates to zero a distance $z_0(c)$ outside the surface
     \Sigma_t R_c = \pi\,|\nu_0(c)| - z_0(c)
     \label{eq:q3relations}
 \end{equation}
-No diffusion coefficient enters, so these are exact transport in that sense; they are still asymptotic, in that the transient flux near the surface is neglected (and the sphere uses the plane Milne $z_0$, without the Winslow curvature correction). The extrapolation distance comes from the expansion about $c = 1$,
+No diffusion coefficient enters, so these are exact transport in that sense. They are still asymptotic, in that the transient flux near the surface is neglected (and the sphere uses the plane Milne $z_0$, without the Winslow curvature correction). The extrapolation distance comes from the expansion about $c = 1$,
 \begin{equation}
     z_0(c) = 0.710446 \left[ \frac{1}{c} + q\,\frac{(1-c)^2}{c} + \mathcal{O}\!\left(\frac{(1-c)^3}{c}\right) \right]
     \label{eq:z0fit}
@@ -229,7 +230,7 @@ whose leading term is exact in the sense that $0.710446/c = 0.710446\,\nu_0\oper
 \begin{notebox}[The sign of the quadratic correction in \eqref{eq:z0fit}]
 The notes print $q = -0.0199$. Case's Table 23 has $c\,z_0(c)$ rising away from $0.710446$ on
 \emph{both} sides of $c = 1$, which a negative $q$ cannot reproduce, while $q = +0.0199$ matches
-the table to its four printed digits at $c = 0.9$ and $c = 1.1$ --- so the minus sign looks like
+the table to its four printed digits at $c = 0.9$ and $c = 1.1$ - so the minus sign looks like
 a transcription error. It matters little here: over $1.02 < c < 2$ the two signs differ by at
 most $3.2\,\%$ in $a/2$, and by under $0.07\,\%$ below $c = 1.2$. Results are quoted with the
 printed sign.
@@ -260,7 +261,7 @@ printed sign.
     \label{tab:q3}
 \end{table}
 
-Both dimensions fall steeply with $c$ --- a barely multiplying system must be many mean free
+Both dimensions fall steeply with $c$ - a barely multiplying system must be many mean free
 paths across, because $|\nu_0| \to \infty$ as $c \to 1^+$.
 
 \begin{notebox}[How good is the two-term fit for $z_0$?]
@@ -299,7 +300,7 @@ whose solutions are the \emph{same} shapes $\cos(Bx)$ and $\sin(Br)/r$. Diffusio
         1/\sqrt{3} & \text{Mark}
     \end{cases}
 \end{equation}
-Marshak sets the incoming partial current to zero, $\phi/4 + D\phi'/2 = 0$, so $z_0 = \ell_0 = 2D = 2/3$; Mark sets the incoming angular flux to zero along $\mu = 1/\sqrt{3}$, so $z_0 = \ell_0 = \sqrt{3}D \approx 0.5774$. Neither input carries the true $c$-dependence: $1/B$ is only the $c \to 1^+$ limit of $|\nu_0|$, and both $z_0$ are constants while the transport $z_0(c) \approx 0.7104/c$ halves across the range.
+Marshak sets the incoming partial current to zero, $\phi/4 + D\phi'/2 = 0$, so $z_0 = \ell_0 = 2D = 2/3$. Mark sets the incoming angular flux to zero along $\mu = 1/\sqrt{3}$, so $z_0 = \ell_0 = \sqrt{3}D \approx 0.5774$. Neither input carries the true $c$-dependence: $1/B$ is only the $c \to 1^+$ limit of $|\nu_0|$, and both $z_0$ are constants while the transport $z_0(c) \approx 0.7104/c$ halves across the range.
 
 \begin{table}[hbt!]
     \centering
@@ -351,13 +352,13 @@ silently (as we've stated above).
     \qquad\Longrightarrow\qquad
     \ell = \frac{1}{B} = |\nu_0(c)|
 \end{equation}
-\emph{exactly} --- the coefficient is built so that its buckling is Case's discrete eigenvalue.
+\emph{exactly} - the coefficient is built so that its buckling is Case's discrete eigenvalue.
 With the \underline{exact $z_0$} taken as the closure, part (d) is part (a) rewritten: same $\ell$, same $z_0$,
 same numbers. \textbf{It has no independent content.}
 
 \paragraph{Part 3(e).} Here the closure is \textbf{manufactured instead of imported.} Ask for the
 $\mu_0(c)$ that makes the half-range first moment of the asymptotic angular flux come out as
-$\int_{-1}^{0}\mu\,\psi_{\text{as}}\,d\mu = \tfrac12\left(\mu_0\phi - J\right)$; setting that
+$\int_{-1}^{0}\mu\,\psi_{\text{as}}\,d\mu = \tfrac12\left(\mu_0\phi - J\right)$. Setting that
 incoming current to zero and using Zimmerman's rules (shown in slides 18-20 in the relevant course slides, more details in Assignment 3 solution) gives $\mu_0 \phi = J = D|\phi'|$, so
 \begin{equation}
     \ell_0 = \frac{D}{\mu_0(c)}
@@ -393,7 +394,7 @@ Using Zimmerman's $\mu_0(c)$ and converting through \eqref{eq:l0z0} gives part (
 \end{table}
 
 \begin{notebox}[Why there are so many candidates for $z_0$]
-$z_0$ is not hard to define --- it is the Milne problem. The trouble is that it is a property of
+$z_0$ is not hard to define - it is the Milne problem. The trouble is that it is a property of
 the \emph{boundary layer}, which is exactly what an asymptotic or diffusion description throws
 away, so it cannot be derived from inside such a theory. It has to be \underline{imported}, as in (a) and
 (d), or \underline{manufactured} from a half-range closure, as in (b), (c) and (e). The four values in play
@@ -462,6 +463,7 @@ Assignment 3 Question 5 puts them against a converged $S_N$ solve, which is what
     \label{fig:q3_methods}
 \end{figure}
 
+\newpage
 \FloatBarrier
 \section*{Question 4: Numerical Diffusion Code in Spherical Coordinates}
 
@@ -495,7 +497,7 @@ The outer boundary is the extrapolated zero: the mesh is run out to $R + z_0$ an
 
 \subsection*{The Iterative Algorithm}
 
-$k$ comes from the source iteration of Bell \& Glasstone, pp.~189--192: start from a flat flux and $k = 1$; form $S = \frac{1}{k}\nu\Sigma_f\phi$; solve the removal problem $(-D\nabla^2 + \Sigma_a)\phi^{(n+1)} = S$; update
+$k$ comes from the source iteration of Bell \& Glasstone, pp.~189--192: start from a flat flux and $k = 1$. Form $S = \frac{1}{k}\nu\Sigma_f\phi$. Solve the removal problem $(-D\nabla^2 + \Sigma_a)\phi^{(n+1)} = S$. Update
 \begin{equation}
     k^{(n+1)} = k^{(n)} \, \frac{\int \nu \Sigma_f \phi^{(n+1)} \, dV}{\int \nu \Sigma_f \phi^{(n)} \, dV}
 \end{equation}
@@ -633,11 +635,11 @@ An expansion of Question 4's \emph{Discretisation}, following \texttt{src/homewo
 \texttt{\_mesh} builds $N$ uniform cells on $[0, R_{\text{out}}]$ with $h = R_{\text{out}}/N$. Two families of index run over it and they must not be confused:
 
 \begin{itemize}
-    \item \textbf{Faces}, indexed $i = 0,\dots,N$ --- there are $N+1$ of them, at radius $r_i = i h$, carrying areas $A_i = 4\pi r_i^2$ (\texttt{areas}, length $N+1$).
-    \item \textbf{Cells}, indexed $j = 0,\dots,N-1$ --- there are $N$ of them, cell $j$ spanning $[r_j, r_{j+1}]$, with centre $\bar r_j = (j + \tfrac12)h$ (\texttt{centres}) and volume $V_j = \tfrac{4\pi}{3}(r_{j+1}^3 - r_j^3)$ (\texttt{volumes}), both of length $N$.
+    \item \textbf{Faces}, indexed $i = 0,\dots,N$ - there are $N+1$ of them, at radius $r_i = i h$, carrying areas $A_i = 4\pi r_i^2$ (\texttt{areas}, length $N+1$).
+    \item \textbf{Cells}, indexed $j = 0,\dots,N-1$ - there are $N$ of them, cell $j$ spanning $[r_j, r_{j+1}]$, with centre $\bar r_j = (j + \tfrac12)h$ (\texttt{centres}) and volume $V_j = \tfrac{4\pi}{3}(r_{j+1}^3 - r_j^3)$ (\texttt{volumes}), both of length $N$.
 \end{itemize}
 
-Cell $j$ is bounded by face $i = j$ on the inside and face $i = j+1$ on the outside, so the two numberings share their integers. The rule that removes every ambiguity below is: \textbf{a subscript on $A$, $J$ or $C$ is a face; a subscript on $\phi$, $V$ or $S$ is a cell.} Where a relation ties a face to the two cells it separates, the same integer does double duty by construction --- face $i$ has cell $i-1$ immediately inside it and cell $i$ immediately outside. The unknown $\phi_j$ is the average flux over cell $j$; it lives at the centre, not at a face. In the half-index notation of Question 4's \emph{Discretisation}, faces $i = j$ and $i = j+1$ are what were written $j - \tfrac12$ and $j + \tfrac12$; the integer form is used here because it is what the code indexes.
+Cell $j$ is bounded by face $i = j$ on the inside and face $i = j+1$ on the outside, so the two numberings share their integers. The rule that removes every ambiguity below is: \textbf{a subscript on $A$, $J$ or $C$ is a face. A subscript on $\phi$, $V$ or $S$ is a cell.} Where a relation ties a face to the two cells it separates, the same integer does double duty by construction - face $i$ has cell $i-1$ immediately inside it and cell $i$ immediately outside. The unknown $\phi_j$ is the average flux over cell $j$. It lives at the centre, not at a face. In the half-index notation of Question 4's \emph{Discretisation}, faces $i = j$ and $i = j+1$ are what were written $j - \tfrac12$ and $j + \tfrac12$. The integer form is used here because it is what the code indexes.
 
 \begin{figure}[htbp]
 \centering
@@ -670,7 +672,7 @@ Rather than assume the balance \eqref{eq:q4_fv}, derive it from \eqref{eq:q4_sph
 \end{aligned}
 \label{eq:fv_derivation}
 \end{equation}
-using $A = 4\pi r^2$ and $J = -D\,d\phi/dr$. The integral of a divergence has collapsed onto the two faces --- the divergence theorem for a shell --- which is why nothing is ever evaluated at $r = 0$, where the operator itself is singular.
+using $A = 4\pi r^2$ and $J = -D\,d\phi/dr$. The integral of a divergence has collapsed onto the two faces - the divergence theorem for a shell - which is why nothing is ever evaluated at $r = 0$, where the operator itself is singular.
 
 The other two terms integrate to volume averages by definition of the unknown, $\phi_j \equiv V_j^{-1}\!\int_{\text{cell } j} \phi \, dV$:
 \begin{equation}
@@ -684,14 +686,14 @@ Collecting the three gives \eqref{eq:q4_fv}, with the half-indices written as th
     A_{j+1} J_{j+1} - A_j J_j + \Sigma_a V_j \phi_j = S_j V_j
     \label{eq:fv_balance}
 \end{equation}
-Nothing has been approximated yet: this is an exact statement about cell averages and true face currents, for any $N$. \textbf{The discretisation enters only in the next step}, where the face current is replaced by a difference between neighbouring cell centres --- which is also where the second-order accuracy under \emph{Verification} comes from. With Fick's law between adjacent centres, the current through face $i$ --- which separates cells $i-1$ and $i$, a distance $h$ apart --- is
+Nothing has been approximated yet: this is an exact statement about cell averages and true face currents, for any $N$. \textbf{The discretisation enters only in the next step}, where the face current is replaced by a difference between neighbouring cell centres - which is also where the second-order accuracy under \emph{Verification} comes from. With Fick's law between adjacent centres, the current through face $i$ - which separates cells $i-1$ and $i$, a distance $h$ apart - is
 \begin{equation}
     J_i = -D\,\frac{\phi_i - \phi_{i-1}}{h}
     \qquad\Longrightarrow\qquad
     A_i J_i = -C_i\,(\phi_i - \phi_{i-1}), \qquad
     \boxed{\;C_i \equiv \frac{D A_i}{h}\;}
 \end{equation}
-The \emph{conductance} $C_i$ is a property of a face, not of a cell --- this is the whole idea of the layout.
+The \emph{conductance} $C_i$ is a property of a face, not of a cell - this is the whole idea of the layout.
 
 Getting from \eqref{eq:fv_balance} to the matrix row takes three small steps, and the index change happens in the first of them. Cell $j$ has two faces, so the face relation is evaluated twice: at the inner face $i = j$, whose neighbours are cells $j-1$ and $j$, and at the outer face $i = j+1$, whose neighbours are cells $j$ and $j+1$. That substitution is where a face index becomes a pair of cell indices:
 \begin{equation}
@@ -713,12 +715,12 @@ Expanding the brackets and collecting the three unknowns $\phi_{j-1}$, $\phi_j$,
     = S_j V_j
     \label{eq:fv_row}
 \end{equation}
-So cell $j$ couples to each neighbour through the conductance of the face it \emph{shares} with that neighbour --- $C_j$ to the left, $C_{j+1}$ to the right --- and both of those same two conductances reappear on the diagonal, because every neutron leaving through a face also leaves the cell it came from.
+So cell $j$ couples to each neighbour through the conductance of the face it \emph{shares} with that neighbour - $C_j$ to the left, $C_{j+1}$ to the right - and both of those same two conductances reappear on the diagonal, because every neutron leaving through a face also leaves the cell it came from.
 Each face appears in exactly the two rows it separates, with the same magnitude and opposite sign. That single fact gives the matrix all three of its useful properties: it is tridiagonal, it is symmetric, and it conserves neutrons exactly (\S\ref{app:properties}).
 
 \subsection*{The two ends, and why neither needs a branch}
 
-\paragraph{The origin.} Face $0$ sits at $r = 0$, so $A_0 = 0$ and therefore $C_0 = 0$. The $\phi_{-1}$ term in \eqref{eq:fv_row} vanishes on its own for cell $j = 0$, and no current crosses the centre. The symmetry condition $\phi'(0) = 0$ is thus imposed \emph{exactly}, by geometry, with no code path of its own --- the reason \texttt{\_banded\_operator} can index a plain array at $j = 0$.
+\paragraph{The origin.} Face $0$ sits at $r = 0$, so $A_0 = 0$ and therefore $C_0 = 0$. The $\phi_{-1}$ term in \eqref{eq:fv_row} vanishes on its own for cell $j = 0$, and no current crosses the centre. The symmetry condition $\phi'(0) = 0$ is thus imposed \emph{exactly}, by geometry, with no code path of its own - the reason \texttt{\_banded\_operator} can index a plain array at $j = 0$.
 
 \paragraph{The outer surface.} Face $N$ has no cell beyond it. It sits at $R + z_0$, where the flux is driven to zero. Deriving its coefficient for the general condition $\phi + \ell_0 \phi' = 0$ and specialising afterwards is worth the extra line, because it shows the extrapolated zero is the clean $\ell_0 \to 0$ limit rather than a separate case. The surface flux $\phi_s$ is eliminated between that condition and the one-sided difference over the half cell $h/2$ that separates $\bar r_{N-1}$ from the surface:
 \begin{equation}
@@ -745,7 +747,7 @@ Both indices of the matrix are cells: $M_{mn}$ couples cell $m$ to cell $n$. \te
 \begin{equation}
     \texttt{ab}[\,1 + m - n,\; n\,] = M_{mn}, \qquad |m - n| \le 1
 \end{equation}
-so row $0$ of \texttt{ab} holds the superdiagonal, row $1$ the diagonal, row $2$ the subdiagonal --- each stored in the \emph{column} of the entry, which is why the superdiagonal starts one slot in and the subdiagonal stops one slot early. The three assignments read:
+so row $0$ of \texttt{ab} holds the superdiagonal, row $1$ the diagonal, row $2$ the subdiagonal - each stored in the \emph{column} of the entry, which is why the superdiagonal starts one slot in and the subdiagonal stops one slot early. The three assignments read:
 \begin{center}
 \begin{tabular}{ll}
     \toprule
@@ -761,7 +763,7 @@ so row $0$ of \texttt{ab} holds the superdiagonal, row $1$ the diagonal, row $2$
 The face index survives in the conductance: the entry coupling cells $n-1$ and $n$ is $-C_n$, the conductance of face $i = n$, which is precisely the face they share.
 The slices are the whole trick, and each says something physical:
 \begin{itemize}
-    \item \texttt{conductance[:-1]} is $C_0 \dots C_{N-1}$, the \emph{inner} face of each cell; \texttt{conductance[1:]} is $C_1 \dots C_N$, the \emph{outer} face of each cell. Element $j$ of their sum is the pair of faces bounding cell $j$ --- the diagonal.
+    \item \texttt{conductance[:-1]} is $C_0 \dots C_{N-1}$, the \emph{inner} face of each cell. \texttt{conductance[1:]} is $C_1 \dots C_N$, the \emph{outer} face of each cell. Element $j$ of their sum is the pair of faces bounding cell $j$ - the diagonal.
     \item \texttt{conductance[1:-1]} is $C_1 \dots C_{N-1}$, the $N-1$ \emph{interior} faces, i.e.\ precisely those that separate two cells. It is dropped into both off-diagonals unchanged, which is why $M$ comes out symmetric.
     \item The two excluded entries are the two boundaries: $C_0 = 0$ (nothing to couple across the origin) and $C_N$ (leakage, coupling to nothing).
 \end{itemize}
@@ -791,24 +793,24 @@ the two $\ast$ entries being the unused corners, left as the zeros \texttt{np.ze
 
 \paragraph{Symmetry and definiteness.} $M = M^{\!\top}$ because both off-diagonals are the same array, and the diagonal dominates strictly once $\Sigma_a > 0$ or $C_N > 0$. So $M$ is positive definite, the LU factorisation inside \texttt{solve\_banded} needs no pivoting, and the solve is $O(N)$.
 
-\paragraph{Row sums are the neutron balance.} Summing row $j$ of \eqref{eq:fv_row}, the conductances cancel in pairs and leave $\Sigma_a V_j$ for every interior row --- and $\Sigma_a V_{N-1} + C_N$ for the last. In matrix form,
+\paragraph{Row sums are the neutron balance.} Summing row $j$ of \eqref{eq:fv_row}, the conductances cancel in pairs and leave $\Sigma_a V_j$ for every interior row - and $\Sigma_a V_{N-1} + C_N$ for the last. In matrix form,
 \begin{equation}
     M \mathbf{1} = \Sigma_a \mathbf{V} + C_N \mathbf{e}_{N-1}
 \end{equation}
-that is: applied to a flat flux, the operator returns absorption plus surface leakage and nothing else. This is the discrete identity behind the balance check under \emph{Verification}; it holds by construction rather than by luck, which is why that check probes the boundary coefficient \eqref{eq:CN} and little else.
+that is: applied to a flat flux, the operator returns absorption plus surface leakage and nothing else. This is the discrete identity behind the balance check under \emph{Verification}. It holds by construction rather than by luck, which is why that check probes the boundary coefficient \eqref{eq:CN} and little else.
 
 \subsection*{The source, $k$, and what plays the role of an initial condition}
 
 Being a steady eigenvalue problem, this has no initial condition in the time-dependent sense. What it has instead is a \emph{starting iterate} for the power iteration, and it is worth being clear about which parts of the setup are physics and which are merely a starting guess:
 
 \begin{itemize}
-    \item \textbf{Baked into the matrix, once:} both boundary conditions. $C_0 = 0$ and $C_N$ are assembled before the first sweep, so every iterate --- converged or not --- satisfies them exactly. They are never re-imposed inside the loop.
-    \item \textbf{The right-hand side} is the \emph{volume-integrated} fission source $F_j = \nu\Sigma_f \phi_j V_j$, divided by $k$; the factor $V_j$ is what makes it dimensionally consistent with the $C_i$'s, which are integrated currents. Compare \eqref{eq:fv_row}: the source term is $S_j V_j$, not $S_j$.
-    \item \textbf{The starting guess} is a flat flux $\phi^{(0)}_j = 1$ with $k^{(0)} = 1$. Power iteration converges to the fundamental mode from any start with a non-zero component along it, which a strictly positive vector certainly has, so the converged $k$ and shape do not depend on this choice --- only the number of sweeps does.
+    \item \textbf{Baked into the matrix, once:} both boundary conditions. $C_0 = 0$ and $C_N$ are assembled before the first sweep, so every iterate - converged or not - satisfies them exactly. They are never re-imposed inside the loop.
+    \item \textbf{The right-hand side} is the \emph{volume-integrated} fission source $F_j = \nu\Sigma_f \phi_j V_j$, divided by $k$. The factor $V_j$ is what makes it dimensionally consistent with the $C_i$'s, which are integrated currents. Compare \eqref{eq:fv_row}: the source term is $S_j V_j$, not $S_j$.
+    \item \textbf{The starting guess} is a flat flux $\phi^{(0)}_j = 1$ with $k^{(0)} = 1$. Power iteration converges to the fundamental mode from any start with a non-zero component along it, which a strictly positive vector certainly has, so the converged $k$ and shape do not depend on this choice - only the number of sweeps does.
     \item \textbf{The renormalisation} $\phi \leftarrow \phi/\max\phi$ after each sweep is likewise not physics: the eigenvector is defined only up to scale, and both integrals in the $k$ update are homogeneous in $\phi$, so the factor cancels. It is there to keep the iterate at $O(1)$ so that the convergence test does not lose its significant digits.
 \end{itemize}
 
-The one quantity that does carry a physical scale through the whole calculation is the radius $R$: it fixes $R_{\text{out}}$, hence $h$, hence every area, volume and conductance. That is the sense in which the outer root search of \texttt{critical\_radius} sits outside everything described here --- each evaluation of $k(R)$ rebuilds the mesh and the matrix from scratch.
+The one quantity that does carry a physical scale through the whole calculation is the radius $R$: it fixes $R_{\text{out}}$, hence $h$, hence every area, volume and conductance. That is the sense in which the outer root search of \texttt{critical\_radius} sits outside everything described here - each evaluation of $k(R)$ rebuilds the mesh and the matrix from scratch.
 
 }
 
