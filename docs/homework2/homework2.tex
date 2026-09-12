@@ -7,6 +7,18 @@
 \usepackage{hyperref}
 \usepackage{microtype}
 \usepackage{xcolor} % TEMPORARY: marks Claude's additions in blue
+\usepackage[most]{tcolorbox}
+
+% Same notebox as homework1 and homework3: third argument passes extra keys, which is how a
+% breakable box sets coltext -- a plain \color inside one is lost at the page break.
+\DeclareTColorBox{notebox}{ O{Note} O{blue} O{} }{
+  breakable,
+  colback=#2!5!white,
+  colframe=#2!75!black,
+  fonttitle=\bfseries,
+  title={#1},
+  #3
+}
 
 \geometry{margin=1in}
 
@@ -17,13 +29,13 @@
 \begin{document}
 
 \maketitle
-\section{Question 1 - Useful identity for the solution of the time-dependent slab-geometry Boltzmann equation}
+\section*{Question 1 - Useful identity for the solution of the time-dependent slab-geometry Boltzmann equation}
 In this question we are asked to prove the following identity:
 \begin{equation}
     \psi(x,\mu,t;c) = ce^{-(1-c){v\Sigma_t} t}\psi(cx,\mu,ct;1) \label{eq:identity}
 \end{equation}
 We will do it in two parts. First, we will write down the equation that $\tilde{\psi} = \psi(cx,\mu,ct;1)$ satisfies, and then we will use it in order to prove that the product $ce^{-(1-c){v\Sigma_t} t}\tilde{\psi}$ satisfies the same equation as $\psi(x,\mu,t;c)$.
-\subsection{The equation for $\tilde{\psi}$}
+\subsection*{The equation for $\tilde{\psi}$}
 \paragraph{Notation:} We will denote by $\Psi(X,\mu,T)\equiv\psi(X,\mu,T;1)$ the $c=1$ solution written in its own variables, and by $\Psi_T$ and $\Psi_X$ its partial derivatives with respect to them, so that $\tilde{\psi}(x,\mu,t) = \Psi(cx,\mu,ct)$ with $X=cx$ and $T=ct$. \textbf{This notation is used to avoid confusion when using the chain rule, as will be done immediately.}
 First, $\Psi$ satisfies the $c=1$ equation in the variables $X$ and $T$:
 \begin{equation}
@@ -34,7 +46,7 @@ which after applying the chain rule, $\Psi_T = \frac{1}{c}\frac{\partial \tilde{
     \frac{1}{v}\frac{\partial \tilde{\psi}}{\partial t} + \mu \frac{\partial \tilde{\psi}}{\partial x} + c\Sigma_t \tilde{\psi} = \frac{c\Sigma_t}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime \label{eq:tilde}
 \end{equation}
 So $\tilde{\psi}$ obeys the same equation as $\psi(x,\mu,t;c)$ except that it is removed at the rate $c\Sigma_t$ instead of $\Sigma_t$.
-\subsection{Proving the identity}
+\subsection*{Proving the identity}
 In this part we are going to simply subtitute the RHS of \ref{eq:identity} into the LHS of the equation for $\psi(x,\mu,t;c)$ and show that it satisfies the same equation. After substitution and application of the chain rule we get:
 \begin{align}
     \text{LHS} &= \frac{1}{v}\left[c(c-1)v\Sigma_t e^{-(1-c)v\Sigma_t t}\tilde{\psi}+c\, e^{-(1-c)v\Sigma_t t}\frac{\partial\tilde{\psi}}{\partial t}\right] + \mu c\, e^{-(1-c)v\Sigma_t t}\frac{\partial\tilde{\psi}}{\partial x} + \Sigma_t c\, e^{-(1-c)v\Sigma_t t}\tilde{\psi} \\
@@ -43,12 +55,12 @@ In this part we are going to simply subtitute the RHS of \ref{eq:identity} into 
     &= c e^{-(1-c)v\Sigma_t t}\frac{c\Sigma_t}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime = \frac{c\Sigma_t}{2}\int_{-1}^{1} c e^{-(1-c)v\Sigma_t t}\tilde{\psi}d\mu^\prime
 \end{align}
 where \ref{eq:tilde} was used in the last line, and this is exactly the RHS of the equation for $\psi(x,\mu,t;c)$.
-\section{Question 2 - Derivation of the time-dependent planar scalar flux for a plane source}
+\section*{Question 2 - Derivation of the time-dependent planar scalar flux for a plane source}
 The relation between a plane source and a point source as studied in class is given by:
 \begin{equation}
     \phi_{\text{pl}}(x) = 2\pi\int_{|x|}^{\infty} \phi_{\text{pt}}(r)rdr
 \end{equation}
-The solution taken from J. C. J. Paasschens is the point-source scalar flux $\phi_{\text{pt}}(r,t)$ for $c=1$, and therefore the planar-source scalar flux is given by the integration given above. 
+The solution taken from J. C. J. Paasschens is the point-source scalar flux $\phi_{\text{pt}}(r,t)$ for $c=1$, and therefore the planar-source scalar flux is given by the integration given above.
 \begin{align}
     \phi_{\text{pl}}(x,t) &= 2\pi \int_{|x|}^{\infty} \frac{e^{-v\Sigma_t t}}{{4\pi r^2}}\delta(r-vt)rdr + {2\pi}\int_{|x|}^{\infty} \frac{{\left(1-r^2/v^2t^2\right)}^{1/8}}{\left(4\pi vt/(3\Sigma_t)\right)^{3/2}} e^{-v\Sigma_t t}G\left(v\Sigma_t t\left[1-\frac{r^2}{v^2t^2}\right]^{3/4}\right)\Theta(vt-r)rdr \\
     &= \frac{e^{-v\Sigma_t t}}{2vt}\Theta(vt-|x|) + \Theta(vt-|x|) \frac{2\pi e^{-v\Sigma_t t}}{\left(4\pi vt/(3\Sigma_t)\right)^{3/2}} \int_{|x|}^{vt} \left(1-\frac{r^2}{v^2t^2}\right)^{1/8} G\left(v\Sigma_t t\left[1-\frac{r^2}{v^2t^2}\right]^{3/4}\right)rdr \\
@@ -63,91 +75,13 @@ with $w_0 = a\left(1-\frac{x^2}{(vt)^2}\right)^{3/4}$, the powers combining as $
 \end{equation}
 which \textbf{closes the derivation of the planar-source scalar flux for $c=1$.}
 Of course the relation proved in Q1 can be used to get the solution for $c\neq 1$ using a simple scaling and multiplication by an exponential factor of the solution for $c=1$.
-\section{\texorpdfstring{\textcolor{blue}{Question 3 - Classical and asymptotic diffusion
-against the exact solution}}{Question 3 - Classical and asymptotic diffusion against the exact solution}}
-{\color{blue}
-\subsection{The three solutions being compared}
-
-Throughout, $\Sigma_t = v = 1$ as specified in the assignment, the source is the plane pulse
-$Q(x,t) = \delta(x)\delta(t)$, and the figures are generated by \texttt{src/homework2}.
-
-This section covers parts 3(a) and 3(b): all three curves being compared are closed forms, so
-no numerical scheme enters. Parts 3(c) and 3(d) --- the finite-difference time-dependent
-diffusion code and the relative-error study --- are separate deliverables, and the analytic
-solution derived below is what that code will be verified against.
-
-The source being a pulse in \emph{time} as well as in space is not an assumption but a
-requirement of the solution being used: Paasschens takes the isotropic point source
-$S(\mathbf{r},t,\hat{\mathbf{s}}) = \delta(\mathbf{r})\delta(t)$ (his Eq.~4), and the uncollided
-term $\propto\delta(r-vt)$ is its signature --- every uncollided particle sits at radius exactly
-$vt$, which only holds for an instantaneous release. A steady $\delta(\mathbf{r})$ source would
-give a time-independent $e^{-\Sigma_t r}/(4\pi r^2)$ instead, and there would be no
-$t = 1,2,3,4,7,15$ to present.
-
-The \textbf{exact} solution is the planar-source scalar flux derived in Question 2 from the
-Paasschens point-source solution, carried to general $c$ by the scaling identity of
-Question 1:
-\begin{equation}
-    \phi(x,t;1) = \frac{e^{-t}}{2t}\left[1 + \sqrt{\frac{3}{\pi}}\int_0^{w_0}\sqrt{w}\,G(w)\,dw\right]\Theta(t-|x|),
-    \qquad w_0 = t\left(1-\frac{x^2}{t^2}\right)^{3/4}
-\end{equation}
-\begin{equation}
-    \phi(x,t;c) = c\,e^{-(1-c)t}\,\phi(cx,ct;1) \label{eq:scaling}
-\end{equation}
-
-The two \textbf{diffusion} solutions are the Green's functions of
-\begin{equation}
-    \frac{1}{v}\frac{\partial \phi}{\partial t} - D\frac{\partial^2 \phi}{\partial x^2} + \Sigma_a\phi = \delta(x)\delta(t),
-    \qquad \Sigma_a = (1-c)\Sigma_t, \label{eq:diffusion}
-\end{equation}
-derived in Section \ref{sec:derivation}, differing only through $D = D_0(c)/\Sigma_t$:
-\begin{equation}
-    D_0 = \tfrac13 \quad\text{(classical)},
-    \qquad
-    D_0(c) = (1-c)\nu_0^2 \quad\text{(asymptotic)},
-\end{equation}
-where $\nu_0$ is the discrete transport eigenvalue, $c\nu_0\,\text{arctanh}(1/\nu_0) = 1$. For
-$c>1$ the eigenvalue is imaginary, $\nu_0 = i|\nu_0|$, and $(1-c)\nu_0^2 = (c-1)|\nu_0|^2$
-remains positive; both branches tend to $\tfrac13$ as $c\to1$, so the two approximations
-coincide there.
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lccccc}
-\toprule
-$c$ & 0.6 & 0.8 & 1.0 & 1.2 & 1.5 \\
-\midrule
-$D_0(c)$ & 0.48588 & 0.39629 & 0.33333 & 0.28717 & 0.23745 \\
-\bottomrule
-\end{tabular}
-\caption{The asymptotic diffusion coefficient; the classical value is $1/3$ for every $c$.}
-\end{table}
-
-\subsection{Derivation of the time-dependent diffusion Green's function}
+\section*{Question 3 - Classical and asymptotic diffusion against the exact solution}
+\subsection*{Derivation of the time-dependent diffusion Green's function}
 \label{sec:derivation}
-
-\subsubsection{The equation, and where the \texorpdfstring{$1/v$}{1/v} belongs}
-
-Written for the \emph{scalar flux} $\phi = vn$, the time-dependent diffusion equation carries a
-factor $1/v$ on the time derivative:
+The time-dependent diffusion equation is:
 \begin{equation}
     \frac{1}{v}\frac{\partial \phi}{\partial t} - D\frac{\partial^2 \phi}{\partial x^2} + \Sigma_a\phi = S(x,t) \label{eq:fluxform}
 \end{equation}
-The quickest way to see that it must be there is dimensional. With $D = D_0/\Sigma_t$ a length
-and $\Sigma_a$ an inverse length, both $D\,\partial_x^2\phi$ and $\Sigma_a\phi$ carry units of
-$\phi/\text{length}$; the time derivative carries $\phi/\text{time}$, and only the factor
-$1/v$, of units $\text{time}/\text{length}$, brings it into line. Equivalently, $\partial_x$
-and $\tfrac1v\partial_t$ are the pair that appear together in the transport equation from which
-\eqref{eq:fluxform} descends, since a particle covers $v\,dt$ of path in $dt$ of time.
-
-Written instead for the \emph{density} $n = \phi/v$, the same equation reads
-$\partial_t n - Dv\,\partial_x^2 n + v\Sigma_a n = vS$, with no $1/v$: the factor is a
-statement about which variable is being used, not an extra physical ingredient. In the
-dimensionless units of this assignment, $\Sigma_t = v = 1$, the two forms coincide, which is
-why the distinction never reaches the numbers.
-
-\subsubsection{Reduction to the heat equation}
-
 Take $S = \delta(x)\delta(t)$ and multiply \eqref{eq:fluxform} by $v$:
 \begin{equation}
     \frac{\partial \phi}{\partial t} - Dv\frac{\partial^2 \phi}{\partial x^2} + v\Sigma_a\phi = v\,\delta(x)\delta(t) \label{eq:vform}
@@ -160,12 +94,9 @@ limit, so only the time derivative survives:
     \phi(x,0^+) - \phi(x,0^-) = v\,\delta(x) \qquad\Longrightarrow\qquad \phi(x,0^+) = v\,\delta(x)
 \end{equation}
 since nothing precedes the pulse. For $t>0$ the equation is source-free, so the problem is now
-a pure initial-value problem. This is the same manoeuvre as in Assignment 1, Question 2, where
-integrating the steady equation across the source turned the delta into a boundary current
-instead: a delta source is always better absorbed into a condition than kept as a term.
+a pure initial-value problem (this is the same trick as in Assignment 1, Question 2)
 
-\paragraph{Step 2: absorption factors out exactly.} Absorption removes particles at a rate
-independent of position, so it can only rescale the solution, never reshape it. Substituting
+\paragraph{Step 2: absorption factors out exactly.} As performed in the course, substituting
 $\phi(x,t) = e^{-v\Sigma_a t}\,u(x,t)$ into \eqref{eq:vform} for $t>0$, the $-v\Sigma_a u$
 produced by the time derivative cancels the absorption term identically and leaves the pure
 heat equation
@@ -203,46 +134,44 @@ Restoring the factor from Step 2 gives the Green's function:
 which in the units of this assignment, $\Sigma_t = v = 1$ and $D = D_0(c)$, is the form
 implemented in \texttt{src/homework2/diffusion.py}:
 \begin{equation}
-    \phi_{\text{diff}}(x,t;c) = \frac{e^{-(1-c)t}}{\sqrt{4\pi D_0(c)\,t}}\,e^{-x^2/(4D_0(c)t)}
+    \boxed{\;\phi_{\text{diff}}(x,t;c) = \frac{e^{-(1-c)t}}{\sqrt{4\pi D_0(c)\,t}}\,e^{-x^2/(4D_0(c)t)}\;}
 \end{equation}
 
-\subsubsection{Three checks on the Green's function}
-
-\paragraph{Particle balance.} Integrating \eqref{eq:green} over all $x$ gives
-$\int\phi\,dx = v\,e^{-(1-c)\Sigma_t vt}$, i.e.\ $\int n\,dx = e^{-(1-c)t}$ in dimensionless
-units. This is exactly the normalisation the exact transport solution obeys, by the scaling
-identity \eqref{eq:scaling} --- so the two solutions being compared carry the same number of
-particles at every time, and the differences in the figures are differences of \emph{shape}
-alone.
-
-\paragraph{Spreading rate.} The Gaussian has variance $\langle x^2\rangle = 2Dvt$, so the
-particle cloud spreads as $\sqrt{t}$ with no upper bound on speed. The exact solution spreads
-at most as $vt$. This is the origin of the leakage past the causal front seen in every panel of
-Section \ref{sec:comparison}, and it is a structural defect of the diffusion approximation, not
-a small-parameter error.
-
-\paragraph{The steady limit.} A steady source is a pulse source fired repeatedly, so
-integrating \eqref{eq:green} over all elapsed times must reproduce the steady solution. Using
+\begin{notebox}[A second route: Fourier in space, then Laplace in time][blue]
+Define
 \begin{equation}
-    \int_0^{\infty}\frac{e^{-\beta\tau}}{\sqrt{4\pi a\tau}}e^{-x^2/(4a\tau)}d\tau
-    = \frac{1}{2\sqrt{a\beta}}\,e^{-\sqrt{\beta/a}\,|x|}
+    \hat{\phi}(k,t) = \int_{-\infty}^{\infty}\phi(x,t)\,e^{-ikx}dx,
+    \qquad
+    \tilde{\phi}(k,s) = \int_{0^-}^{\infty}\hat{\phi}(k,t)\,e^{-st}dt
 \end{equation}
-with $\tau = vt$, $a = D$ and $\beta = \Sigma_a$:
+and apply both to \eqref{eq:vform} term by term, with $\phi(x,0^-) = 0$:
+\begin{align}
+    \frac{\partial \phi}{\partial t} &\;\longrightarrow\; s\,\tilde{\phi} - \hat{\phi}(k,0^-) = s\,\tilde{\phi} \\
+    -Dv\frac{\partial^2 \phi}{\partial x^2} &\;\longrightarrow\; Dvk^2\,\tilde{\phi} \\
+    v\Sigma_a\,\phi &\;\longrightarrow\; v\Sigma_a\,\tilde{\phi} \\
+    v\,\delta(x)\delta(t) &\;\longrightarrow\; v
+\end{align}
+so that
+\begin{gather}
+    \left(s + Dvk^2 + v\Sigma_a\right)\tilde{\phi}(k,s) = v \\
+    \tilde{\phi}(k,s) = \frac{v}{s + Dvk^2 + v\Sigma_a}
+\end{gather}
+a single simple pole at $s = -(Dvk^2 + v\Sigma_a)$, so with
+$\mathcal{L}^{-1}\{(s+\alpha)^{-1}\} = e^{-\alpha t}$,
 \begin{equation}
-    \int_0^{\infty}\phi_{\text{diff}}\,dt
-    = \frac{1}{2\sqrt{D\Sigma_a}}e^{-\sqrt{\Sigma_a/D}\,|x|}
-    \;\overset{D=1/(3\Sigma_t)}{=}\;
-    \frac{\sqrt3}{2\sqrt{1-c}}\,e^{-\sqrt{3(1-c)}\,\Sigma_t|x|}
+    \hat{\phi}(k,t) = v\,e^{-\left(Dvk^2 + v\Sigma_a\right)t}
 \end{equation}
-the familiar classical result, and with $D = (1-c)\nu_0^2/\Sigma_t$ instead,
-$e^{-\Sigma_t|x|/\nu_0}/\big(2(1-c)\nu_0\big)$, the asymptotic one. This ties the coefficient
-in front of the Gaussian to the coefficient in front of the exponential, so a normalisation
-slip in either shows up immediately; it is run numerically in \texttt{main.py} and agrees to
-$\sim10^{-14}$ relative. Note it exists only for $c<1$: for $c\geq1$ nothing removes the
-particles a steady source keeps adding, the integral diverges, and only the time-dependent
-form \eqref{eq:green} is meaningful.
+and the Fourier inversion completes the square exactly as in Step 4:
+\begin{align}
+    \phi(x,t) &= \frac{v}{2\pi}\int_{-\infty}^{\infty} e^{-\left(Dvk^2 + v\Sigma_a\right)t}e^{ikx}dk \\
+    &= \frac{v\,e^{-v\Sigma_a t}}{2\pi}\,e^{-x^2/(4Dvt)}\int_{-\infty}^{\infty} e^{-Dvt\left(k - \frac{ix}{2Dvt}\right)^2}dk \\
+    &= \frac{v\,e^{-v\Sigma_a t}}{2\pi}\,e^{-x^2/(4Dvt)}\sqrt{\frac{\pi}{Dvt}}
+     = \frac{v\,e^{-v\Sigma_a t}}{\sqrt{4\pi Dvt}}\,e^{-x^2/(4Dvt)}
+\end{align}
+which is \eqref{eq:green}, with $\Sigma_a = (1-c)\Sigma_t$.
+\end{notebox}
 
-\subsection{Parts 3(a) and 3(b): the comparison}
+\subsection*{Parts 3(a) and 3(b): the comparison}
 \label{sec:comparison}
 
 Each figure fixes $c$ and shows $t = 1, 2, 3, 4, 7, 15$. The vertical line marks the causal
@@ -279,6 +208,159 @@ plotted; all three solutions are even in $x$.
     \includegraphics[width=\textwidth]{figs/q3_comparison_c1.5.pdf}
     \caption{$c = 1.5$.}
 \end{figure}
-}
+
+\subsection*{Part 3(c): the numerical solution}
+\label{sec:numerical}
+
+Before discretising, the absorption is removed exactly as in Step 2: with
+$\phi(x,t) = e^{-v\Sigma_a t}u(x,t)$ the term $v\Sigma_a\phi$ cancels identically and what is
+left is the pure heat equation carrying the pulse as its initial condition:
+\begin{equation}
+    \frac{\partial u}{\partial t} = Dv\frac{\partial^2 u}{\partial x^2},
+    \qquad u(x,0^+) = v\,\delta(x)
+    \label{eq:heat}
+\end{equation}
+Since the equation and initial condition are even in $x$, so is the solution of \eqref{eq:heat}.
+\paragraph{Truncation.} The solution is plotted in $[0,L]$ and is assumed to be zero at $x=L$. This truncation is justified because the spatial Gaussian from the analytic solution has variance $\sigma^2 = 2Dvt$, so taking
+\begin{equation}
+    L = x_{\max} + 8\sqrt{2Dv\,t_{\max}}
+\end{equation}
+places the truncation eight standard deviations beyond the last point to be plotted, where the
+solution is of order $e^{-32}$ of its peak.
+
+\paragraph{The grid, and the discrete pulse.} Take nodes $x_j = jh$ with $j = 0\ldots N$.
+The spatial width is $h = L/N$, and time levels $t^n = n\Delta t$. On a node-centred grid the trapezoid weight of node
+$0$ on the half line is $h/2$, and the full-line integral is twice the half-line one, so the
+cell straddling the origin carries total weight $h$:
+\begin{equation}
+    \int_{-\infty}^{\infty} u(x,0)\,dx \;\approx\; 2\cdot\frac{h}{2}\,u_0^0 \;=\; h\,u_0^0
+    \;\overset{!}{=}\; v
+    \qquad\Longrightarrow\qquad
+    u_0^0 = \frac{v}{h}, \quad u_{j\ge1}^0 = 0
+    \label{eq:ic}
+\end{equation}
+so the spike of height $v/h$ in the first cell is the correctly normalised delta --- the
+factor of two from the symmetry and the half-weight of the boundary node cancel.
+
+\paragraph{The update.} Central second differences in space, evaluated at the old level, give
+the explicit scheme. With $r = Dv\,\Delta t/h^2$,
+\begin{align}
+    u_j^{n+1} &= u_j^n + r\left(u_{j-1}^n - 2u_j^n + u_{j+1}^n\right), \qquad 1 \le j \le N-1
+    \label{eq:ftcs} \\
+    u_0^{n+1} &= u_0^n + 2r\left(u_1^n - u_0^n\right) \\
+    u_N^{n+1} &= 0
+\end{align}
+the row at $j=0$ following from the symmetry condition written as the ghost value
+$u_{-1} = u_1$.
+
+\paragraph{Von Neuman Stability.} Substituting the Fourier mode $u_j^n = \xi^n e^{ij\theta}$ into
+\eqref{eq:ftcs} gives the amplification factor
+\begin{equation}
+    \xi(\theta) = 1 + r\left(e^{-i\theta} - 2 + e^{i\theta}\right) = 1 - 4r\sin^2(\theta/2)
+    \label{eq:stab}
+\end{equation}
+and $|\xi| \le 1$ for every $\theta$ requires $4r \le 2$, i.e.
+\begin{equation}
+    r \le \frac{1}{2}
+    \qquad\Longleftrightarrow\qquad
+    \Delta t \le \frac{h^2}{2Dv}
+\end{equation}
+
+
+\paragraph{Conservation, as the check.} Let $M^n$ be the trapezoid mass on the half line, so
+that $\int_{-\infty}^{\infty}u\,dx \approx 2M^n$:
+\begin{equation}
+    M^n = h\left[\tfrac{1}{2}u_0^n + \sum_{j=1}^{N-1}u_j^n + \tfrac{1}{2}u_N^n\right]
+\end{equation}
+Calculating $M^{n+1}$ using \eqref{eq:ftcs} and the boundary conditions gives
+\begin{equation}
+    M^{n+1} - M^n = r h\left(u_N^n - u_{N-1}^n\right) = -\,r h\,u_{N-1}^n
+    \label{eq:conserve}
+\end{equation}
+So the scheme conserves particles to machine precision until the tail reaches the truncation,
+and the only leak is through the far boundary, at a rate that is directly observable as
+$u_{N-1}^n$. Restoring the prefactor, the check on the solver is
+$\int\phi\,dx = e^{-v\Sigma_a t}$, the same identity already used on the exact solution.
+\paragraph{Results.} The scheme is implemented in \texttt{src/homework2/solver.py} and run at
+$N = 2000$ nodes, which puts $h \approx 0.022$ and $\Delta t \approx 6.5\times10^{-4}$, i.e.
+about $2\times10^{4}$ sweeps to reach $t = 15$. Figure~\ref{fig:q3c_solver} places it over the
+closed form it discretises and Figure~\ref{fig:q3c_error} measures what separates them. Three
+results are worth quoting:
+\begin{itemize}
+    \item \textbf{Conservation is exact.} $\int\phi\,dx$ matches $e^{-(1-c)t}$ to between $0$
+    and $1.1\times10^{-15}$ over $c = 0.6, 1.0, 1.5$ and $t = 1, 4, 15$ --- round-off, not
+    discretisation, as \eqref{eq:conserve} requires.
+    \item \textbf{The scheme is second order.} The peak error at $t = 4$ falls
+    $1.007\times10^{-3} \to 2.586\times10^{-4} \to 6.466\times10^{-5}$ as $N$ doubles from
+    $500$ to $2000$: ratios of $3.89$ and $4.00$.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3c_solver.pdf}
+    \caption{Part 3(c): the explicit solver (markers, thinned) over the closed-form diffusion
+    Green's function it discretises (solid), at $c = 1$ and $N = 2000$. The two are
+    indistinguishable at this scale over eight decades of flux; what separates them is
+    Figure~\ref{fig:q3c_error}.}
+    \label{fig:q3c_solver}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3c_solver_error.pdf}
+    \caption{Part 3(c): the solver's relative error against the closed form, within three
+    standard deviations. Left, across the domain at three times. Right, the peak error at $t = 4$ against
+    the node count, against a second-order guide.}
+    \label{fig:q3c_error}
+\end{figure}
+
+\subsection*{Part 3(d): the numerical solutions against the exact one}
+\label{sec:q3d}
+
+Part 3(d) asks how far the numerical solution of 3(c) sits from the exact flux of Question 2.
+The measured quantity is the pointwise relative error
+\begin{equation}
+    E(x,t;c) = \left|\frac{\phi_{\mathrm{diff}}(x,t)}{\phi_{\mathrm{exact}}(x,t)} - 1\right|
+    \label{eq:relerr}
+\end{equation}
+where $\phi_{\mathrm{diff}}$ is the march of \eqref{eq:ftcs} run once with $D = 1/3$ and once
+with the asymptotic $D = D_0(c) = (1-c)\nu_0^2$, and $\phi_{\mathrm{exact}}$ is the Question 2
+flux carried to $c \neq 1$ by the scaling \eqref{eq:identity}, evaluated from the exact series
+$G$.
+
+Two choices fix the domain of Figure~\ref{fig:q3d}. The exact solution is identically zero
+beyond the causal front, so \eqref{eq:relerr} is cut at $0.98\,vt$, just inside it; and since
+the front moves, the abscissa is the scaled position $x/vt$, which puts every time on one axis
+with the front always at $1$.
+
+\paragraph{What the figure measures.} Part 3(c) established that the scheme reproduces the
+Green's function it discretises to $6.5\times10^{-5}$ at $N = 2000$, while Figure~\ref{fig:q3d}
+spans $10^{-2}$ to $10^{4}$. The discretisation sits two to eight orders of magnitude below
+everything plotted, so \textbf{what is measured here is the diffusion approximation itself, not
+the solver}. The downward spikes are sign changes, where the error passes through zero.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3d_diffusion_error.pdf}
+    \caption{Part 3(d): relative error \eqref{eq:relerr} of the two numerical diffusion
+    solutions against the exact transport flux, one panel per $c$, against the scaled position
+    $x/vt$. The causal front is at $1$. At $c = 1$ the two diffusion coefficients coincide.}
+    \label{fig:q3d}
+\end{figure}
+
+\subsection*{Discussing the results}
+\begin{enumerate}
+    \item \textbf{Diffusion is a late-time limit} The relative error of both diffusion solutions decays with time, and the decay is faster the closer $c$ is to $1$.
+    In addition, the quality of the approximation generally improves with time: the exact solution relaxes onto its diffusive shape only once a particle has scattered
+    many times, and at $t = 1$ --- one mean free time, one collision --- there is nothing diffusive
+    about it.
+
+    \item \textbf{Once relaxed, $D_0(c)$ is the better coefficient, and by a large factor.} At $t = 15$
+    the asymptotic error at the origin is $2.61\%$ against $23.88\%$ at $c=0.6$, $0.59\%$ against
+    $8.39\%$ at $c=0.8$, $3.67\%$ against $10.59\%$ at $c=1.2$ and $4.85\%$ against $19.70\%$ at
+    $c=1.5$ --- a factor of four to fourteen. That is the payoff of the asymptotic coefficient:
+    $D_0 = (1-c)\nu_0^2$ is built from the discrete eigenvalue that governs the exact solution at long times, whereas
+    $1/3$ is not built from anything about the medium at all.
+\end{enumerate}
 
 \end{document}

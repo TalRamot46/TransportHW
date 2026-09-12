@@ -1,0 +1,95 @@
+# 06 — Verification
+
+**Every check that was run, with the number it produced. None of these asserts that the code is
+correct; each is something that would have failed loudly if it were not.**
+
+## Question 1 — the reflected sphere
+
+**Against an independent discretisation.** The closed-form root of report equation (8) was
+checked against a two-region spherical finite-volume `k`-eigenvalue solve — 3000 cells,
+harmonic-mean face diffusion coefficients across the material jump, the same extrapolated-zero
+outer condition — for Pu-239 behind all three reflectors at `d = 1, 3, 10` mfp in both
+continuous theories. Agreement is better than **0.4%** everywhere, and better than **0.1%**
+except sodium at `d = 10`, whose 124 cm extrapolation layer is the least well resolved by a
+uniform mesh.
+
+`_continuous` and `_fixed` are report eqs. (8) and (13) transcribed, and were checked to
+reproduce every published radius after the module was rewritten around them: agreement to
+better than **5e-5 cm** on the tabulated entries, i.e. every printed digit.
+
+That check is what makes the sodium anomaly of report Question 1 reportable: two independent
+discretisations of the same equation agree, so the anomaly is in the model and not in the
+solver. It also fixes the interface convention for the two continuous theories — a conservative finite-volume scheme conserves
+`J`, and it reproduces the eq. (8) column of [04](04-reflected-solver.md), not the eq. (13) one.
+It therefore says nothing about (c), whose curvature fixup is deliberately non-conservative.
+
+**`partial_current_factor`.** Against direct half-range integration of the discrete mode
+`psi ∝ (nu0 - mu)^-1`: agrees to **eight digits** at `c = 0.9` and `c = 0.998`. Its `c > 1`
+branch was checked to be the exact analytic continuation by substituting `nu0 = i/k0` into the
+`c < 1` form — the result has zero imaginary part and matches the coded branch to **ten digits**
+at `c = 1.3` and `c = 1.5`.
+
+**`relaxation_rate`.** `k0(1.5) = 1.45110`, Case's Table 8 value to six digits.
+
+## Question 2 — the two P_N solvers
+
+**The analytic `P_1`.** The only check that goes around `pn/algebra.py` rather than through it:
+`a/2 = arctan(3/(2B))/B` with `B = sqrt(3(c-1))`. Method 2 returns it to **eight digits** at all
+three `c` — `0.72347894` against `0.72347894` at `c = 1.5` — and Method 1 to `2.5e-6` relative,
+which is its `Δx²`. Any error in `marshak_matrix` or `parity_blocks` would show here, and would
+show in both methods at once everywhere else.
+
+**The spectrum of `A B`.** Its eigenvalues should be the squared positive roots of `P_{N+1}` —
+the same numbers `leggauss` returns for `S_{N+1}` — and they are, to **`1.2e-15`** at
+`N = 1, 3, 5, 9`. This is the parity split and the report's inertia argument checked in one
+line, and it is what licenses the claim that exactly one eigenvalue of `K²` is positive.
+
+**Method 1 against Method 2.** The two agree to **1–3 parts in `10^6`** over the whole (c, N)
+table, and the residue is spatial: refining `c = 1.5`, `N = 5` at 25, 50, 100, 200 and 400 cells
+gives errors `6.61e-5`, `1.65e-5`, `4.13e-6`, `1.03e-6`, `2.58e-7` — **a ratio of 4.00 at every
+step**, second order to three digits, boundary rows included. Evaluated at Method 2's critical
+half-thickness, Method 1 returns `k = 0.9999994` at all twelve entries.
+
+**The thick-slab limit.** As `c -> 1+` the half-thickness must approach `pi/(2B) - z0` with
+`z0 -> 0.710446`, the Milne extrapolation distance. At `c = 1.001`, `P_9` gives `27.9583` mfp
+against `pi/(2B) = 28.6787`, an implied `z0` of **`0.7204`** — 1.4% high, which is `P_9`'s own
+boundary error and shrinks with `N`. Nothing in the code is told about the Milne problem.
+
+## Questions 3–5 — the S_N solver
+
+**The mesh is free.** Critical radius of the `c = 1.5` sphere at `S_10`:
+
+| cells | 50 | 100 | 200 | 800 |
+|---|---|---|---|---|
+| `R_c` [mfp] | 1.685945 | 1.685954 | 1.685957 | 1.685957 |
+
+Seven microns of mean free path across a factor of sixteen in mesh. **Every departure in the
+report's Questions 3–5 tables is therefore angular truncation, not spatial** — which is the
+claim those tables are built to make, so it is the load-bearing check of the three.
+
+**Uncollided transport in the sphere.** A pure absorber with a uniform unit source has
+`phi(0) = (1 - e^{-Sigma R})/Sigma`. At `Sigma = 1, R = 2` the exact value is `0.864665`; the
+code gives `0.864733` (`S_2`), `0.864645` (`S_4`), `0.864602` (`S_32`) at 800 cells. This
+exercises the areas, the volumes, the `mu = -1` starting direction and the `r = 0` reflection
+with no scattering to hide behind — the parts of `sn/sphere.py` the critical-size results would
+not isolate.
+
+**The exact slab benchmark.** At `c = 1.5` the one-speed critical half-thickness is `0.605055`
+mfp. The S_N sequence descends onto it monotonically — `0.609042` (`S_10`), `0.606407`
+(`S_16`), `0.605631` (`S_24`), `0.605195` (`S_48`) — roughly second order in `1/N`.
+
+**The fixup fires when it should.** A pure absorber 20 mfp thick on **4 cells**, `S_10`, source
+confined to the first cell: the fixup fires on 5 of 40 cell solves and the scalar flux stays
+non-negative, `[0.968, 0.032, 0, 0]`. Without it the last two cells oscillate in sign.
+
+**And never fires in Questions 3–5.** Counted over whole `k` calculations at `c = 1.5`, `S_10`,
+critical size: 0 of 640 and 0 of 17000 cell solves in the slab (4 and 100 cells), 0 of 1364 and
+0 of 38500 in the sphere. The fission source is proportional to the flux, so no cell is ever
+starved, and a critical system is thin enough that `Sigma_t dx/|mu| < 2` even on 4 cells.
+**The report's S_N tables can therefore be read as pure diamond-difference results**, with no
+fixup-induced first-order error mixed in.
+
+**The inner tolerance is the cheap knob.** Tightening `run_sn_for_source`'s tolerance from
+`1e-6` to `1e-11` triples the sweep count (149 to 446) and does not move `k` in its first eight
+digits: an inexact inner solve is absorbed by the next outer. `1e-8` sits comfortably inside
+that plateau.

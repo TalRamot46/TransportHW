@@ -1,4 +1,10 @@
-"""Shared matplotlib helpers: a headless backend, a panel grid, and a safe save."""
+"""Shared matplotlib helpers: Assignment 3's styling, a headless backend, and a safe save.
+
+Assignment 3's look, adopted here: serif text, ticks inwards on all four sides, a light solid
+grid behind the data, one shared palette and a transparent save. No titles, panel or figure --
+the report caption carries the description, and whatever a title used to identify is now in the
+axis label, the legend, or a `case_label` inside the panel.
+"""
 
 import os
 import logging
@@ -13,28 +19,87 @@ logger = logging.getLogger(__name__)
 
 N_COLS = 3
 
-def use_style():
-    """Applies the same grid style as the other homework figures."""
-    style = 'seaborn-v0_8-whitegrid'
-    plt.style.use(style if style in plt.style.available else 'default')
+# Panels are smaller than the page they land on, so a figure scaled to \textwidth is reduced
+# and a 13 pt label arrives near the report's 11 pt body. Raising these makes the text
+# smaller, not larger.
+PANEL_WIDTH = 3.5
+PANEL_HEIGHT = 2.5
 
-def make_grid(n_panels):
+LABEL_SIZE = 13
+TICK_SIZE = 11
+LEGEND_SIZE = 11
+
+# Assignment 3's palette, so every report reads as one set of figures.
+NAVY, ORANGE, GREEN, RED, BLUE, GREY = ('#2c3e50', '#e67e22', '#27ae60', '#c0392b',
+                                        '#2980b9', '#7f8c8d')
+
+def use_style():
+    """The shared rc block: family, sizes and axis weight, applied per figure."""
+    plt.rcParams.update({
+        'font.family': 'serif',
+        'font.sans-serif': ['DejaVu Sans', 'Arial', 'Helvetica'],
+        'mathtext.fontset': 'dejavusans',
+        'axes.labelsize': LABEL_SIZE,
+        'axes.linewidth': 0.8,
+        'xtick.labelsize': TICK_SIZE,
+        'ytick.labelsize': TICK_SIZE,
+        'legend.fontsize': LEGEND_SIZE,
+        'figure.facecolor': 'none',
+    })
+
+def subplots(n_rows, n_cols, width=PANEL_WIDTH, height=PANEL_HEIGHT):
+    """Styled subplot array of the given shape, always two-dimensional."""
+    use_style()
+    return plt.subplots(n_rows, n_cols, figsize=(width * n_cols, height * n_rows),
+                        squeeze=False)
+
+def make_grid(n_panels, width=PANEL_WIDTH, height=PANEL_HEIGHT):
     """Creates a three-column grid of panels and returns (fig, flattened axes)."""
     use_style()
     n_rows = -(-n_panels // N_COLS)  # ceiling division
-    fig, axes = plt.subplots(n_rows, N_COLS, figsize=(5.0 * N_COLS, 3.6 * n_rows))
+    fig, axes = plt.subplots(n_rows, N_COLS, figsize=(width * N_COLS, height * n_rows))
     return fig, axes.flatten()
 
+def case_label(ax, text, xy=(0.04, 0.94)):
+    """Names the case a panel shows -- its time, its c -- inside the axes.
+
+    A grid with one panel per case needs that label somewhere, and the y-label is the wrong
+    place: prefixed with the case it grows long enough to collide with the row above.
+    """
+    ax.annotate(text, xy=xy, xycoords='axes fraction', fontsize=LABEL_SIZE,
+                va='top', ha='left',
+                bbox=dict(boxstyle='square,pad=0.2', facecolor='white',
+                          edgecolor='none', alpha=0.75))
+
+def panel(ax, xlabel=None, ylabel=None, log=False, legend=None, fontsize=LEGEND_SIZE):
+    """Applies the shared panel styling. No title: the report caption carries it."""
+    if xlabel:
+        ax.set_xlabel(xlabel)
+    if ylabel:
+        ax.set_ylabel(ylabel)
+    if log:
+        ax.set_yscale('log')
+
+    ax.set_axisbelow(True)
+    ax.grid(True, linestyle='-', linewidth=0.5, color='#cccccc')
+    ax.tick_params(axis='both', which='both', direction='in', top=True, right=True)
+    if legend:
+        ax.legend(loc=legend, fontsize=fontsize, frameon=True)
+
 def label_grid(axes, n_panels, xlabel, ylabel):
-    """Removes the unused panels and labels the outer edges of the grid."""
+    """Removes the unused panels and labels only the outer edges of the grid."""
     for j in range(n_panels, len(axes)):
         axes[j].remove()
 
     for i in range(n_panels):
         if i % N_COLS == 0:
-            axes[i].set_ylabel(ylabel, fontsize=10)
+            axes[i].set_ylabel(ylabel)
         if i >= n_panels - N_COLS:
-            axes[i].set_xlabel(xlabel, fontsize=10)
+            axes[i].set_xlabel(xlabel)
+
+def finish(fig):
+    """Tightens the layout. There is no figure title, by design."""
+    fig.tight_layout()
 
 def savefig(fig, save_path):
     """
@@ -50,7 +115,7 @@ def savefig(fig, save_path):
     if os.path.exists(save_path):
         os.remove(save_path)
 
-    fig.savefig(save_path, bbox_inches='tight', dpi=300)
+    fig.savefig(save_path, format='pdf', bbox_inches='tight', transparent=True)
     logger.info(f"Saved figure to: {save_path}")
 
 def close(fig):

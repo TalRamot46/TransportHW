@@ -10,6 +10,16 @@ The reports are the user's own write-ups. Additions to them go in
 `homework2.tex`, so they can be reviewed before being accepted. Do not restructure or
 reword the surrounding text.
 
+**Blue is unreviewed, green is accepted.** When the user says an addition has been read,
+recolour it to `green!55!black`; blue is then free to mean "new since last time".
+
+**One colour span per paragraph, wrapping the whole block.** Write
+`{\color{blue} ... entire paragraph ... }`, not a `\textcolor{blue}{...}` around each
+altered phrase. The user deletes these markers by hand after reviewing, and a paragraph
+sprinkled with half a dozen of them is painful to clean up. The same goes for a notebox:
+colour it with the `[green!55!black][coltext=green!55!black]` arguments rather than
+wrapping fragments inside it, which also survives the page break a breakable box may take.
+
 ## Code style
 
 These are the user's standing preferences. They apply to every file written here.
@@ -26,15 +36,23 @@ These are the user's standing preferences. They apply to every file written here
 
 ## Explanations
 
-Every non-trivial explanation — a derivation, a design decision, why a formula is written one
-way rather than another — goes into `src/homeworkN/explanations/` as its own markdown file,
-**not** into a long code comment and not into the chat only.
+`src/homeworkN/explanations/` documents **the code**, not the physics. The intended reading
+flow is the report first, then these: `docs/homeworkN/homeworkN.tex` carries the idea — every
+derivation, every formula, every result — and the explanations carry the map from those
+formulas to the modules that implement them.
+
+So these files hold: the module map and the call path, what each non-obvious internal function
+does and why it is shaped that way, numerical branches and traps, alternatives that were tried
+and rejected, and what was verified and how. They do **not** re-derive anything that belongs in
+the report. If a derivation is missing, it goes in the `.tex`, not here.
 
 - One idea per file, named `NN-short-kebab-title.md`, numbered in reading order.
 - Each file opens with `# NN — Short Title` and a one-line bold statement of what it settles.
 - `00-index.md` is the index: a table of every file with its number, title, and that one-line
   hook. Keep it in sync when adding a file.
+- Cite the report by equation or table number instead of restating its content.
 - Reference measured numbers rather than asserting correctness.
+- Keep them short. A file that repeats the report is worse than no file at all.
 
 ## Physics conventions
 
@@ -61,4 +79,4 @@ way rather than another — goes into `src/homeworkN/explanations/` as its own m
 
 Reports are LaTeX documents under `docs/`. Match the preamble of the existing ones. When the
 user asks for a "minimal" report, that means the formulas and the figures, with no
-walk-through prose — the derivations live in the assignment write-up and in `explanations/`.
+walk-through prose — but the derivations still belong here rather than in `explanations/`.

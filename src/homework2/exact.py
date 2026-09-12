@@ -3,7 +3,7 @@ Exact planar-source scalar flux of Assignment 2, Question 2.
 
 Units are those of the assignment throughout: Sigma_t = v = 1, so the Paasschens
 argument a = v Sigma_t t reduces to t, and the flux equals the number density.
-Derivation and the numerically stable form: explanations/01-planar-flux-c1.md.
+Derivation: report §2. The numerically stable form: explanations/02.
 """
 
 import numpy as np

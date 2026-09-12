@@ -1,0 +1,84 @@
+"""The order scan shared by Questions 3 and 4: the same three panels in either geometry."""
+
+import numpy as np
+from typing import NamedTuple
+from homework1.criticality import critical_dimensions
+from homework3.figures import two_over_one, panel, finish, savefig
+from homework3.sn.core import multiplying_medium
+
+C_VALUES = (1.2, 1.5, 1.8)
+ORDERS = (2, 4, 6, 10)
+REFERENCE_C = 1.5              # the c whose k curve and flux shapes the figure shows
+CURVE_POINTS = 21
+
+COLORS = ('#2c3e50', '#e67e22', '#27ae60', '#c0392b')
+
+class OrderScan(NamedTuple):
+    """Critical sizes for every (c, N), and the k curve and flux shapes at REFERENCE_C."""
+    sizes: dict          # {c: {N: critical size}}
+    grid: np.ndarray     # sizes at which k was evaluated, at REFERENCE_C
+    curves: dict         # {N: k on that grid}
+    fluxes: dict         # {N: (mesh, scalar flux)} of the critical system
+    index: int           # which entry of critical_dimensions is this geometry's size
+    orders: tuple        # the N of this method, ascending
+    family: str          # 'S' or 'P', for the curve labels
+
+def reference_size(c, index):
+    """Assignment 1's exact-transport critical half-thickness (index 2) or radius (3)."""
+    return critical_dimensions(c, 'transport-ref')[index]
+
+def scan_orders(critical_size, k_result, index, orders=ORDERS, family='S'):
+    """Runs the whole (c, N) scan for one method; `index` picks its reference size."""
+    sizes = {c: {N: critical_size(multiplying_medium(c), N, reference_size(c, index))
+                 for N in orders}
+             for c in C_VALUES}
+
+    medium = multiplying_medium(REFERENCE_C)
+    critical = sizes[REFERENCE_C]
+    grid = np.linspace(0.5 * min(critical.values()), 1.6 * max(critical.values()),
+                       CURVE_POINTS)
+
+    curves, fluxes = {}, {}
+    for N in orders:
+        curves[N] = np.array([k_result(size, medium, N).k for size in grid])
+        result = k_result(critical[N], medium, N)
+        fluxes[N] = (result.x / critical[N], result.phi / result.phi[0])
+
+    return OrderScan(sizes, grid, curves, fluxes, index, tuple(orders), family)
+
+def _panel_orders(ax, scan, symbol):
+    """Critical size against N, with Assignment 1's exact-transport value as a dashed line."""
+    for i, c in enumerate(C_VALUES):
+        color = f'C{i}'
+        ax.plot(scan.orders, [scan.sizes[c][N] for N in scan.orders], 'o-', color=color,
+                linewidth=2.0, label=f'$c = {c}$')
+        ax.axhline(reference_size(c, scan.index), color=color, linestyle='--',
+                   linewidth=1.2, alpha=0.7)
+    panel(ax, 'Order $N$', f'{symbol} [mean free paths]', legend='upper right')
+
+def _panel_curves(ax, scan, symbol):
+    """k against system size at REFERENCE_C, one curve per order, with the k = 1 crossings."""
+    for color, N in zip(COLORS, scan.orders):
+        ax.plot(scan.grid, scan.curves[N], color=color, linewidth=2.0,
+                label=f'${scan.family}_{{{N}}}$')
+        ax.plot([scan.sizes[REFERENCE_C][N]], [1.0], color=color, marker='o',
+                markersize=7, markerfacecolor='none', markeredgewidth=1.8)
+    ax.axhline(1.0, color='grey', linestyle=':', linewidth=1.4)
+    panel(ax, f'{symbol} [mean free paths]', 'Multiplication factor $k$',
+          legend='lower right')
+
+def _panel_fluxes(ax, scan):
+    """Scalar flux of the critical system, normalised, one curve per order."""
+    for color, N in zip(COLORS, scan.orders):
+        x, phi = scan.fluxes[N]
+        ax.plot(x, phi, color=color, linewidth=2.0, label=f'${scan.family}_{{{N}}}$')
+    panel(ax, 'Position / critical size', r'$\phi / \phi(0)$', legend='lower left')
+
+def plot_orders(scan, symbol, save_path):
+    """Writes the three-panel order-scan figure of one geometry."""
+    fig, (ax_orders, ax_curves, ax_fluxes) = two_over_one()
+    _panel_orders(ax_orders, scan, symbol)
+    _panel_curves(ax_curves, scan, symbol)
+    _panel_fluxes(ax_fluxes, scan)
+    finish(fig)
+    savefig(fig, save_path)
