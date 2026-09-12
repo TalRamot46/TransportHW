@@ -598,9 +598,9 @@ $\beta_{i,m} = \left(A_{i+1/2}-A_{i-1/2}\right)/w_m$. The angular coefficients f
 \end{equation}
 The recursion needs a starting value $\psi_{i,1/2}$ at $\mu_{1/2}=-1$, where $1-\mu^2=0$ and the angular derivative drops out; what remains, $-\partial \psi/\partial r + \Sigma_t \psi = S/2$, is \eqref{eq:slabsweepback} at $|\mu|=1$, run inwards from the vacuum boundary.
 
-\textcolor{blue}{\paragraph{The two faces of a spherical cell.} Equation \eqref{eq:sphbalance} is
+\paragraph{The two faces of a spherical cell.} Equation \eqref{eq:sphbalance} is
 \eqref{eq:slabbalance} with a second outgoing face. They are not alike and it is worth naming
-them separately:}
+them separately:
 \begin{itemize}
     \item the \emph{radial face}, weighted by the two shell areas
     $A_{i\pm1/2}$, whose outflow feeds the \textbf{next radial cell} of the same ordinate.
@@ -621,18 +621,18 @@ Each closes with its own diamond relation,
         \label{eq:closmu}
 \end{align}
 
-\textcolor{blue}{Take the forward sweep, $\mu_m>0$, so that the radial outflow is
+Take the forward sweep, $\mu_m>0$, so that the radial outflow is
 $A_{\text{out}}=A_{i+1/2}$ and the inflow $A_{\text{in}}=A_{i-1/2}$. Substituting
 \eqref{eq:closr} and \eqref{eq:closmu} into \eqref{eq:sphbalance} eliminates both outgoing
-fluxes at once:}
+fluxes at once:
 \begin{multline}
     \mu_m\left(2A_{\text{out}}\psi_{i,m} - \left(A_{\text{out}}+A_{\text{in}}\right)\psi_{i-\frac12,m}\right) \\
     + \beta_{i,m}\left(2\alpha_{m+\frac12}\psi_{i,m} - \left(\alpha_{m+\frac12}+\alpha_{m-\frac12}\right)\psi_{i,m-\frac12}\right)
     + \Sigma_t V_i \psi_{i,m} = \frac{S_i}{2}V_i
     \label{eq:sphcollect}
 \end{multline}
-\textcolor{blue}{Every term now carries either $\psi_{i,m}$ or a known inflow, so collecting
-$\psi_{i,m}$ on the left gives the cell solve outright:}
+Every term now carries either $\psi_{i,m}$ or a known inflow, so collecting
+$\psi_{i,m}$ on the left gives the cell solve outright:
 \begin{equation}
     \boxed{\;
     \psi_{i,m} = \frac{\tfrac12 S_i V_i
@@ -641,16 +641,16 @@ $\psi_{i,m}$ on the left gives the cell solve outright:}
         {\Sigma_t V_i + 2\mu_m A_{\text{out}} + 2\beta_{i,m}\alpha_{m+\frac12}}\;}
     \label{eq:cellflux}
 \end{equation}
-\textcolor{blue}{and \eqref{eq:closr} and \eqref{eq:closmu} then hand on the two fluxes the
+and \eqref{eq:closr} and \eqref{eq:closmu} then hand on the two fluxes the
 march needs next --- $\psi_{i+1/2,m}$ to radial cell $i+1$, and $\psi_{i,m+1/2}$ to ordinate
 $m+1$. The backward sweep is \eqref{eq:cellflux} with $A_{\text{out}}=A_{i-1/2}$,
-$A_{\text{in}}=A_{i+1/2}$, $\mu_m$ replaced by $|\mu_m|$ and the radial inflow (Eq. \eqref{eq:closr}) taken as
-$\psi_{i+1/2,m}$; the angular half of the formula is untouched. Setting
+$A_{\text{in}}=A_{i+1/2}$, $\mu_m$ replaced by $|\mu_m|$ and the radial inflow (eq. \eqref{eq:closr}) taken as
+$\psi_{i+1/2,m}$. The angular half of the formula is untouched. Setting
 $A_{\text{out}}=A_{\text{in}}=1$, $V_i=\Delta x$ and $\alpha_{m\pm1/2}=0$ returns
 \eqref{eq:slabsweep} exactly, which is the check that the two cell solves are the same
 balance. \textbf{In code they are kept apart on purpose: \texttt{sn.slab.cell\_flux} takes one
 inflow, \texttt{sn.sphere.cell\_flux} takes a \texttt{radial\_face} and an
-\texttt{angular\_face}.}}
+\texttt{angular\_face}.}
 
 
 \paragraph{Fixup.} Whenever a diamond outgoing flux $2\psi_{i,m}-\psi_{\text{in}}$ of \eqref{eq:closr} or \eqref{eq:closmu} comes out negative it is set to zero and the cell balance is re-solved with it held there, in angle as well as in space. Frankly, this never occurs in Questions 3--5: the fission source is proportional to the flux itself, so no cell is ever starved, and a critical system is thin enough that $\Sigma_t \Delta x / |\mu_m| < 2$ at every ordinate.

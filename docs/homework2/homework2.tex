@@ -324,61 +324,50 @@ results are worth quoting:
 \subsection*{Part 3(d): the numerical solutions against the exact one}
 \label{sec:q3d}
 
-Part 3(d) asks how far the numerical solution of 3(c) sits from the exact flux of Question 2.
-The measured quantity is the pointwise relative error
+Both marches of \eqref{eq:ftcs} --- $D = 1/3$ and $D = D_0(c) = (1-c)\nu_0^2$ --- against the
+Question 2 flux carried to $c$ by \eqref{eq:identity}: pointwise in Figure~\ref{fig:q3d}, and,
+since both carry the same population $e^{-(1-c)t}$ so that $p = e^{(1-c)t}\phi$ are probability
+densities, as the single misplaced fraction of Table~\ref{tab:q3d},
 \begin{equation}
-    E(x,t;c) = \left|\frac{\phi_{\mathrm{diff}}(x,t)}{\phi_{\mathrm{exact}}(x,t)} - 1\right|
-    \label{eq:relerr}
+    E = \left|\frac{\phi_{\mathrm{diff}}}{\phi_{\mathrm{exact}}} - 1\right|,
+    \qquad
+    \delta(t;c) = \frac{1}{2}\int\left|p_{\mathrm{diff}} - p_{\mathrm{exact}}\right|dx
+    = \frac{1}{2}\left[\int_{|x|<vt} p_{\mathrm{exact}}E\,dx \;+\; L\right]
+    \label{eq:tv}
 \end{equation}
-where $\phi_{\mathrm{diff}}$ is the march of \eqref{eq:ftcs} run once with $D = 1/3$ and once
-with the asymptotic $D = D_0(c) = (1-c)\nu_0^2$, and $\phi_{\mathrm{exact}}$ is the Question 2
-flux carried to $c \neq 1$ by the scaling \eqref{eq:identity}, evaluated from the exact series
-$G$.
+that is, $E$ averaged over the particles plus $L$, the flux put beyond the front. $L$ dies: it
+is $\operatorname{erfc}\sqrt{vt/4D}$, the front standing at $\sqrt{vt/2D}$ standard deviations,
+which grows as $\sqrt{t}$ because the packet widens as $\sqrt{t}$ while the front runs away
+linearly --- $22.07\%$, $1.43\%$, $2.10\times10^{-6}$ at $t = 1, 4, 15$, against the solver's
+$21.47\%$, $1.41\%$, $2.03\times10^{-6}$.
 
-Two choices fix the domain of Figure~\ref{fig:q3d}. The exact solution is identically zero
-beyond the causal front, so \eqref{eq:relerr} is cut at $0.98\,vt$, just inside it; and since
-the front moves, the abscissa is the scaled position $x/vt$, which puts every time on one axis
-with the front always at $1$.
-
-\paragraph{What the figure measures.} Part 3(c) established that the scheme reproduces the
-Green's function it discretises to $6.5\times10^{-5}$ at $N = 2000$, while Figure~\ref{fig:q3d}
-spans $10^{-2}$ to $10^{4}$. The discretisation sits two to eight orders of magnitude below
-everything plotted, so \textbf{what is measured here is the diffusion approximation itself, not
-the solver}. The downward spikes are sign changes, where the error passes through zero.
+The rest does not. In density form \eqref{eq:identity} is $p(x,t;c) = c\,p(cx,ct;1)$ and the
+$c=1$ density relaxes onto the classical Gaussian of variance $2vt/3$, so the exact flux spreads
+with $D_\infty$ --- neither $1/3$ nor $D_0(c)$ --- and two centred Gaussians of variances
+$2D_<vt$ and $2D_>vt$, crossing at $x^{*2} = 4vtD_<a^2\ln a/(a^2-1)$, stay $\delta_\infty$ apart:
+\begin{equation}
+    D_\infty(c) = \frac{1}{3c\,\Sigma_t}, \qquad a^2 \equiv \frac{D_>}{D_<}, \qquad
+    \delta_\infty = \operatorname{erf}\sqrt{\frac{a^2\ln a}{a^2-1}}
+                  - \operatorname{erf}\sqrt{\frac{\ln a}{a^2-1}}
+    \label{eq:floor}
+\end{equation}
+free of $t$ --- a fixed variance ratio is a fixed distance however far both spread. So $\delta$
+stops at $\delta_\infty(D, D_\infty(c))$, zero only at $c = 1$: by $t = 40$ the classical curves
+measure $11.48\%$ against $12.29\%$ at $c=0.6$ and $10.12\%$ against $9.78\%$ at $c=1.5$, while
+$c=1$ is still falling. $D_0$ beats $1/3$ by a factor of three to nine at $t = 15$ and by more
+in the floors, but is not right either: $D_\infty = \tfrac13 + \tfrac13(1-c)$ against
+$D_0 = \tfrac13 + \tfrac{4}{15}(1-c)$, four fifths of the first-order correction against none.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figs/q3d_diffusion_error.pdf}
-    \caption{Part 3(d): relative error \eqref{eq:relerr} of the two numerical diffusion
-    solutions against the exact transport flux, one panel per $c$, against the scaled position
-    $x/vt$. The causal front is at $1$. At $c = 1$ the two diffusion coefficients coincide.}
+    \caption{Part 3(d): the pointwise error $E$ of \eqref{eq:tv}, one panel per $c$, against the
+    scaled position $x/vt$ --- cut at $0.98\,vt$, since $\phi_{\mathrm{exact}}$ stops at the
+    front. The downward spikes are sign changes. Part 3(c) put the discretisation at
+    $6.5\times10^{-5}$, so what is plotted is the approximation, not the solver. At $c=1$ the
+    two coefficients coincide.}
     \label{fig:q3d}
 \end{figure}
-
-\paragraph{One number for the whole profile.} A relative error at a point is a choice of point,
-and \eqref{eq:relerr} has no single value to quote. Both fluxes carry the same population,
-$\int\phi\,dx = e^{-(1-c)t}$ for the exact solution and for either diffusion, so dividing by it
-turns each into a probability density,
-\begin{equation}
-    p(x,t;c) = e^{(1-c)t}\phi(x,t;c), \qquad \int_{-\infty}^{\infty} p\,dx = 1
-\end{equation}
-and the single number is then half the $L^1$ distance between the two densities,
-\begin{equation}
-    \delta(t;c) = \frac{1}{2}\int_{-\infty}^{\infty}
-    \left|p_{\mathrm{diff}}(x,t) - p_{\mathrm{exact}}(x,t)\right|dx \;\in\; [0,1]
-    \label{eq:tv}
-\end{equation}
-which reads as \textbf{the fraction of the population that diffusion puts in the wrong place}.
-It is not an arbitrary norm. Splitting the integral at the front, where $p_{\mathrm{exact}}$
-stops,
-\begin{equation}
-    2\delta(t;c) = \underbrace{\int_{|x|<vt} p_{\mathrm{exact}}\,E\,dx}_{\text{$E$ averaged over the particles}}
-    \;+\; \underbrace{\int_{|x|>vt} p_{\mathrm{diff}}\,dx}_{\textstyle \equiv\, L(t;c)}
-    \label{eq:tvsplit}
-\end{equation}
-so $\delta$ is exactly the pointwise error of Figure~\ref{fig:q3d} averaged with the exact flux
-as its weight, plus the flux diffusion has put outside the causal front altogether. The two
-terms answer different questions, and they do not behave alike.
 
 \begin{table}[htbp]
     \centering
@@ -403,111 +392,21 @@ terms answer different questions, and they do not behave alike.
             & asymptotic, $0.23745$ & 16.66\% & 8.89\%  & 5.11\%  & 3.58\%  & 2.51\%  & 1.60\% \\
         \bottomrule
     \end{tabular}
-    \caption{The misplaced fraction \eqref{eq:tv} of the numerical diffusion solutions, and the
-    floor \eqref{eq:floor} each one settles on. From \texttt{check\_total\_variation} in
-    \texttt{src/homework2/main.py}.}
+    \caption{The misplaced fraction \eqref{eq:tv} and the floor \eqref{eq:floor} it settles on,
+    from \texttt{check\_total\_variation} in \texttt{src/homework2/main.py}.}
     \label{tab:q3d}
 \end{table}
-
-\paragraph{The leak past the front decays, and exponentially.} The second term of
-\eqref{eq:tvsplit} is elementary, $p_{\mathrm{diff}}$ being the Gaussian of variance
-$\sigma^2 = 2Dvt$:
-\begin{equation}
-    L(t;c) = 2\int_{vt}^{\infty} \frac{e^{-x^2/(4Dvt)}}{\sqrt{4\pi Dvt}}\,dx
-           = \operatorname{erfc}\!\left(\frac{vt}{\sqrt{4Dvt}}\right)
-           = \operatorname{erfc}\sqrt{\frac{vt}{4D}}
-    \label{eq:leak}
-\end{equation}
-The front sits at $vt/\sigma = \sqrt{vt/2D}$ standard deviations, and that \emph{grows} as
-$\sqrt{t}$: the packet widens like $\sqrt{t}$ while the front runs away linearly, so in the
-only units that matter the front recedes from the packet. Hence $L \sim e^{-vt/4D}$, and with
-$D = 1/3$ it falls from $22.07\%$ at $t=1$ through $1.43\%$ at $t=4$ to $2.10\times10^{-6}$ at
-$t=15$, the front standing at $1.22$, $2.45$ and $4.74$ standard deviations. The solver
-reproduces those as $21.47\%$, $1.41\%$ and $2.03\times10^{-6}$ --- agreement to $3\%$ in a
-tail six decades down, which is as much as an $\mathcal{O}(h^2)$ scheme can be asked for there.
-
-\paragraph{The rest of the error does not decay, unless $c=1$.} The Question 1 identity
-\eqref{eq:identity} fixes the late-time limit exactly. In density form it reads
-$p(x,t;c) = c\,p(cx,ct;1)$, and the $c=1$ density relaxes onto the classical Gaussian of
-variance $2vt/3$, so
-\begin{equation}
-    p(x,t;c) \;\longrightarrow\; c\,\frac{e^{-(cx)^2/(4ct/3)}}{\sqrt{4\pi ct/3}}
-    = \frac{e^{-x^2/(4D_\infty vt)}}{\sqrt{4\pi D_\infty vt}},
-    \qquad \boxed{\;D_\infty(c) = \frac{1}{3c\,\Sigma_t}\;}
-    \label{eq:dinf}
-\end{equation}
-The coefficient the exact flux actually spreads with is therefore \emph{neither} $1/3$ nor
-$D_0(c)$ --- though $D_0$ is much the closer of the two: $0.48588$ against $D_\infty = 0.55556$
-at $c = 0.6$, and $0.23745$ against $0.22222$ at $c = 1.5$, where the classical $1/3$ is out by
-$40\%$ in one direction and $50\%$ in the other.
-
-A wrong coefficient leaves a residue that never goes away. Two centred Gaussians of variances
-$2D_< vt$ and $2D_> vt$ cross where their exponents and prefactors balance,
-\begin{equation}
-    \frac{x^{*2}}{4vt}\left(\frac{1}{D_<}-\frac{1}{D_>}\right) = \ln a,
-    \qquad a^2 \equiv \frac{D_>}{D_<}
-    \qquad\Longrightarrow\qquad
-    x^{*2} = 4vt\,D_<\,\frac{a^2\ln a}{a^2-1}
-\end{equation}
-and the narrower one exceeds the wider inside $x^*$, so that \eqref{eq:tv} between them is
-\begin{equation}
-    \delta_\infty = \operatorname{erf}\sqrt{\frac{a^2\ln a}{a^2-1}}
-                  - \operatorname{erf}\sqrt{\frac{\ln a}{a^2-1}}
-    \label{eq:floor}
-\end{equation}
-in which every $t$ has cancelled --- $x^{*2}$ grows exactly as $\sigma^2$ does. \textbf{Two
-Gaussians whose variances hold a fixed ratio stay a fixed distance apart however far they
-spread}, so $\delta$ cannot decay past $\delta_\infty(D, D_\infty(c))$, the last column of
-Table~\ref{tab:q3d}. Figure~\ref{fig:q3dsummary} carries the solutions out to $t = 40$ and they
-do settle there: at $c=0.6$ the classical curve measures $11.48\%$ against a floor of
-$12.29\%$ and the asymptotic $2.41\%$ against $3.24\%$; at $c=1.5$, $10.12\%$ against $9.78\%$
-and $1.94\%$ against $1.60\%$. Only at $c=1$, where $D_\infty = 1/3$ exactly, is the floor zero
---- and there $\delta$ keeps falling, $1.38\%$ at $t=15$ and $0.51\%$ at $t=40$.
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figs/q3d_summary.pdf}
-    \caption{Part 3(d). Left and centre, on one scale: the misplaced fraction \eqref{eq:tv}
-    against time for each approximation, with the floor \eqref{eq:floor} of each $c$ dotted
-    beneath its curve. Every classical curve turns and climbs onto its floor; the asymptotic
-    ones sit far lower and the $c=1$ curve, alone in having no floor, decays throughout. Right:
-    the leak past the front \eqref{eq:leak}, which depends on $c$ only through $D$ --- so the
+    \caption{Part 3(d). Left and centre, on one scale: $\delta$ against time, with each $c$'s
+    floor dotted beneath its curve. Every classical curve turns and climbs onto its floor; the
+    asymptotic ones sit far lower, and the $c=1$ curve, alone in having none, decays throughout.
+    Right: the leak $L$ of \eqref{eq:tv}, which depends on $c$ only through $D$ --- so the
     classical case is one curve for every $c$ --- with the solver's own leak marked on it.}
     \label{fig:q3dsummary}
 \end{figure}
-
-\subsection*{Discussing the results}
-\begin{enumerate}
-    \item \textbf{Diffusion is a late-time limit} The relative error of both diffusion solutions falls steeply with time, and the fall is faster the closer $c$ is to $1$.
-    In addition, the quality of the approximation generally improves with time: the exact solution relaxes onto its diffusive shape only once a particle has scattered
-    many times, and at $t = 1$ --- one mean free time, one collision --- there is nothing diffusive
-    about it. It does not, however, improve without limit: only the acausal part of the error
-    \eqref{eq:leak} decays to nothing, and for $c \neq 1$ the fall turns at $t \approx 4$ and
-    settles on the floor \eqref{eq:floor}, which is a property of $D$ against $D_\infty(c)$ and
-    not of the time.
-
-    \item \textbf{Once relaxed, $D_0(c)$ is the better coefficient, and by a large factor.} At $t = 15$
-    the asymptotic $\delta$ is $1.15\%$ against $10.12\%$ at $c=0.6$, $0.59\%$ against
-    $3.73\%$ at $c=0.8$, $1.94\%$ against $5.55\%$ at $c=1.2$ and $2.51\%$ against $10.69\%$ at
-    $c=1.5$ --- a factor of three to nine, and the gap between the two floors is wider still.
-    That is the payoff of the asymptotic coefficient:
-    $D_0 = (1-c)\nu_0^2$ is built from the discrete eigenvalue that governs the exact solution at long times, whereas
-    $1/3$ is not built from anything about the medium at all. The exception is $t = 1$ at $c < 1$,
-    where the asymptotic value is the worse of the two ($31.02\%$ against $22.09\%$ at $c=0.6$):
-    the coefficient is right only once the asymptotic discrete mode dominates, and choosing it early is no
-    better than a guess.
-
-    \item \textbf{Neither coefficient is the right one for this problem.} $D_\infty = 1/(3c)$ of
-    \eqref{eq:dinf} is, and it is exact rather than asymptotic --- it follows from the Question 1
-    identity and the $c=1$ diffusion limit alone. $D_0(c)$ is the coefficient of the
-    \emph{steady} problem, where $\nu_0$ sets the spatial decay $e^{-|x|/\nu_0}$; that it is also
-    close to $D_\infty$ here is what makes it the better of the two on offer, not the right one.
-    Expanding about $c = 1$ puts a number on ``closer'': $D_\infty = \tfrac13 + \tfrac13(1-c) +
-    \mathcal{O}\!\left((1-c)^2\right)$ against $D_0 = \tfrac13 + \tfrac{4}{15}(1-c) +
-    \mathcal{O}\!\left((1-c)^2\right)$, so the asymptotic coefficient recovers four fifths of the
-    first-order correction and the classical one recovers none of it. The ratio of the two
-    departures measures $0.79982$ at $c = 0.999$ and $0.80018$ at $c = 1.001$.
-\end{enumerate}
 }% <<< END BLUE BLOCK
 
 \end{document}

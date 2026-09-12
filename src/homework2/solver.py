@@ -81,5 +81,5 @@ def bulk(x, t, D, sigmas=3.0):
     return x <= sigmas * np.sqrt(2.0 * D * V * t)
 
 def mass(x, u):
-    """int u dx over the whole line, from the half-domain values; report eq. (44)."""
+    """int u dx over the whole line, from the half-domain values; report eq. (42)."""
     return 2.0 * np.trapezoid(u, x)

@@ -77,7 +77,7 @@ reached.
 `2 * trapezoid(u, x)` against `e^{-(1-c)t}`, over `c = 0.6, 1.0, 1.5` and `t = 1, 4, 15`. The
 relative error is between `0` and `1.1e-15` in all nine cases — round-off, not discretisation.
 
-That is not an accuracy result but a structural one: report eq. (45) says the only leak is
+That is not an accuracy result but a structural one: report eq. (42) says the only leak is
 `-r h u[N-1]` at the far boundary, and the truncation is placed where `u[N-1]` is denormal. A
 wrong factor in the symmetry row would break this immediately while leaving every plot looking
 right, which is what the check is for.
@@ -119,7 +119,7 @@ conservation intact and so slips past check 7.
 |---|---|---|
 | peak amplitude | 2.014e-2 | 1.310e5 |
 
-Seven orders of magnitude apart across a 4% change in `r`. Report eq. (41) predicts exactly
+Seven orders of magnitude apart across a 4% change in `r`. Report eq. (39) predicts exactly
 this: past the limit the `theta = pi` mode grows as `|1-4r|^n`, so the scheme does not lose
 accuracy, it explodes.
 
@@ -129,7 +129,7 @@ Starting from the smeared delta versus from the analytic Gaussian at `WARM_T0`, 
 `t = 4`: the two agree to `8.08e-7`, against a discretisation error of `6.47e-5` at the same
 point.
 
-**This is the empirical form of report eq. (43).** The source treatment sits nearly two orders
+**This is the empirical form of report eq. (35).** The source treatment sits nearly two orders
 of magnitude below what limits the solver, so smoothing the initial spike — into a half-Gaussian
 or anything else — would buy nothing. It also rules out the opposite worry: that the first cell
 being the entire source leaves a defect the march never recovers from.

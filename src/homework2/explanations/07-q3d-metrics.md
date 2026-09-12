@@ -3,8 +3,8 @@
 **`metrics.py` turns a profile comparison into three numbers; the only subtle one is that
 `total_variation` integrates on its own grid, not on the solver's.**
 
-Report §3, part 3(d) derives all three — eq. (46) for the misplaced fraction, eq. (49) for the
-leak past the front, eq. (52) for the floor. What follows is only what the code does about them.
+Report §3, part 3(d) derives all three: eq. (43) carries the misplaced fraction and the leak
+past the front, eq. (44) the floor. What follows is only what the code does about them.
 
 ## The grid `total_variation` integrates on
 
@@ -29,7 +29,7 @@ first, by about `0.1` in the second decimal.
 ## `gaussian_gap` is where the `t` cancels
 
 `late_time_floor` is not measured, it is evaluated: the floor is the gap between two Gaussians
-whose variances hold a fixed ratio, and report eq. (52) shows every `t` cancelling out of it.
+whose variances hold a fixed ratio, and report eq. (44) shows every `t` cancelling out of it.
 The code therefore takes two `D` values and no time at all. `sorted()` on the pair is what lets
 one expression serve both `D > D_inf` and `D < D_inf`, which is the difference between `c < 1`
 and `c > 1` — the ratio `a^2` must be the larger over the smaller or the `erf` arguments go

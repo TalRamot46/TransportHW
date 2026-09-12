@@ -88,7 +88,7 @@ def check_diffusion_limit():
                     f"({(exact / diffusive - 1.0) * 100:+.2f} %)")
 
 def check_solver_conservation():
-    """The explicit scheme leaks only through the far boundary, so the mass is exact; report eq. (45)."""
+    """The explicit scheme leaks only through the far boundary, so the mass is exact; report eq. (42)."""
     logger.info("\nSolver conservation, 2 int u dx vs. exp(-(1-c)t)")
     logger.info(f"{'c':<6} | {'t':<6} | {'mass':<16} | {'expected':<16} | {'rel. err':<10}")
     for c in (0.6, 1.0, 1.5):
@@ -119,7 +119,7 @@ def check_solver_order():
         previous = error
 
 def check_solver_stability_edge():
-    """Past r = 1/2 the scheme does not degrade, it explodes; report eq. (41)."""
+    """Past r = 1/2 the scheme does not degrade, it explodes; report eq. (39)."""
     logger.info("\nStability edge, peak amplitude after 400 sweeps of an isolated spike")
     for r in (0.49, 0.51):
         u = np.zeros(101)
@@ -129,7 +129,7 @@ def check_solver_stability_edge():
         logger.info(f"  r = {r}  max|u| = {np.abs(u).max():.3e}")
 
 def check_solver_source_treatment():
-    """Starting from the smeared delta or from the analytic Gaussian must agree; report eq. (43)."""
+    """Starting from the smeared delta or from the analytic Gaussian must agree; report eq. (35)."""
     logger.info("\nSource treatment, pulse start vs. warm start at t = 4")
     x, pulse = solve(1.0, 'classical', times=(4.0,), start='pulse')
     _, warm = solve(1.0, 'classical', times=(4.0,), start='warm')
