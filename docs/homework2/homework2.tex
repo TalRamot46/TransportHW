@@ -137,7 +137,7 @@ implemented in \texttt{src/homework2/diffusion.py}:
     \boxed{\;\phi_{\text{diff}}(x,t;c) = \frac{e^{-(1-c)t}}{\sqrt{4\pi D_0(c)\,t}}\,e^{-x^2/(4D_0(c)t)}\;}
 \end{equation}
 
-\begin{notebox}[A second route: Fourier in space, then Laplace in time][blue][coltext=blue]
+\begin{notebox}[A second route: Fourier in space, then Laplace in time][blue]
 Define
 \begin{equation}
     \hat{\phi}(k,t) = \int_{-\infty}^{\infty}\phi(x,t)\,e^{-ikx}dx,
@@ -209,8 +209,6 @@ plotted; all three solutions are even in $x$.
     \caption{$c = 1.5$.}
 \end{figure}
 
-% >>> BLUE BLOCK: part 3(c), added for review. Delete this line, the {\color{blue}
-% below, and the matching brace marked "END BLUE BLOCK" to accept it.
 \subsection*{Part 3(c): the numerical solution}
 \label{sec:numerical}
 
@@ -283,7 +281,6 @@ So the scheme conserves particles to machine precision until the tail reaches th
 and the only leak is through the far boundary, at a rate that is directly observable as
 $u_{N-1}^n$. Restoring the prefactor, the check on the solver is
 $\int\phi\,dx = e^{-v\Sigma_a t}$, the same identity already used on the exact solution.
-{\color{blue}
 \paragraph{Results.} The scheme is implemented in \texttt{src/homework2/solver.py} and run at
 $N = 2000$ nodes, which puts $h \approx 0.022$ and $\Delta t \approx 6.5\times10^{-4}$, i.e.
 about $2\times10^{4}$ sweeps to reach $t = 15$. Figure~\ref{fig:q3c_solver} places it over the
@@ -316,11 +313,7 @@ results are worth quoting:
     the node count, against a second-order guide.}
     \label{fig:q3c_error}
 \end{figure}
-}% <<< END BLUE BLOCK
 
-% >>> BLUE BLOCK: part 3(d), added for review. Delete this line, the {\color{blue}
-% below, and the matching brace marked "END BLUE BLOCK" to accept it.
-{\color{blue}
 \subsection*{Part 3(d): the numerical solutions against the exact one}
 \label{sec:q3d}
 
@@ -367,11 +360,7 @@ the solver}. The downward spikes are sign changes, where the error passes throug
     $8.39\%$ at $c=0.8$, $3.67\%$ against $10.59\%$ at $c=1.2$ and $4.85\%$ against $19.70\%$ at
     $c=1.5$ --- a factor of four to fourteen. That is the payoff of the asymptotic coefficient:
     $D_0 = (1-c)\nu_0^2$ is built from the discrete eigenvalue that governs the exact solution at long times, whereas
-    $1/3$ is not built from anything about the medium at all. The exception is $t = 1$ at $c < 1$,
-    where the asymptotic value is the worse of the two ($-33.70\%$ against $-19.96\%$ at $c=0.6$):
-    the coefficient is right only once the asymptotic discrete mode dominates, and choosing it early is no
-    better than a guess.
+    $1/3$ is not built from anything about the medium at all.
 \end{enumerate}
-}% <<< END BLUE BLOCK
 
 \end{document}
