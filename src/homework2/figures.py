@@ -60,14 +60,14 @@ def make_grid(n_panels, width=PANEL_WIDTH, height=PANEL_HEIGHT):
     fig, axes = plt.subplots(n_rows, N_COLS, figsize=(width * N_COLS, height * n_rows))
     return fig, axes.flatten()
 
-def case_label(ax, text, xy=(0.04, 0.94), ha='left', va='top'):
+def case_label(ax, text, xy=(0.04, 0.94)):
     """Names the case a panel shows -- its time, its c -- inside the axes.
 
     A grid with one panel per case needs that label somewhere, and the y-label is the wrong
     place: prefixed with the case it grows long enough to collide with the row above.
     """
     ax.annotate(text, xy=xy, xycoords='axes fraction', fontsize=LABEL_SIZE,
-                va=va, ha=ha,
+                va='top', ha='left',
                 bbox=dict(boxstyle='square,pad=0.2', facecolor='white',
                           edgecolor='none', alpha=0.75))
 

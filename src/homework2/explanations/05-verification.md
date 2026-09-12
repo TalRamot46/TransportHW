@@ -1,6 +1,6 @@
 # 05 — Verification
 
-**Fourteen checks in `main.py`, run on every invocation. There is no separate test file, so
+**Twelve checks in `main.py`, run on every invocation. There is no separate test file, so
 these are the whole safety net — the numbers below are from the current code.**
 
 ## 1. Normalisation — `check_normalisation`
@@ -134,47 +134,21 @@ of magnitude below what limits the solver, so smoothing the initial spike — in
 or anything else — would buy nothing. It also rules out the opposite worry: that the first cell
 being the entire source leaves a defect the march never recovers from.
 
-## 12. The misplaced fraction — `check_total_variation`
+## 12. Diffusion against exact transport — `check_diffusion_error`
 
-The part 3(d) headline, and the table the report quotes. Half the `L1` distance between the
-numeric diffusion density and the exact one, for both approximations over `C_VALUES` and
-`METRIC_TIMES`; [07](07-q3d-metrics.md) covers the grid it integrates on.
+The part 3(d) measurement, and the only check whose output the report quotes as a table rather
+than as a bound. Signed relative error of each numeric diffusion flux against `phi_exact`, at
+the origin and at `x = 0.9 vt`; the report's Table 2 is the `x = 0` half of it.
 
-The one result worth pulling out is that the classical column is **not** monotone in `t` for
-`c != 1`. At `c = 0.6` it reads `22.09, 8.32, 5.59, 7.71, 10.12` percent — it turns at about
-`t = 4` and climbs. Check 13 is what explains that, and it is the reason this check exists
-rather than a single late-time number.
+Two choices inside it are worth recording:
 
-## 13. The late-time floor — `check_late_time_floor`
+- **`form="series"`, not the default interpolation.** Check 2 puts the interpolation's own cost
+  at up to `1.5%`, and the asymptotic error at `c = 0.8, t = 15` is `-0.59%` — the reference
+  would otherwise be less accurate than the quantity being measured.
+- **`0.9 vt`, not the front itself.** `phi_exact` is identically zero beyond `vt`, so the ratio
+  has no limit there; `0.9` is far enough out to show the failure (`+144415%` at `c = 1.5`,
+  `t = 15`) without dividing by zero.
 
-Measured `delta` at `t = 40` against `late_time_floor`, which is evaluated rather than measured:
-
-| `c` | classical, measured / floor | asymptotic, measured / floor |
-|---|---|---|
-| 0.6 | 11.48% / 12.29% | 2.41% / 3.24% |
-| 1.0 | 0.51% / 0 | 0.51% / 0 |
-| 1.5 | 10.12% / 9.78% | 1.94% / 1.60% |
-
-The gap between measured and floor is the transport correction that has not died yet, and the
-`c = 1` row sizes it: `0.51%` at `t = 40`, falling as `t^-1/2`. Read the other rows with that in
-mind — `11.48` against `12.29` is approaching from below, `10.12` against `9.78` from above, and
-both are inside that correction.
-
-**This check is the one that would catch a wrong `D_inf`.** Setting it to `1/3` instead of
-`1/(3c)` makes every classical floor zero, and the measured `c = 0.6` and `c = 1.5` columns
-would then have nothing to converge to.
-
-## 14. The leak past the front — `check_front_leakage`
-
-`erfc(sqrt(vt/4D))` against the mass the solver puts beyond `x = vt`, with the front's distance
-in standard deviations alongside:
-
-| `t` | 1 | 4 | 15 |
-|---|---|---|---|
-| front, in sigmas | 1.2247 | 2.4495 | 4.7434 |
-| closed form | 2.207e-1 | 1.431e-2 | 2.101e-6 |
-| solver | 2.147e-1 | 1.410e-2 | 2.032e-6 |
-
-The closed form is `c`-independent for the classical `D`, which is why the three `c` blocks
-print identical numbers — that repetition is the check, not an oversight. The `3%` gap to the
-solver is discussed in [07](07-q3d-metrics.md).
+The five `c` values are solved twice each, once per approximation, and each solve marches
+through all of `SOLVER_TIMES` in one pass — ten marches, not thirty. That matters: this check
+and `plot_diffusion_error` together are most of the runtime of `main.py`.

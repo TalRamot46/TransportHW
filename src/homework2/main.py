@@ -13,18 +13,14 @@ from homework2.diffusion import (
     phi_steady_asymptotic,
 )
 from homework2.solver import solve, step, mass, bulk
-from homework2.metrics import (total_variation, front_leakage, measured_front_leakage,
-                               front_in_sigmas, late_time_coefficient, late_time_floor)
 from homework2.figures import figs_dir
 from homework2.plots import (plot_comparison_for_c, plot_solver, plot_solver_error,
-                             plot_diffusion_error, plot_q3d_summary, C_VALUES, TIMES)
+                             plot_diffusion_error, C_VALUES, TIMES)
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
 
 SOLVER_TIMES = (1.0, 4.0, 15.0)   # a subset of TIMES: each solve marches the whole way
-METRIC_TIMES = (1.0, 2.0, 4.0, 7.0, 15.0)
-FLOOR_TIME = 40.0                 # late enough for the transport correction to have mostly gone
 
 def _bulk_error(x, phi, t, c):
     """Largest relative departure of the solver from the closed form, inside the bulk."""
@@ -138,40 +134,21 @@ def check_solver_source_treatment():
     logger.info(f"  max relative difference = {difference:.2e}, against a discretisation error of "
                 f"{_bulk_error(x, pulse[4.0], 4.0, 1.0):.2e}")
 
-def check_total_variation():
-    """Part 3(d): the single whole-profile number, for both approximations and every c."""
-    logger.info("\nMisplaced fraction of the population, half the L1 distance to exact transport")
-    logger.info(f"{'c':<6} | {'t':<6} | {'classical':<11} | {'asymptotic':<11}")
+def _error_at(x, phi, t, c, fraction):
+    """Relative error of a numeric flux against exact transport, at the node nearest x = fraction vt."""
+    j = int(np.argmin(np.abs(x - fraction * t)))
+    return phi[j] / float(phi_exact(x[j], t, c, "series")) - 1.0
+
+def check_diffusion_error():
+    """Part 3(d): how far each numeric diffusion solution sits from the exact transport flux."""
+    logger.info("\nDiffusion against exact transport, relative error at x = 0 and at x = 0.9 vt")
+    logger.info(f"{'c':<6} | {'t':<6} | {'classical':<22} | {'asymptotic':<22}")
     for c in C_VALUES:
-        runs = [solve(c, a, times=METRIC_TIMES) for a in ('classical', 'asymptotic')]
-        for t in METRIC_TIMES:
-            cells = [f"{total_variation(x, fluxes[t], t, c):<11.4%}" for x, fluxes in runs]
-            logger.info(f"{c:<6} | {t:<6.0f} | {cells[0]} | {cells[1]}")
-
-def check_late_time_floor():
-    """The exact flux spreads with 1/(3c), so a wrong D leaves an error that never decays."""
-    logger.info("\nLate-time floor: the measured L1 gap against gaussian_gap(D, 1/(3c))")
-    logger.info(f"{'c':<6} | {'approximation':<13} | {'D':<9} | {'measured':<10} | {'floor':<10}")
-    for c in (0.6, 1.0, 1.5):
-        for approximation in ('classical', 'asymptotic'):
-            x, fluxes = solve(c, approximation, times=(FLOOR_TIME,))
-            logger.info(f"{c:<6} | {approximation:<13} | "
-                        f"{diffusion_coefficient(c, approximation):<9.5f} | "
-                        f"{total_variation(x, fluxes[FLOOR_TIME], FLOOR_TIME, c):<10.4%} | "
-                        f"{late_time_floor(c, approximation):<10.4%}")
-    logger.info(f"  true late-time D = 1/(3c): " +
-                ", ".join(f"{c} -> {late_time_coefficient(c):.5f}" for c in C_VALUES))
-
-def check_front_leakage():
-    """The acausal leak erfc(sqrt(vt/4D)), against the mass the solver actually puts past the front."""
-    logger.info("\nFraction of the diffusion population past the causal front |x| = vt")
-    logger.info(f"{'c':<6} | {'t':<6} | {'front/sigma':<12} | {'closed form':<12} | {'solver':<12}")
-    for c in (0.6, 1.0, 1.5):
-        x, fluxes = solve(c, 'classical', times=SOLVER_TIMES)
+        runs = {a: solve(c, a, times=SOLVER_TIMES) for a in ('classical', 'asymptotic')}
         for t in SOLVER_TIMES:
-            logger.info(f"{c:<6} | {t:<6.0f} | {front_in_sigmas(t, c):<12.4f} | "
-                        f"{front_leakage(t, c):<12.4e} | "
-                        f"{measured_front_leakage(x, fluxes[t], t, c):<12.4e}")
+            cells = [f"{_error_at(x, fluxes[t], t, c, 0.0):+8.2%} {_error_at(x, fluxes[t], t, c, 0.9):+11.2%}"
+                     for x, fluxes in runs.values()]
+            logger.info(f"{c:<6} | {t:<6.0f} | {cells[0]:<22} | {cells[1]:<22}")
 
 def generate_figures():
     """Writes one comparison figure per value of c into the report's figure directory."""
@@ -182,7 +159,6 @@ def generate_figures():
     plot_solver(save_path=os.path.join(directory, "q3c_solver.pdf"))
     plot_solver_error(save_path=os.path.join(directory, "q3c_solver_error.pdf"))
     plot_diffusion_error(save_path=os.path.join(directory, "q3d_diffusion_error.pdf"))
-    plot_q3d_summary(save_path=os.path.join(directory, "q3d_summary.pdf"))
 
 def main():
     logger.info("=== Assignment 2, Question 3: exact transport vs. diffusion ===")
@@ -203,9 +179,7 @@ def main():
     check_solver_source_treatment()
 
     logger.info("\n--- Part 3(d): the numeric diffusion solutions against exact transport ---")
-    check_total_variation()
-    check_late_time_floor()
-    check_front_leakage()
+    check_diffusion_error()
 
     generate_figures()
 

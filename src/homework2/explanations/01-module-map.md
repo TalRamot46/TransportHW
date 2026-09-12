@@ -1,6 +1,6 @@
 # 01 — The Module Map
 
-**Seven modules: parts 3(a) and 3(b) are closed forms and only `solver.py` integrates anything,
+**Six modules: parts 3(a) and 3(b) are closed forms and only `solver.py` integrates anything,
 so `main.py` spends most of its time checking identities.**
 
 ## The files
@@ -10,16 +10,15 @@ so `main.py` spends most of its time checking identities.**
 | `exact.py` | The Q2 planar flux: Paasschens' `G`, the collided integral, and the Q1 scaling to general `c`. |
 | `diffusion.py` | The two diffusion Green's functions, time-dependent and steady, and `D0(c)`. |
 | `solver.py` | Part 3(c): the explicit FTCS march of the heat equation ([06](06-q3c-solver-spec.md)). |
-| `metrics.py` | Part 3(d): the misplaced fraction, the leak past the front, the late-time floor ([07](07-q3d-metrics.md)). |
 | `plots.py` | The Q3 comparison figure: one figure per `c`, one panel per `t`. |
 | `figures.py` | Matplotlib helpers — headless backend, three-column grid, safe save. |
-| `main.py` | Fourteen verification checks, then the figures. |
+| `main.py` | Twelve verification checks, then the figures. |
 
 ## `main.py` is a test suite
 
 Unlike Assignments 1 and 3, there is no `qN.report(figs)` structure, because parts 3(a) and
 3(b) have nothing to solve — all three curves being compared are closed forms. So `main.py` is
-fourteen `check_*` functions ([05](05-verification.md)) followed by one `generate_figures()`.
+twelve `check_*` functions ([05](05-verification.md)) followed by one `generate_figures()`.
 Each check is independent; none of them feeds the figures, and the five solver checks are the
 only place `solver.py` is exercised at all.
 

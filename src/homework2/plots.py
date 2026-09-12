@@ -12,11 +12,9 @@ from homework2.exact import phi_exact
 from homework2.diffusion import (phi_classical_diffusion, phi_asymptotic_diffusion,
                                  diffusion_coefficient)
 from homework2.solver import solve, bulk, X_REACH
-from homework2.metrics import (total_variation, front_leakage, measured_front_leakage,
-                               late_time_floor)
 from homework2.figures import (make_grid, subplots, panel, case_label, label_grid,
                                finish, savefig, close, LEGEND_SIZE,
-                               NAVY, ORANGE, GREEN, RED, BLUE, GREY)
+                               NAVY, ORANGE, GREEN, RED, GREY)
 
 C_VALUES = (0.6, 0.8, 1.0, 1.2, 1.5)
 TIMES = (1.0, 2.0, 3.0, 4.0, 7.0, 15.0)
@@ -33,13 +31,6 @@ FRONT_FRACTION = 0.98                # the exact flux vanishes at |x| = vt; stop
 # shows from under the asymptotic one instead of vanishing.
 APPROXIMATIONS = (('Classical', 'classical', ORANGE, 2.8), ('Asymptotic', 'asymptotic', GREEN, 1.6))
 ERROR_FLOOR = 1e-3                   # below this the panel is all sign-change dip, not error
-
-SUMMARY_TIMES = (1.0, 2.0, 3.0, 4.0, 6.0, 9.0, 13.0, 20.0, 30.0, 40.0)
-LEAK_TIMES = np.linspace(1.0, 15.0, 200)
-LEAK_MARKS = (1.0, 4.0, 7.0, 15.0)   # where the solver is asked to confirm the closed form
-LEAK_ATOL = 1e-9                     # erfc runs out of anything worth drawing below this
-MISPLACED_YLIM = (2e-3, 6e-1)        # shared by both panels, so the two read against each other
-C_COLOURS = (NAVY, ORANGE, GREEN, RED, BLUE)
 
 # Vertical padding, as a factor below the smallest and above the largest value the exact
 # curve reaches inside the front, plus a floor on the total range so that an early-time
@@ -210,62 +201,5 @@ def plot_diffusion_error(c_values=C_VALUES, times=ERROR_TIMES, save_path=None):
 
     finish(fig)
     _error_legend(fig, times)
-    savefig(fig, save_path)
-    close(fig)
-
-def _misplaced_panel(ax, approximation, c_values, times):
-    """Misplaced fraction against time for one approximation, with each c's floor beneath it."""
-    for c, colour in zip(c_values, C_COLOURS):
-        x, fluxes = solve(c, approximation, times=times)
-        ax.plot(times, [total_variation(x, fluxes[t], t, c) for t in times],
-                color=colour, linewidth=2.0, marker='o', markersize=3.5, label=f'$c = {c:g}$')
-        floor = late_time_floor(c, approximation)
-        if floor > 0.0:
-            ax.axhline(floor, color=colour, linestyle=':', linewidth=1.2, alpha=0.7)
-
-    ax.set_xscale('log')
-    ax.set_ylim(*MISPLACED_YLIM)
-    panel(ax, '$t$ [mean free times]', 'Misplaced fraction', log=True)
-
-def _leakage_panel(ax, c_values, times):
-    """Acausal leak past the front: the closed form for each D, and the solver on top of it."""
-    for c, colour in zip(c_values, C_COLOURS):
-        leak = front_leakage(times, c, 'asymptotic')
-        ax.plot(times[leak > LEAK_ATOL], leak[leak > LEAK_ATOL],
-                color=colour, linestyle='--', linewidth=1.8)
-
-    # Classical D is 1/3 whatever c is, so this one curve serves every panel above.
-    ax.plot(times, front_leakage(times, 1.0, 'classical'), color=GREY, linewidth=2.6)
-
-    x, fluxes = solve(1.0, 'classical', times=LEAK_MARKS)
-    ax.plot(LEAK_MARKS, [measured_front_leakage(x, fluxes[t], t, 1.0) for t in LEAK_MARKS],
-            color=RED, linestyle='none', marker='o', markersize=6,
-            markerfacecolor='none', markeredgewidth=1.5)
-
-    ax.set_ylim(bottom=LEAK_ATOL)
-    panel(ax, '$t$ [mean free times]', 'Fraction past the front', log=True)
-
-def _summary_legends(axes):
-    """The c colours name both upper panels; the third needs its own three entries."""
-    axes[0][0].legend(loc='lower left', fontsize=9, frameon=True, ncol=2)
-    handles = [Line2D([], [], color=GREY, linewidth=2.6, label='Classical, any $c$'),
-               Line2D([], [], color=NAVY, linestyle='--', linewidth=1.8, label='Asymptotic'),
-               Line2D([], [], color=RED, linestyle='none', marker='o', markersize=6,
-                      markerfacecolor='none', markeredgewidth=1.5, label='Solver')]
-    axes[0][2].legend(handles=handles, loc='lower left', fontsize=9, frameon=True)
-
-def plot_q3d_summary(c_values=C_VALUES, times=SUMMARY_TIMES, save_path=None):
-    """Part 3(d): the whole-profile error against time, and the acausal leak past the front."""
-    fig, axes = subplots(1, 3, width=3.7, height=3.2)
-
-    _misplaced_panel(axes[0][0], 'classical', c_values, times)
-    _misplaced_panel(axes[0][1], 'asymptotic', c_values, times)
-    _leakage_panel(axes[0][2], c_values, LEAK_TIMES)
-
-    for ax, name in zip(axes[0], ('Classical', 'Asymptotic')):
-        case_label(ax, name, xy=(0.96, 0.05), ha='right', va='bottom')
-    _summary_legends(axes)
-
-    finish(fig)
     savefig(fig, save_path)
     close(fig)
