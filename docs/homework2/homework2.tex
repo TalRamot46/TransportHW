@@ -2,6 +2,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{geometry}
 \usepackage{booktabs}
 \usepackage{hyperref}
@@ -77,6 +78,37 @@ with $w_0 = a\left(1-\frac{x^2}{(vt)^2}\right)^{3/4}$, the powers combining as $
 \end{equation}
 which \textbf{closes the derivation of the planar-source scalar flux for $c=1$.}
 Of course the relation proved in Q1 can be used to get the solution for $c\neq 1$ using a simple scaling and multiplication by an exponential factor of the solution for $c=1$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3_comparison_c0.6.pdf}
+    \caption{$c = 0.6$.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3_comparison_c0.8.pdf}
+    \caption{$c = 0.8$.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3_comparison_c1.pdf}
+    \caption{$c = 1$. The two diffusion coefficients coincide at $D_0 = 1/3$, so the classical
+    and asymptotic curves overlie each other.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3_comparison_c1.2.pdf}
+    \caption{$c = 1.2$.}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figs/q3_comparison_c1.5.pdf}
+    \caption{$c = 1.5$.}
+\end{figure}
 
 \newpage
 \section*{Question 3 - Classical and asymptotic diffusion against the exact solution}
@@ -181,37 +213,6 @@ which is \eqref{eq:green}, with $\Sigma_a = (1-c)\Sigma_t$.
 Each figure fixes $c$ and shows $t = 1, 2, 3, 4, 7, 15$. The vertical line marks the causal
 front $|x| = vt$, beyond which the exact solution is identically zero. Only $x \ge 0$ is
 plotted. All three solutions are even in $x$.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{figs/q3_comparison_c0.6.pdf}
-    \caption{$c = 0.6$.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{figs/q3_comparison_c0.8.pdf}
-    \caption{$c = 0.8$.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{figs/q3_comparison_c1.pdf}
-    \caption{$c = 1$. The two diffusion coefficients coincide at $D_0 = 1/3$, so the classical
-    and asymptotic curves overlie each other.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{figs/q3_comparison_c1.2.pdf}
-    \caption{$c = 1.2$.}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\textwidth]{figs/q3_comparison_c1.5.pdf}
-    \caption{$c = 1.5$.}
-\end{figure}
 
 \subsection*{Part 3(c): the numerical solution}
 \label{sec:numerical}

@@ -14,6 +14,7 @@
 \usepackage{xcolor}
 \usepackage[most]{tcolorbox}
 \usepackage{placeins}
+\usepackage{float}
 
 % Every algorithm below is placed with [H], i.e. not as a float: it stays exactly where
 % it is written, and the surrounding \color reaches it -- a floated algorithm would be
@@ -65,7 +66,7 @@
 
 
 
-\subsection*{The two regions}
+\subsection*{The two regions, and the solutions to Helmholtz on each}
 
 Every radius here is measured in mean free paths of the medium it sits in:
 \begin{equation}
@@ -250,7 +251,7 @@ Sodium & 10 & 7.9401 & 7.4425 & 4.8292 & 39.840 & 32.809 & 8.963  \\
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\textwidth]{figs/q1_critical_radius.pdf}
-\caption{Critical core radius against reflector optical thickness. Dashed and dotted lines are the two bare references. Water saturates by $d = 3$ mfp, iron is still improving at $d = 10$ mfp and the sodium (a) and (b) curves sit above their bare lines throughout, while (c) does not}.
+\caption{Critical core radius against reflector optical thickness. Dashed and dotted lines are the two bare references. Water saturates by $d = 3$ mfp, iron is still improving at $d = 10$ mfp and the sodium (a) and (b) curves sit above their bare lines throughout, while (c) does not.}
 \end{figure}
 
 \begin{figure}[htbp]
@@ -260,19 +261,6 @@ Sodium & 10 & 7.9401 & 7.4425 & 4.8292 & 39.840 & 32.809 & 8.963  \\
 \end{figure}
 
 
-\begin{table}[htbp]
-\centering
-\begin{tabular}{lccccc}
-\toprule
-reflector & $D_R$ [cm] & shell [cm] & geometric $D_R/R_c$ & far-face $D_R/L$ & total vs.\ bare $0.5592$ \\
-\midrule
-Water  & 1.021 & 30.6  & 0.2050 & 0.1826 & 0.3876 \\
-Iron   & 1.433 & 43.0  & 0.3063 & 0.0381 & 0.3444 \\
-Sodium & 3.859 & 115.8 & \textbf{0.6295} & 0.0312 & 0.6607 \\
-\bottomrule
-\end{tabular}
-\caption{Leakage ratio at the interface, in cm$^{-1}$, classic theory. Sodium's far-face return is the best of the three - 10 mfp of a pure scatterer really does send almost everything back - but its geometric term alone exceeds what a bare vacuum surface leaks.}
-\end{table}
 
 \FloatBarrier
 \section*{Question 2: Critical slab half-thickness by $P_N$}
@@ -517,8 +505,7 @@ them: the normalised critical flux - as in Question 3, the order changes the sur
 and not the interior shape.}
 \end{figure}
 
-\FloatBarrier
-\newpage
+\clearpage
 \section*{The $S_N$ method of Questions 3--5}
 
 All three questions solve the same monoenergetic, steady-state problem,
@@ -770,12 +757,12 @@ everything in \texttt{sn.core} is written against neither. Three nested loops, a
 matrix among them.
 \end{sloppypar}
 
-\newpage
+\clearpage
 \section*{Question 3: Critical slab half-thickness by $S_N$}
 
 Reflective at $x=0$, vacuum at $x=a/2$, 200 cells. The reference column is Assignment 1's exact-transport relation $a/2 = \tfrac{\pi}{2}\nu_0 - z_0$, evaluated from Case's tabulated $\nu_0$ and $z_0$.
 
-\begin{table}[htbp]
+\begin{table}[H]
 \centering
 \begin{tabular}{ccccc}
 \toprule
@@ -800,7 +787,7 @@ $c$ & order & $a/2$ [mfp] & exact transport [mfp] & departure \\
 \caption{Critical half-thickness in mean free paths. The departure is entirely angular: the same radii are reproduced to seven digits on meshes from 50 to 800 cells.}
 \end{table}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{figs/q3_slab_orders.pdf}
 \caption{Top left: convergence of $a/2$ with $N$, dashed lines the exact-transport values. Top right: $k$ against half-thickness at $c=1.5$, circles the $k=1$ crossings. Beneath them: the normalised critical flux, which barely moves with $N$ - the order affects the boundary, not the interior.}
@@ -893,30 +880,10 @@ $c$ & order & $R_c$ [mfp] & exact transport [mfp] & departure \\
 \caption{The same three panels for the sphere. The $S_2$ curve is the outlier in all three: in curvilinear geometry $S_2$ is not the $P_1$ equation, and the angular redistribution term it misrepresents is a loss from the interior directions.}
 \end{figure}
 
-\paragraph{Cross-check between the two geometries.} Both drive the asymptotic flux to zero at the same extrapolated surface, so $a/2 + z_0 = \tfrac{\pi}{2}\nu_0$ and $R_c + z_0 = \pi \nu_0$, and therefore
-\begin{equation}
-    z_0 = R_c - 2\,(a/2)
-\end{equation}
-which lets the two tables above check each other without any further calculation:
-
-\begin{table}[htbp]
-\centering
-\begin{tabular}{cccccc}
-\toprule
-$c$ & from $S_2$ & from $S_4$ & from $S_6$ & from $S_{10}$ & Case's table \\
-\midrule
-1.2 & 0.091 & 0.509 & 0.563 & 0.583 & 0.592 \\
-1.5 & 0.047 & 0.368 & 0.438 & 0.468 & 0.475 \\
-1.8 & 0.032 & 0.287 & 0.354 & 0.391 & 0.397 \\
-\bottomrule
-\end{tabular}
-\caption{Extrapolation distance $z_0$ implied by the two geometries, in mean free paths. At $S_{10}$ it is 1.5\% below Case's value at all three $c$ - the same shortfall three times, which is the relation's own asymptotic error. At $S_2$ it nearly vanishes, which is the sharpest statement of what low-order $S_N$ gets wrong: the boundary, not the interior.}
-\end{table}
-
 \FloatBarrier
 \section*{Question 5: Critical mass of U-235 and Pu-239 by $S_N$}
 
-The cross sections are the Question 5 table of Assignment 1 - $\Sigma_t = 0.32640$ cm$^{-1}$ for both, giving $c = 1.500$ for Pu-239 and $c = 1.300$ for U-235 - and the critical mass follows from the converged radius as $M_c = \tfrac{4}{3}\pi R_c^3 \rho$. Here $\Sigma_s > 0$, so the inner iteration does real work: about ten sweeps per outer, against one for the $c$-only problems above. The orders are $S_2$ to $S_{16}$ rather than the $S_2$--$S_{10}$ of the previous questions, since the mass goes as the cube of the radius and is the more demanding quantity.
+The cross sections are the Question 5 table of Assignment 1 - $\Sigma_t = 0.32640$ cm$^{-1}$ for both, giving $c = 1.500$ for Pu-239 and $c = 1.300$ for U-235 - and the critical mass follows from the converged radius as $M_c = \tfrac{4}{3}\pi R_c^3 \rho$. Here $\Sigma_s > 0$, so the inner iteration does real work: about ten sweeps per outer, against one for the $c$-only problems above.
 
 \begin{table}[htbp]
 \centering
@@ -943,6 +910,4 @@ U-235 & $S_{16}$ & 1.300 & 7.4231 & 32.553 & 7.4339 & $-0.15\%$ \\
 \includegraphics[width=\textwidth]{figs/q5_critical_mass.pdf}
 \caption{$k$ against sphere radius at $S_{16}$, with the $k=1$ crossing that fixes the critical mass.}
 \end{figure}
-
-Diffusion overestimates both radii, and by more for Pu-239 than for U-235: the surface sits about two mean free paths from the centre in both cases, but the higher $c$ makes the Pu-239 flux fall off faster and its surface angular flux more forward-peaked, which is exactly what a diffusion approximation cannot represent. $S_{16}$ recovers the difference to within $0.3\%$ of the transport-theory radius.
 \end{document}
