@@ -3,6 +3,8 @@ import logging
 import numpy as np
 import matplotlib.pyplot as plt
 from homework4 import SimulationConfig, find_critical_radius
+from homework4.q5 import run_analytic_comparison
+from homework1.figures import savefig
 
 # Setup logging configuration
 logging.basicConfig(
@@ -77,9 +79,7 @@ def run_density_study():
     
     fig.tight_layout()
     plot_path = os.path.join(FIGS_DIR, "density_analysis.pdf")
-    plt.savefig(plot_path, format='pdf', bbox_inches='tight', transparent=True)
-    plt.close()
-    logger.info(f"Density study plot saved as PDF to: {plot_path}")
+    savefig(fig, plot_path)
 
 
 def run_probability_study():
@@ -170,9 +170,7 @@ def run_probability_study():
     
     fig.tight_layout()
     plot_path = os.path.join(FIGS_DIR, "probability_analysis.pdf")
-    plt.savefig(plot_path, format='pdf', bbox_inches='tight', transparent=True)
-    plt.close()
-    logger.info(f"Probability sweep plot saved as PDF to: {plot_path}")
+    savefig(fig, plot_path)
 
 
 def run_deep_probability_study():
@@ -285,14 +283,13 @@ def run_deep_probability_study():
     
     fig.tight_layout()
     plot_path = os.path.join(FIGS_DIR, "deep_probability_analysis.pdf")
-    plt.savefig(plot_path, format='pdf', bbox_inches='tight', transparent=True)
-    plt.close()
-    logger.info(f"Deep probability sweep plot saved as PDF to: {plot_path}")
+    savefig(fig, plot_path)
 
 def main():
     run_density_study()
     run_probability_study()
     run_deep_probability_study()
+    run_analytic_comparison()
 
 if __name__ == "__main__":
     main()

@@ -30,7 +30,7 @@
 
 \maketitle
 \section*{Question 1 - Useful identity for the solution of the time-dependent slab-geometry Boltzmann equation}
-In this question we are asked to prove the following identity:
+In this question we are asked to prove the following identity for the time-dependent slab-geometry green function:
 \begin{equation}
     \psi(x,\mu,t;c) = ce^{-(1-c){v\Sigma_t} t}\psi(cx,\mu,ct;1) \label{eq:identity}
 \end{equation}
@@ -39,11 +39,11 @@ We will do it in two parts. First, we will write down the equation that $\tilde{
 \paragraph{Notation:} We will denote by $\Psi(X,\mu,T)\equiv\psi(X,\mu,T;1)$ the $c=1$ solution written in its own variables, and by $\Psi_T$ and $\Psi_X$ its partial derivatives with respect to them, so that $\tilde{\psi}(x,\mu,t) = \Psi(cx,\mu,ct)$ with $X=cx$ and $T=ct$. \textbf{This notation is used to avoid confusion when using the chain rule, as will be done immediately.}
 First, $\Psi$ satisfies the $c=1$ equation in the variables $X$ and $T$:
 \begin{equation}
-    \frac{1}{v}\Psi_T + \mu \Psi_X + \Sigma_t \Psi = \frac{\Sigma_t}{2}\int_{-1}^{1} \Psi d\mu^\prime
+    \frac{1}{v}\Psi_T + \mu \Psi_X + \Sigma_t \Psi = \frac{\Sigma_t}{2}\int_{-1}^{1} \Psi d\mu^\prime + \delta(x)\delta(t)
 \end{equation}
 which after applying the chain rule, $\Psi_T = \frac{1}{c}\frac{\partial \tilde{\psi}}{\partial t}$ and $\Psi_X = \frac{1}{c}\frac{\partial \tilde{\psi}}{\partial x}$, and multiplying by $c$, becomes:
 \begin{equation}
-    \frac{1}{v}\frac{\partial \tilde{\psi}}{\partial t} + \mu \frac{\partial \tilde{\psi}}{\partial x} + c\Sigma_t \tilde{\psi} = \frac{c\Sigma_t}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime \label{eq:tilde}
+    \frac{1}{v}\frac{\partial \tilde{\psi}}{\partial t} + \mu \frac{\partial \tilde{\psi}}{\partial x} + c\Sigma_t \tilde{\psi} = \frac{c\Sigma_t}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime \label{eq:tilde} + c\delta(x)\delta(t)
 \end{equation}
 So $\tilde{\psi}$ obeys the same equation as $\psi(x,\mu,t;c)$ except that it is removed at the rate $c\Sigma_t$ instead of $\Sigma_t$.
 \subsection*{Proving the identity}
@@ -52,9 +52,11 @@ In this part we are going to simply subtitute the RHS of \ref{eq:identity} into 
     \text{LHS} &= \frac{1}{v}\left[c(c-1)v\Sigma_t e^{-(1-c)v\Sigma_t t}\tilde{\psi}+c\, e^{-(1-c)v\Sigma_t t}\frac{\partial\tilde{\psi}}{\partial t}\right] + \mu c\, e^{-(1-c)v\Sigma_t t}\frac{\partial\tilde{\psi}}{\partial x} + \Sigma_t c\, e^{-(1-c)v\Sigma_t t}\tilde{\psi} \\
     &= c e^{-(1-c)v\Sigma_t t}\left[\frac{1}{v}\frac{\partial\tilde{\psi}}{\partial t} + \mu \frac{\partial\tilde{\psi}}{\partial x} + \Sigma_t \tilde{\psi} + (c-1)\Sigma_t\tilde{\psi}\right] \\
     &= c e^{-(1-c)v\Sigma_t t}\left[\frac{1}{v}\frac{\partial\tilde{\psi}}{\partial t} + \mu \frac{\partial\tilde{\psi}}{\partial x} + c\Sigma_t \tilde{\psi}\right] \\
-    &= c e^{-(1-c)v\Sigma_t t}\frac{c\Sigma_t}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime = \frac{c\Sigma_t}{2}\int_{-1}^{1} c e^{-(1-c)v\Sigma_t t}\tilde{\psi}d\mu^\prime
+    &= c e^{-(1-c)v\Sigma_t t}\left[\frac{c\Sigma_t}{2}\int_{-1}^{1} \tilde{\psi}d\mu^\prime + \delta(x)\delta(t)\right] = \frac{c\Sigma_t}{2}\int_{-1}^{1} c e^{-(1-c)v\Sigma_t t}\tilde{\psi}d\mu^\prime + c\delta(x)\delta(t)
 \end{align}
-where \ref{eq:tilde} was used in the last line, and this is exactly the RHS of the equation for $\psi(x,\mu,t;c)$.
+where \ref{eq:tilde} was used in the last line, and also the fact that $f(t)\delta(t)$ = $f(0)\delta(t)$. The result is exactly the RHS of the equation for $\psi(x,\mu,t;c)$, and thus the identity is proven.
+
+\newpage
 \section*{Question 2 - Derivation of the time-dependent planar scalar flux for a plane source}
 The relation between a plane source and a point source as studied in class is given by:
 \begin{equation}
@@ -75,6 +77,8 @@ with $w_0 = a\left(1-\frac{x^2}{(vt)^2}\right)^{3/4}$, the powers combining as $
 \end{equation}
 which \textbf{closes the derivation of the planar-source scalar flux for $c=1$.}
 Of course the relation proved in Q1 can be used to get the solution for $c\neq 1$ using a simple scaling and multiplication by an exponential factor of the solution for $c=1$.
+
+\newpage
 \section*{Question 3 - Classical and asymptotic diffusion against the exact solution}
 \subsection*{Derivation of the time-dependent diffusion Green's function}
 \label{sec:derivation}

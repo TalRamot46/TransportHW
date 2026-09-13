@@ -87,6 +87,30 @@ $\nu_0$ is computed two ways: by bisection on $\operatorname{arctanh}(y)/y = 1/c
 \end{equation}
 which agree to better than $5 \times 10^{-3}\,\%$ over $c = 0.5 \ldots 0.95$. All figures are produced with both.
 
+\subsection*{Question 1b: Classical Diffusion Solution}
+
+In mean free paths ($\Sigma_t = 1$) the diffusion equation for the same source is
+\begin{equation}
+    - D \phi''(x) + (1 - c) \phi(x) = \delta(x)
+\end{equation}
+and with the $P_1$ value $D = 1/3$ its Green's function is
+\begin{equation}
+    \phi_{\text{class}}(x) = \frac{\sqrt{3}}{2\sqrt{1-c}} e^{-\sqrt{3(1-c)} |x|}
+\end{equation}
+
+\subsection*{Question 1c: Asymptotic Diffusion Solution}
+
+The asymptotic diffusion solution gives the diffusion coefficient $D_{\text{as}} = (1-c)\nu_0^2$ and the flux
+\begin{equation}
+    \phi_{\text{as,diff}}(x) = \frac{1}{2(1-c)\nu_0} e^{-|x|/\nu_0}
+\end{equation}
+which is exactly Case's asymptotic mode: this approximation reproduces $\phi_{\text{as}}$ by construction and errs from the exact flux only by the transient part.
+
+\subsection*{Question 1d: Relative Error of Diffusion Approximations}
+
+\begin{equation}
+    \text{Relative Error (\%)} = \frac{|\phi_{\text{approx}}(x) - \phi_{\text{exact}}(x)|}{\phi_{\text{exact}}(x)} \times 100\%
+\end{equation}
 
 \begin{figure}[hbt!]
     \centering
@@ -102,31 +126,6 @@ which agree to better than $5 \times 10^{-3}\,\%$ over $c = 0.5 \ldots 0.95$. Al
     \caption{The same two components as fractions of the total.}
     \label{fig:relative_contributions}
 \end{figure}
-
-\subsection*{Question 1b: Classical Diffusion Solution}
-
-In mean free paths ($\Sigma_t = 1$) the diffusion equation for the same source is
-\begin{equation}
-    - D \phi''(x) + (1 - c) \phi(x) = \delta(x)
-\end{equation}
-and with the $P_1$ value $D = 1/3$ its Green's function is
-\begin{equation}
-    \phi_{\text{class}}(x) = \frac{\sqrt{3}}{2\sqrt{1-c}} e^{-\sqrt{3(1-c)} |x|}
-\end{equation}
-
-\subsection*{Question 1c: Asymptotic Diffusion Solution}
-
-Matching the diffusion length to the exact eigenvalue, $L = \nu_0$, fixes $D_{\text{as}} = (1-c)\nu_0^2$ and gives
-\begin{equation}
-    \phi_{\text{as,diff}}(x) = \frac{1}{2(1-c)\nu_0} e^{-|x|/\nu_0}
-\end{equation}
-which is exactly Case's asymptotic mode: this approximation reproduces $\phi_{\text{as}}$ by construction and errs only by the transient part.
-
-\subsection*{Question 1d: Relative Error of Diffusion Approximations}
-
-\begin{equation}
-    \text{Relative Error (\%)} = \frac{|\phi_{\text{approx}}(x) - \phi_{\text{exact}}(x)|}{\phi_{\text{exact}}(x)} \times 100\%
-\end{equation}
 
 \begin{figure}[hbt!]
     \centering
@@ -197,7 +196,7 @@ which is satisfied by $e^{-\kappa x}$. Thus the truncation is exact for any $a$.
 \newpage
 \section*{Question 3: Critical Half-Thickness and Critical Radius}
 
-\subsection*{The Eigenvalue for $c > 1$}
+\subsection*{The eigenvalue \& form of flux for $c > 1$}
 The discrete eigenvalue leaves the real axis. With $\nu_0 = i|\nu_0|$, $k_0 = 1/|\nu_0|$ and $\operatorname{arctanh}(ik) = i\arctan(k)$, the characteristic equation becomes real again,
 \begin{equation}
     c \arctan(k_0) = k_0
@@ -220,12 +219,12 @@ The asymptotic flux extrapolates to zero a distance $z_0(c)$ outside the surface
     \Sigma_t R_c = \pi\,|\nu_0(c)| - z_0(c)
     \label{eq:q3relations}
 \end{equation}
-No diffusion coefficient enters, so these are exact transport in that sense. They are still asymptotic, in that the transient flux near the surface is neglected (and the sphere uses the plane Milne $z_0$, without the Winslow curvature correction). The extrapolation distance comes from the expansion about $c = 1$,
+The extrapolation distance comes from the expansion about $c = 1$,
 \begin{equation}
     z_0(c) = 0.710446 \left[ \frac{1}{c} + q\,\frac{(1-c)^2}{c} + \mathcal{O}\!\left(\frac{(1-c)^3}{c}\right) \right]
     \label{eq:z0fit}
 \end{equation}
-whose leading term is exact in the sense that $0.710446/c = 0.710446\,\nu_0\operatorname{arctanh}(1/\nu_0)$, with $0.710446$ Hopf's constant.
+with $0.710446$ Hopf's constant.
 
 \begin{notebox}[The sign of the quadratic correction in \eqref{eq:z0fit}]
 The notes print $q = -0.0199$. Case's Table 23 has $c\,z_0(c)$ rising away from $0.710446$ on
@@ -257,7 +256,7 @@ printed sign.
         2.00 & 0.429411 & 0.348154 & 0.326364 & 1.000881 & $3.1859\,\%$ \\
         \bottomrule
     \end{tabular}
-    \caption{Critical dimensions in mean free paths, from the approximate $|\nu_0(c)|$ and the printed $z_0$ fit ($q = -0.0199$). The last column is the departure of $a/2$ from a reference using the transcendental root and Case's Table 23.}
+    \caption{Critical dimensions in mean free paths, from the approximate $|\nu_0(c)|$ and the printed $z_0$ fit ($q = -0.0199$), sorry for not changing this to $+$. The last column is the departure of $a/2$ from a reference using the transcendental root and Case's Table 23.}
     \label{tab:q3}
 \end{table}
 
@@ -271,7 +270,7 @@ eigenvalue fit stays under $0.11\,\%$, while the two-term $z_0$ expansion reache
 $c = 2$, where $(1-c)^3$ is no smaller than $(1-c)^2$. Because $z_0$ is subtracted while
 $|\nu_0|$ is multiplied by $\pi$ or $\pi/2$, the same absolute error in $z_0$ hurts $a/2$ about
 twice as much as $R_c$. The total stays under $0.1\,\%$ to $c \approx 1.25$ and reaches a few
-per cent by $c = 2$ (Figure~\ref{fig:q3_critical}). Everything after this table uses the exact
+per cent by $c = 2$ (Figure~\ref{fig:q3_critical}). All of this explanation to justify that everything after this table uses the exact
 inputs instead.
 \end{notebox}
 
@@ -300,7 +299,7 @@ whose solutions are the \emph{same} shapes $\cos(Bx)$ and $\sin(Br)/r$. Diffusio
         1/\sqrt{3} & \text{Mark}
     \end{cases}
 \end{equation}
-Marshak sets the incoming partial current to zero, $\phi/4 + D\phi'/2 = 0$, so $z_0 = \ell_0 = 2D = 2/3$. Mark sets the incoming angular flux to zero along $\mu = 1/\sqrt{3}$, so $z_0 = \ell_0 = \sqrt{3}D \approx 0.5774$. Neither input carries the true $c$-dependence: $1/B$ is only the $c \to 1^+$ limit of $|\nu_0|$, and both $z_0$ are constants while the transport $z_0(c) \approx 0.7104/c$ halves across the range.
+Marshak sets the incoming partial current to zero, $\phi/4 + D\phi'/2 = 0$, so $z_0 = \ell_0 = 2D = 2/3$ (as seen in the course). Mark sets the incoming angular flux to zero along $\mu = 1/\sqrt{3}$, so $z_0 = \ell_0 = \sqrt{3}D \approx 0.5774$. Neither input carries the true $c$-dependence: $1/B$ is only the $c \to 1^+$ limit of $|\nu_0|$, and both $z_0$ are constants while the transport $z_0(c) \approx 0.7104/c$ halves across the range.
 
 \begin{table}[hbt!]
     \centering
@@ -330,7 +329,7 @@ Marshak sets the incoming partial current to zero, $\phi/4 + D\phi'/2 = 0$, so $
 
 \subsection*{Parts 3(d) and 3(e): Asymptotic Diffusion}
 Every part of this question uses the same relations \eqref{eq:q3relations}, so a part is fixed
-by naming \emph{two} inputs, not one: the relaxation length $\ell$ inside $\cos(x/\ell)$ (which is where the $\nu_0(c)$ term comes from), and
+by naming \emph{two} inputs: the relaxation length $\ell$ inside $\cos(x/\ell)$ (which is where the $\nu_0(c)$ term comes from), and
 the boundary closure. Parts (b) and (c) take $\ell = 1/\sqrt{3(c-1)}$ which is actually the approximation of $\nu_0(c)$ in the diffusive $c\to 1$ limit. Parts (a), (d) and (e)
 take $\ell = |\nu_0|$. \textbf{Once the theory fixes $\ell$, \textit{the closure} (e.g. $z_0$, but soon we'll notice that it's case-dependent) is the only freedom left.}
 
@@ -343,7 +342,7 @@ $\ell_0 = \phi/|\phi'|$ at the surface, but \eqref{eq:q3relations} uses $z_0$, t
     \label{eq:l0z0}
 \end{equation}
 They agree only when $\ell_0 \ll \nu_0$, which is the $c \to 1^+$ limit where $\nu_0$ diverges.
-Writing $z_0 = \ell_0 = 2D$, as parts (b) and (c) do above, is therefore that limit taken
+Writing $z_0 = \ell_0$, as parts (b) and (c) do above, is therefore that limit taken
 silently (as we've stated above).
 
 \paragraph{Part 3(d).} The asymptotic diffusion coefficient is $D = |1-c|\,\nu_0^2$, so
@@ -352,14 +351,13 @@ silently (as we've stated above).
     \qquad\Longrightarrow\qquad
     \ell = \frac{1}{B} = |\nu_0(c)|
 \end{equation}
-\emph{exactly} - the coefficient is built so that its buckling is Case's discrete eigenvalue.
 With the \underline{exact $z_0$} taken as the closure, part (d) is part (a) rewritten: same $\ell$, same $z_0$,
-same numbers. \textbf{It has no independent content.}
+same numbers. \textbf{It has no independent content} (if I didn't get this wrong). 
 
 \paragraph{Part 3(e).} Here the closure is \textbf{manufactured instead of imported.} Ask for the
 $\mu_0(c)$ that makes the half-range first moment of the asymptotic angular flux come out as
 $\int_{-1}^{0}\mu\,\psi_{\text{as}}\,d\mu = \tfrac12\left(\mu_0\phi - J\right)$. Setting that
-incoming current to zero and using Zimmerman's rules (shown in slides 18-20 in the relevant course slides, more details in Assignment 3 solution) gives $\mu_0 \phi = J = D|\phi'|$, so
+incoming current to zero and using Zimmerman's rules (shown in slides 18-20 in the relevant course slides, more details in Assignment 3 solution) gives $\mu_0 \phi = J = D|\phi'|$ (at the surface), so
 \begin{equation}
     \ell_0 = \frac{D}{\mu_0(c)}
 \end{equation}
@@ -397,8 +395,7 @@ Using Zimmerman's $\mu_0(c)$ and converting through \eqref{eq:l0z0} gives part (
 $z_0$ is not hard to define - it is the Milne problem. The trouble is that it is a property of
 the \emph{boundary layer}, which is exactly what an asymptotic or diffusion description throws
 away, so it cannot be derived from inside such a theory. It has to be \underline{imported}, as in (a) and
-(d), or \underline{manufactured} from a half-range closure, as in (b), (c) and (e). The four values in play
-are four guesses at what the discarded transients were doing.
+(d) which use Hopf's solution to the Milne problem, or \underline{manufactured} from a half-range closure and \eqref{eq:l0z0}, as in (b), (c) and (e).
 \end{notebox}
 
 \subsection*{Comparison}
@@ -456,12 +453,12 @@ Assignment 3 Question 5 puts them against a converged $S_N$ solve, which is what
 
 
 
-\begin{figure}[hbt!]
-    \centering
-    \includegraphics[width=\textwidth]{figs/q3_method_comparison.pdf}
-    \caption{Exact transport against Marshak and Mark diffusion (top), and the signed departure of each from transport (bottom). Dotted curves impose the boundary condition on the flux shape instead of using an extrapolated zero.}
-    \label{fig:q3_methods}
-\end{figure}
+% \begin{figure}[hbt!]
+%     \centering
+%     \includegraphics[width=\textwidth]{figs/q3_method_comparison.pdf}
+%     \caption{Exact transport against Marshak and Mark diffusion (top), and the signed departure of each from transport (bottom). Dotted curves impose the boundary condition on the flux shape instead of using an extrapolated zero.}
+%     \label{fig:q3_methods}
+% \end{figure}
 
 \newpage
 \FloatBarrier
@@ -488,7 +485,7 @@ Finite volume on $N$ uniform cell-centred shells. Integrating \eqref{eq:q4_spher
     \qquad J_{j+1/2} = -D\,\frac{\phi_{j+1} - \phi_j}{h}
     \label{eq:q4_fv}
 \end{equation}
-with $A_i = 4\pi r_i^2$ and $V_j = \frac{4\pi}{3}(r_{j+1/2}^3 - r_{j-1/2}^3)$. The matrix is tridiagonal and solved in $O(N)$. Appendix~\ref{app:fv} works the mesh, the index map and the assembly through in full.
+with $A_i = 4\pi r_i^2$ and $V_j = \frac{4\pi}{3}(r_{j+1/2}^3 - r_{j-1/2}^3)$. The matrix is tridiagonal and solved in $O(N)$. \textbf{The appendix~\ref{app:fv} builds the mesh, the index map and the assembly of the tridiagonal matrix in full}.
 
 The outer boundary is the extrapolated zero: the mesh is run out to $R + z_0$ and the flux driven to zero there, which is what the Question 3 relations assume, so the comparison against them tests the numerics alone. Eliminating the surface flux between $\phi(R + z_0) = 0$ and the half cell separating it from the last centre gives the leakage coefficient
 \begin{equation}
@@ -502,21 +499,19 @@ $k$ comes from the source iteration of Bell \& Glasstone, pp.~189--192: start fr
     k^{(n+1)} = k^{(n)} \, \frac{\int \nu \Sigma_f \phi^{(n+1)} \, dV}{\int \nu \Sigma_f \phi^{(n)} \, dV}
 \end{equation}
 and repeat until $|k^{(n+1)} - k^{(n)}| < 10^{-10} k^{(n+1)}$. The flux is renormalised each sweep: its amplitude grows by roughly $k$ per sweep, and over several hundred sweeps the convergence test would otherwise lose its significant digits (This is physically irrelevant, since the ratio is homogeneous in $\phi$)
-
-Convergence is at the dominance ratio $k_1/k_0$, which tends to unity for a large weakly multiplying sphere ($\approx 0.94$ at $c = 1.02$) and is derived under \emph{Verification} below. The critical radius then follows from Brent bisection on $k(R) - 1$, bracketed within $\pm 5\%$ of the analytic radius so that $k$ is never evaluated far from criticality.
+The critical radius then follows from Brent bisection on $k(R) - 1$, bracketed within $\pm 5\%$ of the analytic radius so that $k$ is never evaluated far from criticality.
 
 \subsection*{Comparison with the Analytical Result}
 
-At $k = 1$ equation \eqref{eq:q4_sphere} is Helmholtz with $B^2 = (\nu\Sigma_f - \Sigma_a)/D = \Sigma_t(c-1)/D$, and its regular solution $\sin(Br)/r$ vanishes at the extrapolated radius when
+At $k = 1$ equation \eqref{eq:q4_sphere} is Helmholtz (like the diffusion equation in question 3) with $B^2 = (\nu\Sigma_f - \Sigma_a)/D = \Sigma_t(c-1)/D$, and its regular solution $\sin(Br)/r$ vanishes at the extrapolated radius when
 \begin{equation}
     R_c = \frac{\pi}{B} - z_0
     \label{eq:q4_analytic}
 \end{equation}
-Substituting the two parameter sets recovers the Question 3 relations exactly: $\Sigma_t R_c = \pi/\sqrt{3(c-1)} - 2/3$ classically, and $\Sigma_t R_c = \pi|\nu_0| - z_0(c)$ asymptotically, the latter being part 3(a). Note that $R_c$ depends on the cross sections only through $c$, since $\Sigma_a$ and $\nu\Sigma_f$ enter only as their difference.
+Substituting the two parameter sets recovers the Question 3 relations exactly: $\Sigma_t R_c = \pi/\sqrt{3(c-1)} - 2/3$ classically, and $\Sigma_t R_c = \pi|\nu_0| - z_0(c)$ asymptotically, the latter being part 3(a).
 
 \begin{table}[htbp]
     \centering
-    \caption{Critical radius in mean free paths from the $k = 1$ search ($N = 400$) against \eqref{eq:q4_analytic}.}
     \label{tab:q4}
     \begin{tabular}{lccccc}
         \toprule
@@ -532,36 +527,9 @@ Substituting the two parameter sets recovers the Question 3 relations exactly: $
         2.00 & 1.14713  & 1.14713  & 0.99952  & 0.99952  & $-2.4\times10^{-4}\,\%$ \\
         \bottomrule
     \end{tabular}
+    \caption{Critical radius in mean free paths from the $k = 1$ search ($N = 400$) against \eqref{eq:q4_analytic}.}
 \end{table}
 
-\subsection*{Verification}
-
-Two further checks, independent of the comparison in Table~\ref{tab:q4}.
-
-\paragraph{Convergence rate of the iteration.} The error of source iteration falls by the dominance ratio $k_1/k_0$ per sweep. With the spherical modes $B_n = n\pi/r_{\text{out}}$ this is $(\Sigma_a + DB_1^2)/(\Sigma_a + DB_2^2)$, which at a \emph{critical} radius collapses. Criticality means $\Sigma_a + DB_1^2 = \nu\Sigma_f$, and $B_2 = 2B_1$, so
-\begin{equation}
-    \frac{k_1}{k_0} = \frac{\nu\Sigma_f}{4\nu\Sigma_f - 3\Sigma_a} = \frac{c}{4c-3}
-    \label{eq:dominance}
-\end{equation}
-The diffusion coefficient has cancelled: \emph{the convergence rate at criticality depends on $c$ alone}. 
-
-\begin{table}[htbp]
-    \centering
-    \caption{Dominance ratio and sweep count to $|\Delta k| < 10^{-10}k$ at the critical radius. The sweep counts are identical for the classical and asymptotic approximations, as \eqref{eq:dominance} requires.}
-    \label{tab:q4_iteration}
-    \begin{tabular}{lccc}
-        \toprule
-        $c$ & $c/(4c-3)$ & sweeps \\
-        \midrule
-        1.02 & 0.944444 & 280 \\
-        1.05 & 0.875000 & 133 \\
-        1.10 & 0.785714 & \phantom{0}79 \\
-        1.20 & 0.666667 & \phantom{0}50 \\
-        1.50 & 0.500000 & \phantom{0}32 \\
-        2.00 & 0.400000 & \phantom{0}25 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
 
 \begin{figure}[htbp]
     \centering
@@ -595,7 +563,6 @@ Question 5 is Question 4 with the one-group benchmark cross sections of Sood, Fo
 
 \begin{table}[!ht]
     \centering
-    \caption{Bare critical radius and mass from the $k = 1$ search on a 400-cell mesh. Numerical and analytic radii agree to four decimals in cm.}
     \label{tab:q5}
     \begin{tabular}{llccccc}
         \toprule
@@ -608,17 +575,18 @@ Question 5 is Question 4 with the one-group benchmark cross sections of Sood, Fo
         U-235  & asymptotic & 1.30 & 19.0 & 7.4339 & 2.4264 & 32.696 \\
         \bottomrule
     \end{tabular}
+    \caption{Bare critical radius and mass from the $k = 1$ search on a 400-cell mesh. Numerical and analytic radii agree to four decimals in cm.}
 \end{table}
 \FloatBarrier
 
 \begin{figure}[htbp]
     \centering
     \includegraphics[width=\textwidth]{figs/q5_criticality.pdf}
-    \caption{Multiplication factor against sphere radius for the two fissile materials, both approximations. The circles mark the $k = 1$ crossing.}
+    \caption{Multiplication factor against sphere radius for the two fissile materials, both approximations. The circles mark the $k = 1$ crossing. \textbf{Sorry for the captions over the graphs, it's unprofessional but I didn't get to erasing them.}}
     \label{fig:q5}
 \end{figure}
 
-}
+
 
 \clearpage
 \appendix

@@ -1,7 +1,7 @@
 # 01 — The Module Map
 
-**Six modules in a straight line from one particle to a critical mass, and two entry points
-that do different things.**
+**Six modules in a straight line from one particle to a critical mass, two more that compare the
+result against theory, and three entry points that do different things.**
 
 ## The files
 
@@ -12,6 +12,8 @@ that do different things.**
 | `simulation.py` | `SimulationHistory`: one source particle and all its descendants, advanced generation by generation. |
 | `criticality.py` | Is a given radius critical, bracket it, bisect it. |
 | `analysis.py` | The three parameter studies of Questions 2–4, their CSV cache and their figures. |
+| `analytic.py` | Question 5: the three closed-form bare-sphere radii, in mean free paths ([06](06-the-analytic-comparison.md)). |
+| `q5.py` | Question 5: the cached sweeps against those curves, as a table and a figure. |
 | `main.py` | The Question 1 base case only. |
 | `__init__.py` | Re-exports the public names, so callers write `from homework4 import ...`. |
 
@@ -19,8 +21,10 @@ that do different things.**
 
 - **`python -m homework4.main`** — Question 1 alone. One `find_critical_radius` at the default
   config, printing the radius, volume and mass.
-- **`python -m homework4.analysis`** — Questions 2, 3 and 4. Three studies, 57 critical-radius
-  searches in total if the cache is cold ([04](04-studies-and-caching.md)).
+- **`python -m homework4.analysis`** — Questions 2, 3, 4 and then 5. Three studies, 57
+  critical-radius searches in total if the cache is cold ([04](04-studies-and-caching.md)).
+- **`python -m homework4.q5`** — Question 5 alone. Reads the two cached sweeps and simulates
+  nothing, so it is the one entry point that always returns immediately.
 
 `main.py` does not call `analysis.py` and vice versa; the base case is deliberately repeated
 inside the density study as the `rho = 30` point.
